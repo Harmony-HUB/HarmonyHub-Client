@@ -1,8 +1,10 @@
 import { useState } from "react";
 import styled from "styled-components";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import Button from "./components/common/Button";
 import MusicEditor from "./components/Editor";
 import Modal from "./components/Modal";
+import app from "./config/firebase-config";
 
 const Header = styled.header`
   display: flex;
@@ -42,6 +44,19 @@ function App() {
     setIsModalOpen(false);
   };
 
+  const handleGoogleLogin = async () => {
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      console.log("Logged in with Google", result.user);
+      closeModal();
+    } catch (error) {
+      console.error("Error logging in with Google", error);
+    }
+  };
+
   return (
     <Container>
       <Header>
@@ -51,7 +66,7 @@ function App() {
       <MusicEditor />
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         {/* Add your modal content here */}
-        <h2>Login Form</h2>
+        <Button onClick={handleGoogleLogin}>Google Login</Button>
         {/* Include your login form components here */}
       </Modal>
     </Container>
