@@ -1,8 +1,8 @@
 import { useState } from "react";
 import styled from "styled-components";
-import Button from "./components/common/Button";
 import MusicEditor from "./components/Editor";
-import Modal from "./components/Modal";
+import Login from "./components/Login";
+import Logout from "./components/Logout";
 
 const Header = styled.header`
   display: flex;
@@ -32,28 +32,26 @@ const Title = styled.h1`
 `;
 
 function App() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const openModal = () => {
-    setIsModalOpen(true);
+  const handleLogin = () => {
+    setIsLoggedIn(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const handleLogout = () => {
+    setIsLoggedIn(false);
   };
-
   return (
     <Container>
       <Header>
-        <Button onClick={openModal}>Login</Button>
+        {isLoggedIn ? (
+          <Logout onLogout={handleLogout} />
+        ) : (
+          <Login onLogin={handleLogin} />
+        )}
       </Header>
       <Title>Harmony HUB</Title>
       <MusicEditor />
-      <Modal isOpen={isModalOpen} onClose={closeModal}>
-        {/* Add your modal content here */}
-        <h2>Login Form</h2>
-        {/* Include your login form components here */}
-      </Modal>
     </Container>
   );
 }
