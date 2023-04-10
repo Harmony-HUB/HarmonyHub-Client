@@ -60,7 +60,6 @@ function MusicEditor() {
 
   const handleSliderChange = (label, newValue) => {
     setSliderValues({ ...sliderValues, [label]: newValue });
-    console.log(sliderValues);
   };
 
   const clickEqualizer = () => {
