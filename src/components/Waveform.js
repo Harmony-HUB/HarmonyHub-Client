@@ -1,7 +1,17 @@
+/* eslint-disable consistent-return */
 import React, { useRef, useEffect, useState } from "react";
 
-function Waveform({ file, onAudioBufferLoaded }) {
-  const canvasRef = useRef(null);
+function Waveform({
+  file,
+  onAudioBufferLoaded,
+  waveformColor = "#b3ecec",
+  progressPosition,
+  isPlaying,
+  updateProgress,
+}) {
+  const waveformCanvasRef = useRef(null);
+  const progressCanvasRef = useRef(null);
+
   const [audioContext] = useState(
     new (window.AudioContext || window.webkitAudioContext)()
   );
@@ -23,20 +33,32 @@ function Waveform({ file, onAudioBufferLoaded }) {
     };
 
     loadAudioFile();
-  }, [file, audioContext, onAudioBufferLoaded]);
+  }, [file]);
+
+  const drawProgress = () => {
+    const canvas = progressCanvasRef.current;
+    const ctx = canvas.getContext("2d");
+    const { width, height } = canvas;
+    const x = (progressPosition * width) / 100;
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, height);
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  };
 
   const drawWaveform = () => {
     if (!audioBuffer) return;
 
-    const canvas = canvasRef.current;
+    const canvas = waveformCanvasRef.current;
     const ctx = canvas.getContext("2d");
-    const { width } = canvas;
-    const { height } = canvas;
+    const { width, height } = canvas;
 
     const data = audioBuffer.getChannelData(0);
-    console.log("data: ", data);
     const step = Math.ceil(data.length / width);
-    console.log("step: ", step);
     const amplitude = height / 2;
 
     let maxAmplitude = 0;
@@ -48,6 +70,7 @@ function Waveform({ file, onAudioBufferLoaded }) {
     ctx.clearRect(0, 0, width, height);
     ctx.beginPath();
     ctx.moveTo(0, amplitude);
+    ctx.strokeStyle = waveformColor;
 
     for (let i = 0; i < width; i += 1) {
       const min = Math.min.apply(null, data.slice(i * step, (i + 1) * step));
@@ -61,12 +84,34 @@ function Waveform({ file, onAudioBufferLoaded }) {
   };
 
   useEffect(() => {
+    if (isPlaying) {
+      const interval = setInterval(() => {
+        updateProgress();
+        drawWaveform();
+        drawProgress();
+      }, 100);
+
+      return () => clearInterval(interval);
+    }
+  }, [isPlaying, updateProgress]);
+
+  useEffect(() => {
     drawWaveform();
   }, [audioBuffer]);
 
+  useEffect(() => {
+    drawProgress();
+  }, [progressPosition]);
+
   return (
-    <div>
-      <canvas ref={canvasRef} width="1350" height="100" />
+    <div style={{ position: "relative" }}>
+      <canvas ref={waveformCanvasRef} width="1350" height="100" />
+      <canvas
+        ref={progressCanvasRef}
+        width="1350"
+        height="150"
+        style={{ position: "absolute", top: 0, left: 0 }}
+      />
     </div>
   );
 }

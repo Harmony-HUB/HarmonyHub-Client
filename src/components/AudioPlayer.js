@@ -11,6 +11,8 @@ function AudioPlayer({ file }) {
   const [audioSource, setAudioSource] = useState(null);
   const [startTime, setStartTime] = useState(0);
   const [pausedTime, setPausedTime] = useState(0);
+  const [progressPosition, setProgressPosition] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const newAudioContext = new (window.AudioContext ||
@@ -18,8 +20,29 @@ function AudioPlayer({ file }) {
     setAudioContext(newAudioContext);
   }, []);
 
+  const updateProgress = () => {
+    if (!audioContext || !audioBuffer || !isPlaying) return;
+
+    const currentTime = audioContext.currentTime - startTime + pausedTime;
+    const progress = (currentTime / audioBuffer.duration) * 100;
+    setProgressPosition(progress);
+  };
+
+  // eslint-disable-next-line consistent-return
+  useEffect(() => {
+    if (isPlaying) {
+      const animationFrame = requestAnimationFrame(updateProgress);
+
+      return () => {
+        cancelAnimationFrame(animationFrame);
+      };
+    }
+  }, [isPlaying, progressPosition]);
+
   const playSound = () => {
-    if (!audioContext || !audioBuffer) return;
+    if (!audioContext || !audioBuffer || audioSource) return;
+
+    setIsPlaying(true);
 
     const newAudioSource = audioContext.createBufferSource();
     newAudioSource.buffer = audioBuffer;
@@ -33,7 +56,9 @@ function AudioPlayer({ file }) {
   const pauseSound = () => {
     if (!audioSource) return;
 
-    audioSource.stop();
+    setIsPlaying(false);
+
+    audioSource.disconnect();
     setPausedTime(audioContext.currentTime - startTime + pausedTime);
     setAudioSource(null);
   };
@@ -41,9 +66,13 @@ function AudioPlayer({ file }) {
   const stopSound = () => {
     if (!audioSource) return;
 
+    setIsPlaying(false);
+
     audioSource.stop();
     setAudioSource(null);
     setPausedTime(0);
+
+    setProgressPosition(0);
   };
 
   const horizontalButtonsConfig = [
@@ -81,7 +110,14 @@ function AudioPlayer({ file }) {
           </Button>
         ))}
       </ButtonWrapper>
-      <Waveform file={file} onAudioBufferLoaded={setAudioBuffer} />
+      <Waveform
+        file={file}
+        onAudioBufferLoaded={setAudioBuffer}
+        waveformColor="#b3ecec"
+        progressPosition={progressPosition}
+        isPlaying={isPlaying}
+        updateProgress={updateProgress}
+      />
     </div>
   );
 }
