@@ -1,4 +1,3 @@
-/* eslint-disable consistent-return */
 import React, { useRef, useEffect, useState } from "react";
 
 function Waveform({
@@ -6,8 +5,6 @@ function Waveform({
   onAudioBufferLoaded,
   waveformColor = "#b3ecec",
   progressPosition,
-  isPlaying,
-  updateProgress,
 }) {
   const waveformCanvasRef = useRef(null);
   const progressCanvasRef = useRef(null);
@@ -84,18 +81,6 @@ function Waveform({
   };
 
   useEffect(() => {
-    if (isPlaying) {
-      const interval = setInterval(() => {
-        updateProgress();
-        drawWaveform();
-        drawProgress();
-      }, 100);
-
-      return () => clearInterval(interval);
-    }
-  }, [isPlaying, updateProgress]);
-
-  useEffect(() => {
     drawWaveform();
   }, [audioBuffer]);
 
@@ -109,7 +94,7 @@ function Waveform({
       <canvas
         ref={progressCanvasRef}
         width="1350"
-        height="150"
+        height="100"
         style={{ position: "absolute", top: 0, left: 0 }}
       />
     </div>
