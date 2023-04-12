@@ -31,13 +31,15 @@ function AudioPlayer({ file }) {
   // eslint-disable-next-line consistent-return
   useEffect(() => {
     if (isPlaying) {
-      const animationFrame = requestAnimationFrame(updateProgress);
+      const interval = setInterval(() => {
+        updateProgress();
+      }, 100);
 
       return () => {
-        cancelAnimationFrame(animationFrame);
+        clearInterval(interval);
       };
     }
-  }, [isPlaying, progressPosition]);
+  }, [isPlaying, updateProgress]);
 
   const playSound = () => {
     if (!audioContext || !audioBuffer || audioSource) return;
@@ -115,8 +117,6 @@ function AudioPlayer({ file }) {
         onAudioBufferLoaded={setAudioBuffer}
         waveformColor="#b3ecec"
         progressPosition={progressPosition}
-        isPlaying={isPlaying}
-        updateProgress={updateProgress}
       />
     </div>
   );
