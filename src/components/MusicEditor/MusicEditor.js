@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
-import Button from "../common/Button";
-import ButtonWrapper from "../common/ButtonWrapper";
-import EqualizerSlider from "../EqualizerSlider";
+import Button from "../common/Button/Button";
+import ButtonWrapper from "../common/ButtonWrapper/ButtonWrapper";
+import EqualizerSlider from "../EqualizerSlider/EqualizerSlider";
 import AudioPlayer from "../AudioPlayer";
 import { Editor, SelectFileButton, FileInput } from "./styles";
 
@@ -92,7 +92,7 @@ function MusicEditor() {
           <FileInput type="file" onChange={handleFileChange} />
         </SelectFileButton>
       )}
-      <ButtonWrapper bottom="70%" direction="vertical">
+      <ButtonWrapper bottom="85%">
         {verticalButtonConfig.map(config => (
           <Button id={config.id} key={config.id} onClick={config.onClick}>
             {config.name}

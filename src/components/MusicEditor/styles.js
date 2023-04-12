@@ -5,7 +5,7 @@ export const Editor = styled.div`
   justify-content: center;
   align-items: center;
   position: relative;
-  width: 80%;
+  width: 90%;
   height: 60%;
   padding: 1rem;
   font-size: 1.2rem;

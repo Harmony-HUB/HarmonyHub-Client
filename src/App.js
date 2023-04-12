@@ -1,8 +1,8 @@
 import { useState } from "react";
 import styled from "styled-components";
-import MusicEditor from "./components/Editor";
-import Login from "./components/Login";
-import Logout from "./components/Logout";
+import MusicEditor from "./components/MusicEditor/MusicEditor";
+import Login from "./components/Auth/Login";
+import Logout from "./components/Auth/Logout";
 
 const Header = styled.header`
   display: flex;
