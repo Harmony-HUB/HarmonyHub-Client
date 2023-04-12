@@ -2,28 +2,38 @@ import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faPause, faStop } from "@fortawesome/free-solid-svg-icons";
 import Waveform from "./Waveform";
-import Button from "./common/Button";
-import ButtonWrapper from "./common/ButtonWrapper";
+import Button from "./common/Button/Button";
+import ButtonWrapper from "./common/ButtonWrapper/ButtonWrapper";
+import { SliderContainer, SliderInput } from "./styles";
 
 function AudioPlayer({ file }) {
-  const [audioContext, setAudioContext] = useState(null);
+  const [audioContext, setAudioContext] = useState({
+    context: null,
+    gainNode: null,
+  });
   const [audioBuffer, setAudioBuffer] = useState(null);
   const [audioSource, setAudioSource] = useState(null);
   const [startTime, setStartTime] = useState(0);
   const [pausedTime, setPausedTime] = useState(0);
   const [progressPosition, setProgressPosition] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(1);
 
   useEffect(() => {
     const newAudioContext = new (window.AudioContext ||
       window.webkitAudioContext)();
-    setAudioContext(newAudioContext);
+    const gainNode = newAudioContext.createGain();
+    setAudioContext({
+      context: newAudioContext,
+      gainNode,
+    });
   }, []);
 
   const updateProgress = () => {
     if (!audioContext || !audioBuffer || !isPlaying) return;
 
-    const currentTime = audioContext.currentTime - startTime + pausedTime;
+    const currentTime =
+      audioContext.context.currentTime - startTime + pausedTime;
     const progress = (currentTime / audioBuffer.duration) * 100;
     setProgressPosition(progress);
   };
@@ -33,7 +43,7 @@ function AudioPlayer({ file }) {
     if (isPlaying) {
       const interval = setInterval(() => {
         updateProgress();
-      }, 100);
+      }, 10);
 
       return () => {
         clearInterval(interval);
@@ -42,17 +52,20 @@ function AudioPlayer({ file }) {
   }, [isPlaying, updateProgress]);
 
   const playSound = () => {
-    if (!audioContext || !audioBuffer || audioSource) return;
+    if (!audioContext || !audioContext.context || !audioBuffer || audioSource)
+      return;
 
     setIsPlaying(true);
 
-    const newAudioSource = audioContext.createBufferSource();
+    const newAudioSource = audioContext.context.createBufferSource();
     newAudioSource.buffer = audioBuffer;
-    newAudioSource.connect(audioContext.destination);
+    newAudioSource.connect(audioContext.gainNode);
+    audioContext.gainNode.connect(audioContext.context.destination);
+
     newAudioSource.start(0, pausedTime);
 
     setAudioSource(newAudioSource);
-    setStartTime(audioContext.currentTime);
+    setStartTime(audioContext.context.currentTime);
   };
 
   const pauseSound = () => {
@@ -75,6 +88,15 @@ function AudioPlayer({ file }) {
     setPausedTime(0);
 
     setProgressPosition(0);
+  };
+
+  const handleVolumeChange = event => {
+    const newVolume = event.target.value;
+    setVolume(newVolume);
+
+    if (audioContext && audioContext.gainNode) {
+      audioContext.gainNode.gain.value = newVolume;
+    }
   };
 
   const horizontalButtonsConfig = [
@@ -117,7 +139,19 @@ function AudioPlayer({ file }) {
         onAudioBufferLoaded={setAudioBuffer}
         waveformColor="#b3ecec"
         progressPosition={progressPosition}
+        volume={volume}
       />
+      <SliderContainer>
+        <SliderInput
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value={volume}
+          onChange={handleVolumeChange}
+          style={{ width: "100%" }}
+        />
+      </SliderContainer>
     </div>
   );
 }

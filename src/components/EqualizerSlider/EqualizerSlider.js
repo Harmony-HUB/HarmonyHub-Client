@@ -1,17 +1,5 @@
 import PropTypes from "prop-types";
-import styled from "styled-components";
-
-const SliderWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 1rem;
-`;
-
-const SliderLabel = styled.label`
-  margin-bottom: 0.5em;
-  font-weight: bold;
-`;
+import { SliderWrapper, SliderLabel } from "./styles";
 
 function EqualizerSlider({ label, min, max, value, onChange }) {
   return (

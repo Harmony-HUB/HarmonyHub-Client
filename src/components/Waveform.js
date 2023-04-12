@@ -1,10 +1,12 @@
 import React, { useRef, useEffect, useState } from "react";
+import "./Waveform.css";
 
 function Waveform({
   file,
   onAudioBufferLoaded,
   waveformColor = "#b3ecec",
   progressPosition,
+  volume,
 }) {
   const waveformCanvasRef = useRef(null);
   const progressCanvasRef = useRef(null);
@@ -56,7 +58,7 @@ function Waveform({
 
     const data = audioBuffer.getChannelData(0);
     const step = Math.ceil(data.length / width);
-    const amplitude = height / 2;
+    const amplitude = (height / 2) * volume;
 
     let maxAmplitude = 0;
     for (let i = 0; i < data.length; i += 1) {
@@ -82,15 +84,31 @@ function Waveform({
 
   useEffect(() => {
     drawWaveform();
-  }, [audioBuffer]);
+  }, [audioBuffer, volume]);
 
   useEffect(() => {
-    drawProgress();
+    let animationFrameId;
+
+    const animateProgress = () => {
+      drawProgress();
+      animationFrameId = requestAnimationFrame(animateProgress);
+    };
+
+    animateProgress();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
   }, [progressPosition]);
 
   return (
     <div style={{ position: "relative" }}>
-      <canvas ref={waveformCanvasRef} width="1350" height="100" />
+      <canvas
+        ref={waveformCanvasRef}
+        width="1350"
+        height="100"
+        className="waveform-canvas"
+      />
       <canvas
         ref={progressCanvasRef}
         width="1350"

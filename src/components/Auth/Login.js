@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import axios from "axios";
 import PropTypes from "prop-types";
-import app from "../config/firebase-config";
-import Button from "./common/Button";
-import Modal from "./common/Modal";
+import app from "../../config/firebase-config";
+import Button from "../common/Button/Button";
+import Modal from "../common/Modal/Modal";
 
 function Login({ onLogin }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
