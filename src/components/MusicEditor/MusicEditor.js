@@ -4,7 +4,7 @@ import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import Button from "../common/Button/Button";
 import ButtonWrapper from "../common/ButtonWrapper/ButtonWrapper";
 import EqualizerSlider from "../EqualizerSlider/EqualizerSlider";
-import AudioPlayer from "../AudioPlayer";
+import AudioPlayer from "../AudioPlayer/AudioPlayer";
 import { Editor, SelectFileButton, FileInput } from "./styles";
 
 function MusicEditor() {
@@ -46,6 +46,10 @@ function MusicEditor() {
       id: "autotune-button",
       name: "AutoTune",
     },
+    {
+      id: "tempo & pitch-button",
+      name: "Tempo & Pitch",
+    },
   ];
 
   const slidersConfig = [
@@ -79,7 +83,9 @@ function MusicEditor() {
                 value={config.value}
                 min={0}
                 max={100}
-                onChange={e => config.onChange(config.label, e.target.value)}
+                onChange={event =>
+                  config.onChange(config.label, event.target.value)
+                }
               />
             ))
           : null}

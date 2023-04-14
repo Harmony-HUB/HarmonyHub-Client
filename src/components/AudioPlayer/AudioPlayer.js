@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay, faPause, faStop } from "@fortawesome/free-solid-svg-icons";
-import Waveform from "./Waveform";
-import Button from "./common/Button/Button";
-import ButtonWrapper from "./common/ButtonWrapper/ButtonWrapper";
+import * as Tone from "tone";
+import Waveform from "../Waveform/Waveform";
 import { SliderContainer, SliderInput } from "./styles";
+import Controls from "./control";
 
 function AudioPlayer({ file }) {
   const [audioContext, setAudioContext] = useState({
     context: null,
     gainNode: null,
+    pitchShifter: null,
   });
   const [audioBuffer, setAudioBuffer] = useState(null);
   const [audioSource, setAudioSource] = useState(null);
@@ -18,14 +17,19 @@ function AudioPlayer({ file }) {
   const [progressPosition, setProgressPosition] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
+  const [pitch, setPitch] = useState(1);
+  const [tempo, setTempo] = useState(1);
 
   useEffect(() => {
-    const newAudioContext = new (window.AudioContext ||
-      window.webkitAudioContext)();
-    const gainNode = newAudioContext.createGain();
+    const newAudioContext = new Tone.Context();
+    const gainNode = new Tone.Gain(1).toDestination();
+
+    const pitchShift = new Tone.PitchShift(0).connect(gainNode);
+
     setAudioContext({
       context: newAudioContext,
       gainNode,
+      pitchShift,
     });
   }, []);
 
@@ -51,17 +55,23 @@ function AudioPlayer({ file }) {
     }
   }, [isPlaying, updateProgress]);
 
-  const playSound = () => {
+  const playSound = async () => {
     if (!audioContext || !audioContext.context || !audioBuffer || audioSource)
       return;
 
+    if (audioContext.context.state === "suspended") {
+      await audioContext.context.resume();
+    }
+
     setIsPlaying(true);
 
-    const newAudioSource = audioContext.context.createBufferSource();
-    newAudioSource.buffer = audioBuffer;
-    newAudioSource.connect(audioContext.gainNode);
-    audioContext.gainNode.connect(audioContext.context.destination);
-
+    const newAudioSource = new Tone.GrainPlayer(audioBuffer, () => {
+      setIsPlaying(false);
+    });
+    newAudioSource.connect(audioContext.pitchShift);
+    audioContext.gainNode.connect(Tone.getContext().destination);
+    newAudioSource.playbackRate = 1;
+    newAudioSource.loop = false;
     newAudioSource.start(0, pausedTime);
 
     setAudioSource(newAudioSource);
@@ -73,8 +83,8 @@ function AudioPlayer({ file }) {
 
     setIsPlaying(false);
 
-    audioSource.disconnect();
-    setPausedTime(audioContext.currentTime - startTime + pausedTime);
+    audioSource.stop();
+    setPausedTime(audioContext.context.currentTime - startTime + pausedTime);
     setAudioSource(null);
   };
 
@@ -99,41 +109,28 @@ function AudioPlayer({ file }) {
     }
   };
 
-  const horizontalButtonsConfig = [
-    {
-      id: "play-button",
-      icon: faPlay,
-      margin: "",
-      onClick: () => playSound(),
-    },
-    {
-      id: "pause-button",
-      icon: faPause,
-      margin: "0 0 0 1rem",
-      onClick: () => pauseSound(),
-    },
-    {
-      id: "stop-button",
-      icon: faStop,
-      margin: "0 0 0 1rem",
-      onClick: () => stopSound(),
-    },
-  ];
+  const handlePitchChange = delta => {
+    const newPitch = parseFloat(pitch + delta);
+    if (newPitch < 0.5 || newPitch > 2) return;
+    setPitch(newPitch);
+
+    if (audioContext && audioContext.pitchShift) {
+      audioContext.pitchShift.pitch = newPitch - 1;
+    }
+  };
+
+  const handleTempoChange = delta => {
+    const newTempo = parseFloat(tempo + delta);
+    if (newTempo < 0.5 || newTempo > 2) return;
+    setTempo(newTempo);
+
+    if (audioSource) {
+      audioSource.playbackRate = newTempo;
+    }
+  };
 
   return (
     <div>
-      <ButtonWrapper bottom="10%" left="3%">
-        {horizontalButtonsConfig.map(config => (
-          <Button
-            id={config.id}
-            margin={config.margin}
-            key={config.id}
-            onClick={config.onClick}
-          >
-            <FontAwesomeIcon icon={config.icon} />
-          </Button>
-        ))}
-      </ButtonWrapper>
       <Waveform
         file={file}
         onAudioBufferLoaded={setAudioBuffer}
@@ -152,6 +149,14 @@ function AudioPlayer({ file }) {
           style={{ width: "100%" }}
         />
       </SliderContainer>
+      <Controls
+        handlePitchChange={handlePitchChange}
+        handleTempoChange={handleTempoChange}
+        handleVolumeChange={handleVolumeChange}
+        playSound={playSound}
+        stopSound={stopSound}
+        pauseSound={pauseSound}
+      />
     </div>
   );
 }
