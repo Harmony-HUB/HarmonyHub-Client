@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import * as Tone from "tone";
 import { useSelector, useDispatch } from "react-redux";
+import styled from "styled-components";
 import Waveform from "../Waveform/Waveform";
 import { SliderContainer, SliderInput } from "./styles";
-import Controls from "./control";
+import Controls from "./Control";
 import Button from "../common/Button/Button";
 import {
+  setAudioContext,
+  setAudioBuffer,
+  setAudioSource,
   setStartTime,
   setPausedTime,
   setProgressPosition,
@@ -16,15 +20,21 @@ import {
   setSelectedStart,
   setSelectedEnd,
 } from "../../feature/audioPlayerSlice";
+import VerticalSlider from "../VerticalSlider";
+
+const VerticalSliderWrapper = styled.div`
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+`;
 
 function AudioPlayer({ file }) {
-  const [audioContext, setAudioContext] = useState({
-    context: null,
-    gainNode: null,
-    pitchShift: null,
-  });
-  const [audioBuffer, setAudioBuffer] = useState(null);
-  const [audioSource, setAudioSource] = useState(null);
+  const [fadeIn, setFadeIn] = useState(0);
+  const [fadeOut, setFadeOut] = useState(0);
+  const [isTrimmed, setIsTrimmed] = useState(false);
 
   const startTime = useSelector(state => state.audioPlayer.startTime);
   const pausedTime = useSelector(state => state.audioPlayer.pausedTime);
@@ -34,6 +44,9 @@ function AudioPlayer({ file }) {
   const tempo = useSelector(state => state.audioPlayer.tempo);
   const selectedStart = useSelector(state => state.audioPlayer.selectedStart);
   const selectedEnd = useSelector(state => state.audioPlayer.selectedEnd);
+  const audioContext = useSelector(state => state.audioPlayer.audioContext);
+  const audioBuffer = useSelector(state => state.audioPlayer.audioBuffer);
+  const audioSource = useSelector(state => state.audioPlayer.audioSource);
 
   const dispatch = useDispatch();
 
@@ -42,11 +55,13 @@ function AudioPlayer({ file }) {
     const gainNode = new Tone.Gain(1).toDestination();
     const pitchShift = new Tone.PitchShift(0).connect(gainNode);
 
-    setAudioContext({
-      context: newAudioContext,
-      gainNode,
-      pitchShift,
-    });
+    dispatch(
+      setAudioContext({
+        context: newAudioContext,
+        gainNode,
+        pitchShift,
+      })
+    );
   }, []);
 
   const updateProgress = () => {
@@ -69,7 +84,7 @@ function AudioPlayer({ file }) {
         clearInterval(interval);
       };
     }
-  }, [isPlaying, updateProgress]);
+  }, [isPlaying]);
 
   const playSound = async () => {
     if (!audioContext || !audioContext.context || !audioBuffer || audioSource)
@@ -89,14 +104,34 @@ function AudioPlayer({ file }) {
     newAudioSource.playbackRate = 1;
     newAudioSource.loop = false;
 
-    const playbackOffset =
-      pausedTime > 0 ? pausedTime : selectedStart * audioBuffer.duration;
+    // eslint-disable-next-line no-nested-ternary
+    const playbackOffset = isTrimmed
+      ? Math.max(0, pausedTime)
+      : Math.max(selectedStart * audioBuffer.duration, pausedTime);
 
-    const duration = (selectedEnd - selectedStart) * audioBuffer.duration;
+    const duration = isTrimmed
+      ? audioBuffer.duration - playbackOffset
+      : (selectedEnd - selectedStart) * audioBuffer.duration - pausedTime;
 
     newAudioSource.start(0, playbackOffset, duration);
 
-    setAudioSource(newAudioSource);
+    if (fadeIn > 0) {
+      newAudioSource.volume.setValueAtTime(-Infinity, playbackOffset);
+      newAudioSource.volume.linearRampToValueAtTime(
+        0,
+        playbackOffset + fadeIn + duration
+      );
+    }
+
+    if (fadeOut > 0) {
+      newAudioSource.volume.setValueAtTime(0, playbackOffset + duration);
+      newAudioSource.volume.linearRampToValueAtTime(
+        -Infinity,
+        playbackOffset + duration - fadeOut * duration
+      );
+    }
+
+    dispatch(setAudioSource(newAudioSource));
     dispatch(setStartTime(audioContext.context.currentTime));
   };
 
@@ -106,10 +141,11 @@ function AudioPlayer({ file }) {
     dispatch(setIsPlaying(false));
 
     audioSource.stop();
-    dispatch(
-      setPausedTime(audioContext.context.currentTime - startTime + pausedTime)
-    );
-    setAudioSource(null);
+    const elapsedTime = audioContext.context.currentTime - startTime;
+    const newPausedTime = elapsedTime + pausedTime;
+
+    dispatch(setPausedTime(newPausedTime));
+    dispatch(setAudioSource(null));
   };
 
   const stopSound = () => {
@@ -118,10 +154,10 @@ function AudioPlayer({ file }) {
     dispatch(setIsPlaying(false));
 
     audioSource.stop();
-    setAudioSource(null);
+    dispatch(setAudioSource(null));
     dispatch(setPausedTime(0));
 
-    dispatch(setProgressPosition(0));
+    dispatch(setProgressPosition(selectedStart * 100));
   };
 
   const handleVolumeChange = event => {
@@ -179,26 +215,48 @@ function AudioPlayer({ file }) {
       }
     }
 
-    setAudioBuffer(newBuffer);
+    dispatch(setAudioBuffer(newBuffer));
+    setIsTrimmed(true);
+  };
+
+  const handleSelectionChange = (start, end) => {
+    dispatch(setSelectedStart(start));
+    dispatch(setSelectedEnd(end));
+
+    if (audioBuffer) {
+      const newPausedTime = start * audioBuffer.duration;
+      dispatch(setPausedTime(newPausedTime));
+      const newProgressPosition = start * 100;
+      dispatch(setProgressPosition(newProgressPosition));
+    }
+  };
+
+  const handleWaveformClick = progressPercentage => {
+    dispatch(setProgressPosition(progressPercentage));
+
+    if (audioBuffer) {
+      const newPausedTime = (progressPercentage / 100) * audioBuffer.duration;
+      dispatch(setPausedTime(newPausedTime));
+    }
+  };
+
+  const handleFadeInChange = event => {
+    const newFadeIn = parseFloat(event.target.value);
+    setFadeIn(newFadeIn);
+  };
+
+  const handleFadeOutChange = event => {
+    const newFadeOut = parseFloat(event.target.value);
+    setFadeOut(newFadeOut);
   };
 
   return (
     <div>
       <Waveform
         file={file}
-        onAudioBufferLoaded={setAudioBuffer}
         waveformColor="#b3ecec"
-        onSelectionChange={(start, end) => {
-          dispatch(setSelectedStart(start));
-          dispatch(setSelectedEnd(end));
-
-          if (audioBuffer) {
-            const newPausedTime = start * audioBuffer.duration;
-            dispatch(setPausedTime(newPausedTime));
-            const newProgressPosition = start * 100;
-            dispatch(setProgressPosition(newProgressPosition));
-          }
-        }}
+        onSelectionChange={handleSelectionChange}
+        onWaveformClick={handleWaveformClick}
       />
       <SliderContainer>
         <SliderInput
@@ -219,9 +277,26 @@ function AudioPlayer({ file }) {
         stopSound={stopSound}
         pauseSound={pauseSound}
       />
+      <VerticalSliderWrapper>
+        <VerticalSlider
+          label="Fade In"
+          min="0"
+          max="10"
+          step="0.1"
+          value={fadeIn}
+          onChange={handleFadeInChange}
+        />
+        <VerticalSlider
+          label="Fade Out"
+          min="0"
+          max="10"
+          step="0.1"
+          value={fadeOut}
+          onChange={handleFadeOutChange}
+        />
+      </VerticalSliderWrapper>
       <Button onClick={trimAudioBuffer}>Trim Audio</Button>
     </div>
   );
 }
-
 export default AudioPlayer;

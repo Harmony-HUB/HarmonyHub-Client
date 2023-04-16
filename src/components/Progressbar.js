@@ -40,7 +40,7 @@ function ProgressBar({ progressPosition, duration }) {
         className="progress-time"
         style={{
           position: "absolute",
-          bottom: 100,
+          bottom: 0,
           left: `${progressPosition}%`,
           transform: "translateX(-50%)",
           color: "white",

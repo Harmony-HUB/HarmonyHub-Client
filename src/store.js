@@ -5,4 +5,8 @@ export default configureStore({
   reducer: {
     audioPlayer: audioPlayerReducer,
   },
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });

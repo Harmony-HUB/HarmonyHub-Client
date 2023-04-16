@@ -1,22 +1,28 @@
 import React, { useRef, useEffect, useState } from "react";
 import "./Waveform.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ProgressBar from "../Progressbar";
 import WaveSelection from "../Selection";
+import {
+  setProgressPosition,
+  setAudioBuffer,
+} from "../../feature/audioPlayerSlice";
 
 function Waveform({
   file,
-  onAudioBufferLoaded,
   waveformColor = "#b3ecec",
   onSelectionChange,
+  onWaveformClick,
 }) {
   const waveformCanvasRef = useRef(null);
 
   const [audioContext] = useState(
     new (window.AudioContext || window.webkitAudioContext)()
   );
-  const [audioBuffer, setAudioBuffer] = useState(null);
 
+  const dispatch = useDispatch();
+
+  const audioBuffer = useSelector(state => state.audioPlayer.audioBuffer);
   const selectedStart = useSelector(state => state.audioPlayer.selectedStart);
   const selectedEnd = useSelector(state => state.audioPlayer.selectedEnd);
   const progressPosition = useSelector(
@@ -26,6 +32,16 @@ function Waveform({
 
   const duration = audioBuffer ? audioBuffer.duration : 0;
 
+  const handleWaveformClick = event => {
+    const canvas = waveformCanvasRef.current;
+    const { width } = canvas;
+    const clickX = event.nativeEvent.offsetX;
+    const progressPercentage = (clickX / width) * 100;
+    onWaveformClick(progressPercentage);
+
+    dispatch(setProgressPosition(progressPercentage));
+  };
+
   useEffect(() => {
     if (!file) return;
 
@@ -34,8 +50,7 @@ function Waveform({
         const response = await fetch(file);
         const audioData = await response.arrayBuffer();
         const newAudioBuffer = await audioContext.decodeAudioData(audioData);
-        setAudioBuffer(newAudioBuffer);
-        onAudioBufferLoaded(newAudioBuffer);
+        dispatch(setAudioBuffer(newAudioBuffer));
       } catch (error) {
         console.error(error);
       }
@@ -94,6 +109,7 @@ function Waveform({
         width="1350"
         height="100"
         className="waveform-canvas"
+        onClick={handleWaveformClick}
       />
       <ProgressBar progressPosition={progressPosition} duration={duration} />
       <WaveSelection

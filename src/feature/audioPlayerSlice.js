@@ -1,6 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  audioContext: {
+    context: null,
+    gainNode: null,
+    pitchShift: null,
+  },
+  audioBuffer: null,
+  audioSource: null,
   startTime: 0,
   pausedTime: 0,
   progressPosition: 0,
@@ -16,6 +23,15 @@ const audioPlayerSlice = createSlice({
   name: "audioSlice",
   initialState,
   reducers: {
+    setAudioContext: (state, action) => {
+      state.audioContext = action.payload;
+    },
+    setAudioBuffer: (state, action) => {
+      state.audioBuffer = action.payload;
+    },
+    setAudioSource: (state, action) => {
+      state.audioSource = action.payload;
+    },
     setStartTime: (state, action) => {
       state.startTime = action.payload;
     },
@@ -47,6 +63,9 @@ const audioPlayerSlice = createSlice({
 });
 
 export const {
+  setAudioContext,
+  setAudioBuffer,
+  setAudioSource,
   setStartTime,
   setPausedTime,
   setProgressPosition,
