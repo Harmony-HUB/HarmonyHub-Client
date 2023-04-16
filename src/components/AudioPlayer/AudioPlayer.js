@@ -1,29 +1,45 @@
 import { useEffect, useState } from "react";
 import * as Tone from "tone";
+import { useSelector, useDispatch } from "react-redux";
 import Waveform from "../Waveform/Waveform";
 import { SliderContainer, SliderInput } from "./styles";
 import Controls from "./control";
+import Button from "../common/Button/Button";
+import {
+  setStartTime,
+  setPausedTime,
+  setProgressPosition,
+  setIsPlaying,
+  setVolume,
+  setPitch,
+  setTempo,
+  setSelectedStart,
+  setSelectedEnd,
+} from "../../feature/audioPlayerSlice";
 
 function AudioPlayer({ file }) {
   const [audioContext, setAudioContext] = useState({
     context: null,
     gainNode: null,
-    pitchShifter: null,
+    pitchShift: null,
   });
   const [audioBuffer, setAudioBuffer] = useState(null);
   const [audioSource, setAudioSource] = useState(null);
-  const [startTime, setStartTime] = useState(0);
-  const [pausedTime, setPausedTime] = useState(0);
-  const [progressPosition, setProgressPosition] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(1);
-  const [pitch, setPitch] = useState(1);
-  const [tempo, setTempo] = useState(1);
+
+  const startTime = useSelector(state => state.audioPlayer.startTime);
+  const pausedTime = useSelector(state => state.audioPlayer.pausedTime);
+  const isPlaying = useSelector(state => state.audioPlayer.isPlaying);
+  const volume = useSelector(state => state.audioPlayer.volume);
+  const pitch = useSelector(state => state.audioPlayer.pitch);
+  const tempo = useSelector(state => state.audioPlayer.tempo);
+  const selectedStart = useSelector(state => state.audioPlayer.selectedStart);
+  const selectedEnd = useSelector(state => state.audioPlayer.selectedEnd);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const newAudioContext = new Tone.Context();
     const gainNode = new Tone.Gain(1).toDestination();
-
     const pitchShift = new Tone.PitchShift(0).connect(gainNode);
 
     setAudioContext({
@@ -39,7 +55,7 @@ function AudioPlayer({ file }) {
     const currentTime =
       audioContext.context.currentTime - startTime + pausedTime;
     const progress = (currentTime / audioBuffer.duration) * 100;
-    setProgressPosition(progress);
+    dispatch(setProgressPosition(progress));
   };
 
   // eslint-disable-next-line consistent-return
@@ -63,46 +79,54 @@ function AudioPlayer({ file }) {
       await audioContext.context.resume();
     }
 
-    setIsPlaying(true);
+    dispatch(setIsPlaying(true));
 
     const newAudioSource = new Tone.GrainPlayer(audioBuffer, () => {
-      setIsPlaying(false);
+      dispatch(setIsPlaying(false));
     });
     newAudioSource.connect(audioContext.pitchShift);
     audioContext.gainNode.connect(Tone.getContext().destination);
     newAudioSource.playbackRate = 1;
     newAudioSource.loop = false;
-    newAudioSource.start(0, pausedTime);
+
+    const playbackOffset =
+      pausedTime > 0 ? pausedTime : selectedStart * audioBuffer.duration;
+
+    const duration = (selectedEnd - selectedStart) * audioBuffer.duration;
+
+    newAudioSource.start(0, playbackOffset, duration);
 
     setAudioSource(newAudioSource);
-    setStartTime(audioContext.context.currentTime);
+    dispatch(setStartTime(audioContext.context.currentTime));
   };
 
   const pauseSound = () => {
     if (!audioSource) return;
 
-    setIsPlaying(false);
+    dispatch(setIsPlaying(false));
 
     audioSource.stop();
-    setPausedTime(audioContext.context.currentTime - startTime + pausedTime);
+    dispatch(
+      setPausedTime(audioContext.context.currentTime - startTime + pausedTime)
+    );
     setAudioSource(null);
   };
 
   const stopSound = () => {
     if (!audioSource) return;
 
-    setIsPlaying(false);
+    dispatch(setIsPlaying(false));
 
     audioSource.stop();
     setAudioSource(null);
-    setPausedTime(0);
+    dispatch(setPausedTime(0));
 
-    setProgressPosition(0);
+    dispatch(setProgressPosition(0));
   };
 
   const handleVolumeChange = event => {
     const newVolume = event.target.value;
-    setVolume(newVolume);
+    dispatch(setVolume(newVolume));
 
     if (audioContext && audioContext.gainNode) {
       audioContext.gainNode.gain.value = newVolume;
@@ -112,7 +136,7 @@ function AudioPlayer({ file }) {
   const handlePitchChange = delta => {
     const newPitch = parseFloat(pitch + delta);
     if (newPitch < 0.5 || newPitch > 2) return;
-    setPitch(newPitch);
+    dispatch(setPitch(newPitch));
 
     if (audioContext && audioContext.pitchShift) {
       audioContext.pitchShift.pitch = newPitch - 1;
@@ -122,11 +146,40 @@ function AudioPlayer({ file }) {
   const handleTempoChange = delta => {
     const newTempo = parseFloat(tempo + delta);
     if (newTempo < 0.5 || newTempo > 2) return;
-    setTempo(newTempo);
+    dispatch(setTempo(newTempo));
 
     if (audioSource) {
       audioSource.playbackRate = newTempo;
     }
+  };
+
+  // eslint-disable-next-line no-unused-vars
+  const trimAudioBuffer = () => {
+    if (!audioBuffer) return;
+
+    const newBuffer = audioContext.context.createBuffer(
+      audioBuffer.numberOfChannels,
+      Math.floor((selectedEnd - selectedStart) * audioBuffer.length),
+      audioBuffer.sampleRate
+    );
+
+    for (
+      let channel = 0;
+      channel < audioBuffer.numberOfChannels;
+      channel += 1
+    ) {
+      const oldChannelData = audioBuffer.getChannelData(channel);
+      const newChannelData = newBuffer.getChannelData(channel);
+
+      const startSample = Math.floor(selectedStart * oldChannelData.length);
+      const endSample = Math.floor(selectedEnd * oldChannelData.length);
+
+      for (let i = startSample, j = 0; i < endSample; i += 1, j += 1) {
+        newChannelData[j] = oldChannelData[i];
+      }
+    }
+
+    setAudioBuffer(newBuffer);
   };
 
   return (
@@ -135,8 +188,17 @@ function AudioPlayer({ file }) {
         file={file}
         onAudioBufferLoaded={setAudioBuffer}
         waveformColor="#b3ecec"
-        progressPosition={progressPosition}
-        volume={volume}
+        onSelectionChange={(start, end) => {
+          dispatch(setSelectedStart(start));
+          dispatch(setSelectedEnd(end));
+
+          if (audioBuffer) {
+            const newPausedTime = start * audioBuffer.duration;
+            dispatch(setPausedTime(newPausedTime));
+            const newProgressPosition = start * 100;
+            dispatch(setProgressPosition(newProgressPosition));
+          }
+        }}
       />
       <SliderContainer>
         <SliderInput
@@ -157,6 +219,7 @@ function AudioPlayer({ file }) {
         stopSound={stopSound}
         pauseSound={pauseSound}
       />
+      <Button onClick={trimAudioBuffer}>Trim Audio</Button>
     </div>
   );
 }
