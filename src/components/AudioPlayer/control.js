@@ -16,8 +16,6 @@ function Controls({
   stopSound,
   handlePitchChange,
   handleTempoChange,
-  fadeIn,
-  fadeOut,
 }) {
   const horizontalButtonsConfig = [
     {
@@ -65,24 +63,18 @@ function Controls({
   ];
 
   return (
-    <>
-      <ButtonWrapper bottom="10%" left="3%">
-        {horizontalButtonsConfig.map(config => (
-          <Button
-            id={config.id}
-            margin={config.margin}
-            key={config.id}
-            onClick={config.onClick}
-          >
-            <FontAwesomeIcon icon={config.icon} />
-          </Button>
-        ))}
-      </ButtonWrapper>
-      <ButtonWrapper>
-        <Button onClick={fadeIn}>Fade In</Button>
-        <Button onClick={fadeOut}>Fade Out</Button>
-      </ButtonWrapper>
-    </>
+    <ButtonWrapper bottom="10%" left="3%">
+      {horizontalButtonsConfig.map(config => (
+        <Button
+          id={config.id}
+          margin={config.margin}
+          key={config.id}
+          onClick={config.onClick}
+        >
+          <FontAwesomeIcon icon={config.icon} />
+        </Button>
+      ))}
+    </ButtonWrapper>
   );
 }
 
