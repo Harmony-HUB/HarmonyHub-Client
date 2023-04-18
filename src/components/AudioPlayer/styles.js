@@ -35,3 +35,9 @@ export const SliderInput = styled.input`
     cursor: pointer;
   }
 `;
+
+export const AudioPlayerWrapper = styled.div`
+  display: flex;
+  flex-direction: ${({ orientation }) =>
+    orientation === "vertical" ? "column" : "row"};
+`;

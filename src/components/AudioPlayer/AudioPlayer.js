@@ -73,7 +73,6 @@ function AudioPlayer({ file }) {
     dispatch(setProgressPosition(progress));
   };
 
-  // eslint-disable-next-line consistent-return
   useEffect(() => {
     if (isPlaying) {
       const interval = setInterval(() => {
@@ -84,6 +83,8 @@ function AudioPlayer({ file }) {
         clearInterval(interval);
       };
     }
+
+    return updateProgress();
   }, [isPlaying]);
 
   const playSound = async () => {
@@ -104,7 +105,6 @@ function AudioPlayer({ file }) {
     newAudioSource.playbackRate = 1;
     newAudioSource.loop = false;
 
-    // eslint-disable-next-line no-nested-ternary
     const playbackOffset = isTrimmed
       ? Math.max(0, pausedTime)
       : Math.max(selectedStart * audioBuffer.duration, pausedTime);
@@ -189,7 +189,6 @@ function AudioPlayer({ file }) {
     }
   };
 
-  // eslint-disable-next-line no-unused-vars
   const trimAudioBuffer = () => {
     if (!audioBuffer) return;
 
@@ -257,6 +256,8 @@ function AudioPlayer({ file }) {
         waveformColor="#b3ecec"
         onSelectionChange={handleSelectionChange}
         onWaveformClick={handleWaveformClick}
+        audioBuffer={audioBuffer}
+        isTrimmed={isTrimmed}
       />
       <SliderContainer>
         <SliderInput

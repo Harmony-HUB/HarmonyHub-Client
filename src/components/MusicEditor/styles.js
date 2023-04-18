@@ -30,3 +30,15 @@ export const SelectFileButton = styled.label`
 export const FileInput = styled.input`
   display: none;
 `;
+
+export const FileInputsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+export const FieldWrapper = styled.div`
+  position: relative;
+  border: ${props => (props.isSelected ? "2px solid #00aaff" : "none")};
+  box-shadow: ${props =>
+    props.isSelected ? "0 0 5px rgba(0, 170, 255, 0.5)" : "none"};
+`;

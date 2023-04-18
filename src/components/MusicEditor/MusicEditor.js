@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
@@ -9,7 +10,6 @@ import { Editor, SelectFileButton, FileInput } from "./styles";
 
 function MusicEditor() {
   const [isEqualizer, setIsEqualizer] = useState(false);
-  const [file, setFile] = useState("");
   const [sliderValues, setSliderValues] = useState({
     0: 50,
     60: 50,
@@ -23,6 +23,7 @@ function MusicEditor() {
     "14k": 50,
     "16k": 50,
   });
+  const [audioFiles, setAudioFiles] = useState([]);
 
   const handleSliderChange = (label, newValue) => {
     setSliderValues({ ...sliderValues, [label]: newValue });
@@ -66,10 +67,16 @@ function MusicEditor() {
     { label: "16k", value: sliderValues[100], onChange: handleSliderChange },
   ];
 
-  const handleFileChange = event => {
+  const handleAddFileField = () => {
+    setAudioFiles([...audioFiles, { file: "", isUploaded: false }]);
+  };
+
+  const handleFileChange = (event, index) => {
     const selectedFile = event.target.files[0];
     const fileURL = URL.createObjectURL(selectedFile);
-    setFile(fileURL);
+    const updatedAudioFiles = [...audioFiles];
+    updatedAudioFiles[index] = { file: fileURL, isUploaded: true };
+    setAudioFiles(updatedAudioFiles);
   };
 
   return (
@@ -90,14 +97,24 @@ function MusicEditor() {
             ))
           : null}
       </div>
-      {file ? (
-        <AudioPlayer file={file} />
-      ) : (
-        <SelectFileButton>
-          <FontAwesomeIcon icon={faUpload} /> 파일 선택
-          <FileInput type="file" onChange={handleFileChange} />
-        </SelectFileButton>
-      )}
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {audioFiles.map((audioFile, index) => (
+          <div key={`audio-file-${index}`}>
+            {audioFile.isUploaded ? (
+              <AudioPlayer file={audioFile.file} />
+            ) : (
+              <SelectFileButton>
+                <FontAwesomeIcon icon={faUpload} /> 파일 선택
+                <FileInput
+                  type="file"
+                  onChange={event => handleFileChange(event, index)}
+                />
+              </SelectFileButton>
+            )}
+          </div>
+        ))}
+      </div>
+      <Button onClick={handleAddFileField}>+</Button>
       <ButtonWrapper bottom="85%">
         {verticalButtonConfig.map(config => (
           <Button id={config.id} key={config.id} onClick={config.onClick}>

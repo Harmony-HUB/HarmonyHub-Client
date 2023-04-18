@@ -13,6 +13,8 @@ function Waveform({
   waveformColor = "#b3ecec",
   onSelectionChange,
   onWaveformClick,
+  audioBuffer,
+  isTrimmed,
 }) {
   const waveformCanvasRef = useRef(null);
 
@@ -22,7 +24,9 @@ function Waveform({
 
   const dispatch = useDispatch();
 
-  const audioBuffer = useSelector(state => state.audioPlayer.audioBuffer);
+  const reduxAudioBuffer = useSelector(state => state.audioPlayer.audioBuffer);
+  const bufferToUse = audioBuffer || reduxAudioBuffer;
+
   const selectedStart = useSelector(state => state.audioPlayer.selectedStart);
   const selectedEnd = useSelector(state => state.audioPlayer.selectedEnd);
   const progressPosition = useSelector(
@@ -67,7 +71,7 @@ function Waveform({
     const { width, height } = canvas;
 
     const data = audioBuffer.getChannelData(0);
-    const step = Math.ceil(data.length / width) / volume;
+    const step = Math.ceil(data.length / width);
     const amplitude = height / 2;
 
     let maxAmplitude = 0;
@@ -84,8 +88,16 @@ function Waveform({
     for (let i = 0; i < width; i += 1) {
       const min = Math.min.apply(null, data.slice(i * step, (i + 1) * step));
       const max = Math.max.apply(null, data.slice(i * step, (i + 1) * step));
-      ctx.lineTo(i, (1 + min * scaleFactor) * amplitude);
-      ctx.lineTo(i, (1 + max * scaleFactor) * amplitude);
+      const x = i / width;
+      if (isTrimmed) {
+        if (x >= selectedStart && x <= selectedEnd) {
+          ctx.lineTo(i, (1 + min * scaleFactor) * amplitude);
+          ctx.lineTo(i, (1 + max * scaleFactor) * amplitude);
+        }
+      } else {
+        ctx.lineTo(i, (1 + min * scaleFactor) * amplitude);
+        ctx.lineTo(i, (1 + max * scaleFactor) * amplitude);
+      }
     }
 
     ctx.lineTo(width, amplitude);
@@ -94,7 +106,7 @@ function Waveform({
 
   useEffect(() => {
     drawWaveform();
-  }, [audioBuffer, volume]);
+  }, [audioBuffer, volume, bufferToUse]);
 
   useEffect(() => {
     if (onSelectionChange) {
