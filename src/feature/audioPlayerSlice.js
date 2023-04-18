@@ -1,11 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-  audioContext: {
-    context: null,
-    gainNode: null,
-    pitchShift: null,
-  },
+const createAudioInstance = () => ({
+  audioContext: null,
   audioBuffer: null,
   audioSource: null,
   startTime: 0,
@@ -15,6 +11,11 @@ const initialState = {
   volume: 1,
   pitch: 1,
   tempo: 1,
+});
+
+const initialState = {
+  instances: {},
+  audioPlayedId: null,
   selectedStart: 0,
   selectedEnd: 1,
 };
@@ -24,34 +25,82 @@ const audioPlayerSlice = createSlice({
   initialState,
   reducers: {
     setAudioContext: (state, action) => {
-      state.audioContext = action.payload;
+      const { audioPlayedId, audioContext } = action.payload;
+      if (!state.instances[audioPlayedId]) {
+        state.instances[audioPlayedId] = createAudioInstance();
+      }
+      state.instances[audioPlayedId].audioContext = audioContext;
+      state.audioPlayedId = audioPlayedId;
     },
     setAudioBuffer: (state, action) => {
-      state.audioBuffer = action.payload;
+      const { audioPlayedId, audioBuffer } = action.payload;
+      console.log("audioBufferReducer: ", audioPlayedId);
+      if (!state.instances[audioPlayedId]) {
+        state.instances[audioPlayedId] = createAudioInstance();
+      }
+      state.instances[audioPlayedId].audioBuffer = audioBuffer;
+      state.audioPlayedId = audioPlayedId;
     },
     setAudioSource: (state, action) => {
-      state.audioSource = action.payload;
+      const { audioPlayedId, audioSource } = action.payload;
+      state.instances[audioPlayedId].audioSource = audioSource;
+      state.audioPlayedId = audioPlayedId;
     },
     setStartTime: (state, action) => {
-      state.startTime = action.payload;
+      const { audioPlayedId, startTime } = action.payload;
+      if (!state.instances[audioPlayedId]) {
+        state.instances[audioPlayedId] = createAudioInstance();
+      }
+      state.instances[audioPlayedId].startTime = startTime;
+      state.audioPlayedId = audioPlayedId;
     },
     setPausedTime: (state, action) => {
-      state.pausedTime = action.payload;
+      const { audioPlayedId, pausedTime } = action.payload;
+      if (!state.instances[audioPlayedId]) {
+        state.instances[audioPlayedId] = createAudioInstance();
+      }
+      state.instances[audioPlayedId].pausedTime = pausedTime;
+      state.audioPlayedId = audioPlayedId;
     },
     setProgressPosition: (state, action) => {
-      state.progressPosition = action.payload;
+      const { audioPlayedId, progressPosition } = action.payload;
+      if (!state.instances[audioPlayedId]) {
+        state.instances[audioPlayedId] = createAudioInstance();
+      }
+      state.instances[audioPlayedId].progressPosition = progressPosition;
+      state.audioPlayedId = audioPlayedId;
     },
     setIsPlaying: (state, action) => {
-      state.isPlaying = action.payload;
+      const { audioPlayedId, isPlaying } = action.payload;
+      if (!state.instances[audioPlayedId]) {
+        state.instances[audioPlayedId] = createAudioInstance();
+      }
+      state.instances[audioPlayedId].isPlaying = isPlaying;
+      state.audioPlayedId = audioPlayedId;
     },
     setVolume: (state, action) => {
-      state.volume = action.payload;
+      const { audioPlayedId, volume } = action.payload;
+      if (!state.instances[audioPlayedId]) {
+        state.instances[audioPlayedId] = createAudioInstance();
+      }
+      state.instances[audioPlayedId].volume = volume;
+      state.audioPlayedId = audioPlayedId;
     },
     setPitch: (state, action) => {
-      state.pitch = action.payload;
+      const { audioPlayedId, pitch } = action.payload;
+      if (!state.instances[audioPlayedId]) {
+        state.instances[audioPlayedId] = createAudioInstance();
+      }
+      state.instances[audioPlayedId].pitch = pitch;
+      state.audioPlayedId = audioPlayedId;
     },
     setTempo: (state, action) => {
-      state.tempo = action.payload;
+      const { audioPlayedId, tempo } = action.payload;
+      if (!state.instances[audioPlayedId]) {
+        state.instances[audioPlayedId] = createAudioInstance();
+      }
+      state.instances[audioPlayedId].tempo = tempo;
+      state.audioPlayedId = audioPlayedId;
     },
     setSelectedStart: (state, action) => {
       state.selectedStart = action.payload;

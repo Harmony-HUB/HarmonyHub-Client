@@ -13,8 +13,9 @@ function Waveform({
   waveformColor = "#b3ecec",
   onSelectionChange,
   onWaveformClick,
-  audioBuffer,
+  // audioBuffer,
   isTrimmed,
+  audioPlayedId,
 }) {
   const waveformCanvasRef = useRef(null);
 
@@ -24,13 +25,17 @@ function Waveform({
 
   const dispatch = useDispatch();
 
+  const audioBuffer = useSelector(
+    state => state.audioPlayer.instances[audioPlayedId]?.audioBuffer
+  );
+
   const reduxAudioBuffer = useSelector(state => state.audioPlayer.audioBuffer);
   const bufferToUse = audioBuffer || reduxAudioBuffer;
 
   const selectedStart = useSelector(state => state.audioPlayer.selectedStart);
   const selectedEnd = useSelector(state => state.audioPlayer.selectedEnd);
   const progressPosition = useSelector(
-    state => state.audioPlayer.progressPosition
+    state => state.audioPlayer.instances[audioPlayedId]?.progressPosition
   );
   const volume = useSelector(state => state.audioPlayer.volume);
 
@@ -43,7 +48,12 @@ function Waveform({
     const progressPercentage = (clickX / width) * 100;
     onWaveformClick(progressPercentage);
 
-    dispatch(setProgressPosition(progressPercentage));
+    dispatch(
+      setProgressPosition({
+        audioPlayedId,
+        progressPosition: progressPercentage,
+      })
+    );
   };
 
   useEffect(() => {
@@ -54,7 +64,9 @@ function Waveform({
         const response = await fetch(file);
         const audioData = await response.arrayBuffer();
         const newAudioBuffer = await audioContext.decodeAudioData(audioData);
-        dispatch(setAudioBuffer(newAudioBuffer));
+        dispatch(
+          setAudioBuffer({ audioPlayedId, audioBuffer: newAudioBuffer })
+        );
       } catch (error) {
         console.error(error);
       }

@@ -41,3 +41,12 @@ export const AudioPlayerWrapper = styled.div`
   flex-direction: ${({ orientation }) =>
     orientation === "vertical" ? "column" : "row"};
 `;
+
+export const VerticalSliderWrapper = styled.div`
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+`;

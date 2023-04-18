@@ -5,8 +5,8 @@ import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import Button from "../common/Button/Button";
 import ButtonWrapper from "../common/ButtonWrapper/ButtonWrapper";
 import EqualizerSlider from "../EqualizerSlider/EqualizerSlider";
-import AudioPlayer from "../AudioPlayer/AudioPlayer";
 import { Editor, SelectFileButton, FileInput } from "./styles";
+import AudioPlayer from "../AudioPlayer/AudioPlayer";
 
 function MusicEditor() {
   const [isEqualizer, setIsEqualizer] = useState(false);
