@@ -13,15 +13,17 @@ function Waveform({
   waveformColor = "#b3ecec",
   onSelectionChange,
   onWaveformClick,
-  // audioBuffer,
   isTrimmed,
   audioPlayedId,
+  isDragging,
+  drag,
 }) {
   const waveformCanvasRef = useRef(null);
 
   const [audioContext] = useState(
     new (window.AudioContext || window.webkitAudioContext)()
   );
+  const [selectionActive, setSelectionActive] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -128,18 +130,31 @@ function Waveform({
 
   return (
     <div style={{ position: "relative" }}>
+      <div
+        className="waveform-drag-handle"
+        ref={drag}
+        style={{
+          opacity: isDragging ? 0.5 : 1,
+          pointerEvents: selectionActive ? "none" : "auto",
+        }}
+      />
       <canvas
         ref={waveformCanvasRef}
         width="1350"
         height="100"
         className="waveform-canvas"
         onClick={handleWaveformClick}
+        style={{
+          pointerEvents: selectionActive ? "none" : "auto",
+        }}
       />
       <ProgressBar progressPosition={progressPosition} duration={duration} />
       <WaveSelection
         selectedStart={selectedStart}
         selectedEnd={selectedEnd}
         onSelectionChange={onSelectionChange}
+        selectionActive={selectionActive}
+        setSelectionActive={setSelectionActive}
       />
     </div>
   );

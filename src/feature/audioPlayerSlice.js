@@ -18,6 +18,12 @@ const initialState = {
   audioPlayedId: null,
   selectedStart: 0,
   selectedEnd: 1,
+  draggedAudio: {
+    id: null,
+    audioBuffer: null,
+    selectedStart: 0,
+    selectedEnd: 1,
+  },
 };
 
 const audioPlayerSlice = createSlice({
@@ -107,6 +113,9 @@ const audioPlayerSlice = createSlice({
     },
     setSelectedEnd: (state, action) => {
       state.selectedEnd = action.payload;
+    },
+    setDraggedAudio: (state, action) => {
+      state.draggedAudio = action.payload;
     },
   },
 });

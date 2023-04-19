@@ -1,5 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import MusicEditor from "./components/MusicEditor/MusicEditor";
 import Login from "./components/Auth/Login";
 import Logout from "./components/Auth/Logout";
@@ -42,17 +44,19 @@ function App() {
     setIsLoggedIn(false);
   };
   return (
-    <Container>
-      <Header>
-        {isLoggedIn ? (
-          <Logout onLogout={handleLogout} />
-        ) : (
-          <Login onLogin={handleLogin} />
-        )}
-      </Header>
-      <Title>Harmony HUB</Title>
-      <MusicEditor />
-    </Container>
+    <DndProvider backend={HTML5Backend}>
+      <Container>
+        <Header>
+          {isLoggedIn ? (
+            <Logout onLogout={handleLogout} />
+          ) : (
+            <Login onLogin={handleLogin} />
+          )}
+        </Header>
+        <Title>Harmony HUB</Title>
+        <MusicEditor />
+      </Container>
+    </DndProvider>
   );
 }
 

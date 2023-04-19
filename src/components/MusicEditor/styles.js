@@ -6,7 +6,7 @@ export const Editor = styled.div`
   align-items: center;
   position: relative;
   width: 90%;
-  height: 60%;
+  height: 80%;
   padding: 1rem;
   font-size: 1.2rem;
   border: 1px solid #ccc;
