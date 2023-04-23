@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import MusicEditor from "./components/MusicEditor/MusicEditor";
 import Login from "./components/Auth/Login";
@@ -8,6 +7,7 @@ import MP3Modal from "./components/common/Modal/MP3Modal";
 import Logout from "./components/Auth/Logout";
 import SongsList from "./components/MusicList";
 import Button from "./components/common/Button/Button";
+import AudioRecorder from "./components/AudioRecorder";
 
 const Header = styled.header`
   display: flex;
@@ -40,6 +40,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserdata] = useState({});
   const [isSongsListModalOpen, setIsSongsListModalOpen] = useState(false);
+  const [IsCircleModalOpen, setIsCircleModalOpen] = useState(false);
 
   const handleLogin = () => {
     setIsLoggedIn(true);
@@ -55,6 +56,14 @@ function App() {
 
   const closeSongsListModal = () => {
     setIsSongsListModalOpen(false);
+  };
+
+  const openCircleModal = () => {
+    setIsCircleModalOpen(true);
+  };
+
+  const closeCircleModal = () => {
+    setIsCircleModalOpen(false);
   };
 
   useEffect(() => {
@@ -74,36 +83,31 @@ function App() {
       unsubscribe();
     };
   }, []);
-  console.log(userData);
 
   return (
     <div>
-      <Router>
-        <Container>
-          <Header>
-            <Button onClick={openSongsListModal}>My Songs List</Button>
-            {isLoggedIn ? (
-              <Logout onLogout={handleLogout} />
-            ) : (
-              <Login onLogin={handleLogin} />
-            )}
-          </Header>
-          <Link to="/">
-            <Title>Harmony HUB</Title>
-          </Link>
-          <Routes>
-            <Route path="/" element={<MusicEditor userData={userData} />} />
-          </Routes>
-        </Container>
-        <MP3Modal
-          isOpen={isSongsListModalOpen}
-          onRequestClose={closeSongsListModal}
-          contentLabel="Songs List Modal"
-        >
-          <SongsList />
-          <Button onClick={closeSongsListModal}>Close</Button>
-        </MP3Modal>
-      </Router>
+      <Container>
+        <Header>
+          <Button onClick={openSongsListModal}>My Songs List</Button>
+          {isLoggedIn ? (
+            <Logout onLogout={handleLogout} />
+          ) : (
+            <Login onLogin={handleLogin} />
+          )}
+          <Button onClick={openCircleModal}>Open Circle Modal</Button>
+        </Header>
+        <Title>Harmony HUB</Title>
+        <MusicEditor userData={userData} />
+      </Container>
+      <MP3Modal
+        isOpen={isSongsListModalOpen}
+        onRequestClose={closeSongsListModal}
+        contentLabel="Songs List Modal"
+      >
+        <SongsList />
+        <Button onClick={closeSongsListModal}>Close</Button>
+      </MP3Modal>
+      <AudioRecorder isOpen={IsCircleModalOpen} onClose={closeCircleModal} />
     </div>
   );
 }

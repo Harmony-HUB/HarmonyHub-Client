@@ -133,7 +133,7 @@ function Waveform({
       <canvas
         ref={waveformCanvasRef}
         width="1350"
-        height="100"
+        height="90"
         className="waveform-canvas"
         onClick={handleWaveformClick}
         style={{
