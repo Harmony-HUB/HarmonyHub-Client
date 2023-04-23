@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import * as Tone from "tone";
 import { useSelector, useDispatch } from "react-redux";
-import { v4 as uuidv4 } from "uuid";
 import Waveform from "../Waveform/Waveform";
 import { SliderContainer, SliderInput, AudioPlayerContainer } from "./styles";
 import AudioStorage from "../AudioStorage";
@@ -24,11 +23,10 @@ import {
 // import VerticalSlider from "../VerticalSlider";
 import Controls from "./Control";
 
-function AudioPlayer({ file, cutWaveformBuffer, userData }) {
+function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
   // const [fadeIn, setFadeIn] = useState(0);
   // const [fadeOut, setFadeOut] = useState(0);
   const [isTrimmed, setIsTrimmed] = useState(false);
-  const [audioPlayedId] = useState(uuidv4());
 
   const {
     audioSource,
