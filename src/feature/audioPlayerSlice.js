@@ -11,19 +11,13 @@ const createAudioInstance = () => ({
   volume: 1,
   pitch: 1,
   tempo: 1,
+  selectedStart: 0,
+  selectedEnd: 1,
 });
 
 const initialState = {
   instances: {},
   audioPlayedId: null,
-  selectedStart: 0,
-  selectedEnd: 1,
-  draggedAudio: {
-    id: null,
-    audioBuffer: null,
-    selectedStart: 0,
-    selectedEnd: 1,
-  },
 };
 
 const audioPlayerSlice = createSlice({
@@ -40,7 +34,6 @@ const audioPlayerSlice = createSlice({
     },
     setAudioBuffer: (state, action) => {
       const { audioPlayedId, audioBuffer } = action.payload;
-      console.log("audioBufferReducer: ", audioPlayedId);
       if (!state.instances[audioPlayedId]) {
         state.instances[audioPlayedId] = createAudioInstance();
       }
@@ -109,13 +102,20 @@ const audioPlayerSlice = createSlice({
       state.audioPlayedId = audioPlayedId;
     },
     setSelectedStart: (state, action) => {
-      state.selectedStart = action.payload;
+      const { audioPlayedId, selectedStart } = action.payload;
+      if (!state.instances[audioPlayedId]) {
+        state.instances[audioPlayedId] = createAudioInstance();
+      }
+      state.instances[audioPlayedId].selectedStart = selectedStart;
+      state.audioPlayedId = audioPlayedId;
     },
     setSelectedEnd: (state, action) => {
-      state.selectedEnd = action.payload;
-    },
-    setDraggedAudio: (state, action) => {
-      state.draggedAudio = action.payload;
+      const { audioPlayedId, selectedEnd } = action.payload;
+      if (!state.instances[audioPlayedId]) {
+        state.instances[audioPlayedId] = createAudioInstance();
+      }
+      state.instances[audioPlayedId].selectedEnd = selectedEnd;
+      state.audioPlayedId = audioPlayedId;
     },
   },
 });

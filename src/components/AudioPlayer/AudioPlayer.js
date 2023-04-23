@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import * as Tone from "tone";
 import { useSelector, useDispatch } from "react-redux";
-import { useDrag, useDrop } from "react-dnd";
 import { v4 as uuidv4 } from "uuid";
 import Waveform from "../Waveform/Waveform";
-import { SliderContainer, SliderInput, VerticalSliderWrapper } from "./styles";
+import { SliderContainer, SliderInput, AudioPlayerContainer } from "./styles";
+import AudioStorage from "../AudioStorage";
 import Button from "../common/Button/Button";
 import {
   setAudioContext,
@@ -19,17 +19,14 @@ import {
   setTempo,
   setSelectedStart,
   setSelectedEnd,
+  // handleDroppedWaveform,
 } from "../../feature/audioPlayerSlice";
-import VerticalSlider from "../VerticalSlider";
+// import VerticalSlider from "../VerticalSlider";
+import Controls from "./Control";
 
-function AudioPlayer({
-  file,
-  setCutWaveformBuffer,
-  cutWaveformBuffer,
-  isSelected,
-}) {
-  const [fadeIn, setFadeIn] = useState(0);
-  const [fadeOut, setFadeOut] = useState(0);
+function AudioPlayer({ file, cutWaveformBuffer, userData }) {
+  // const [fadeIn, setFadeIn] = useState(0);
+  // const [fadeOut, setFadeOut] = useState(0);
   const [isTrimmed, setIsTrimmed] = useState(false);
   const [audioPlayedId] = useState(uuidv4());
 
@@ -43,33 +40,28 @@ function AudioPlayer({
     volume,
     pitch,
     tempo,
+    selectedStart,
+    selectedEnd,
   } = useSelector(state => state.audioPlayer.instances[audioPlayedId] || {});
-
-  const selectedStart = useSelector(state => state.audioPlayer.selectedStart);
-  const selectedEnd = useSelector(state => state.audioPlayer.selectedEnd);
 
   const dispatch = useDispatch();
 
-  const attachCutAudioWave = () => {};
+  useEffect(() => {
+    dispatch(setSelectedStart({ audioPlayedId, selectedStart: 0 }));
+    dispatch(setSelectedEnd({ audioPlayedId, selectedEnd: 1 }));
+  }, []);
 
-  const [{ isDragging }, drag] = useDrag({
-    type: "audioPlayer",
-    item: { id: audioPlayedId },
-    collect: monitor => ({
-      isDragging: !!monitor.isDragging(),
-    }),
-  });
-
-  // eslint-disable-next-line no-unused-vars
-  const [{ isOver }, drop] = useDrop({
-    accept: "audioPlayer",
-    drop: item => {
-      attachCutAudioWave(item.id);
-    },
-    collect: monitor => ({
-      isOver: !!monitor.isOver(),
-    }),
-  });
+  useEffect(() => {
+    if (cutWaveformBuffer) {
+      dispatch(
+        setAudioBuffer({
+          audioPlayedId,
+          audioBuffer: cutWaveformBuffer,
+        })
+      );
+      setIsTrimmed(true);
+    }
+  }, [cutWaveformBuffer]);
 
   useEffect(() => {
     const newAudioContext = Tone.getContext();
@@ -116,7 +108,6 @@ function AudioPlayer({
   const playSound = async () => {
     if (!audioContext || !audioContext.context || !audioBuffer || audioSource)
       return;
-    console.log("!!");
 
     if (audioContext.context.state === "suspended") {
       await audioContext.context.resume();
@@ -142,21 +133,21 @@ function AudioPlayer({
 
     newAudioSource.start(0, playbackOffset, duration);
 
-    if (fadeIn > 0) {
-      newAudioSource.volume.setValueAtTime(-Infinity, playbackOffset);
-      newAudioSource.volume.linearRampToValueAtTime(
-        0,
-        playbackOffset + fadeIn + duration
-      );
-    }
+    // if (fadeIn > 0) {
+    //   newAudioSource.volume.setValueAtTime(-Infinity, playbackOffset);
+    //   newAudioSource.volume.linearRampToValueAtTime(
+    //     0,
+    //     playbackOffset + fadeIn + duration
+    //   );
+    // }
 
-    if (fadeOut > 0) {
-      newAudioSource.volume.setValueAtTime(0, playbackOffset + duration);
-      newAudioSource.volume.linearRampToValueAtTime(
-        -Infinity,
-        playbackOffset + duration - fadeOut * duration
-      );
-    }
+    // if (fadeOut > 0) {
+    //   newAudioSource.volume.setValueAtTime(0, playbackOffset + duration);
+    //   newAudioSource.volume.linearRampToValueAtTime(
+    //     -Infinity,
+    //     playbackOffset + duration - fadeOut * duration
+    //   );
+    // }
 
     dispatch(setAudioSource({ audioPlayedId, audioSource: newAudioSource }));
     dispatch(
@@ -208,6 +199,7 @@ function AudioPlayer({
 
   const handlePitchChange = delta => {
     const newPitch = parseFloat(pitch + delta);
+
     if (newPitch < 0.5 || newPitch > 2) return;
     dispatch(setPitch({ audioPlayedId, pitch: newPitch }));
 
@@ -251,50 +243,15 @@ function AudioPlayer({
       }
     }
 
-    setCutWaveformBuffer(newBuffer);
+    dispatch(setAudioBuffer({ audioPlayedId, audioBuffer: newBuffer }));
+    dispatch(setSelectedStart({ audioPlayedId, selectedStart: 0 }));
+    dispatch(setSelectedEnd({ audioPlayedId, selectedEnd: 1 }));
     setIsTrimmed(true);
   };
 
-  const spliceWaveform = () => {
-    if (!audioBuffer || !cutWaveformBuffer) return;
-
-    const newBufferLength =
-      audioBuffer.length +
-      cutWaveformBuffer.length -
-      (selectedEnd - selectedStart) * audioBuffer.length;
-    const newBuffer = audioContext.context.createBuffer(
-      audioBuffer.numberOfChannels,
-      newBufferLength,
-      audioBuffer.sampleRate
-    );
-
-    for (
-      let channel = 0;
-      channel < audioBuffer.numberOfChannels;
-      channel += 1
-    ) {
-      const oldChannelData = audioBuffer.getChannelData(channel);
-      const cutWaveformData = cutWaveformBuffer.getChannelData(channel);
-      const newChannelData = newBuffer.getChannelData(channel);
-
-      const startSample = Math.floor(selectedStart * oldChannelData.length);
-      const endSample = Math.floor(selectedEnd * oldChannelData.length);
-
-      for (let i = 0, j = 0; i < newBufferLength; i += 1, j += 1) {
-        if (i >= startSample && i < endSample) {
-          newChannelData[i] = cutWaveformData[j - startSample];
-        } else {
-          newChannelData[i] = oldChannelData[j];
-        }
-      }
-    }
-
-    dispatch(setAudioBuffer({ audioPlayedId, audioBuffer: newBuffer }));
-  };
-
   const handleSelectionChange = (start, end) => {
-    dispatch(setSelectedStart(start));
-    dispatch(setSelectedEnd(end));
+    dispatch(setSelectedStart({ audioPlayedId, selectedStart: start }));
+    dispatch(setSelectedEnd({ audioPlayedId, selectedEnd: end }));
 
     if (audioBuffer) {
       const newPausedTime = start * audioBuffer.duration;
@@ -323,30 +280,34 @@ function AudioPlayer({
     }
   };
 
-  const handleFadeInChange = event => {
-    const newFadeIn = parseFloat(event.target.value);
-    setFadeIn(newFadeIn);
-  };
+  // const handleFadeInChange = event => {
+  //   const newFadeIn = parseFloat(event.target.value);
+  //   setFadeIn(newFadeIn);
+  // };
 
-  const handleFadeOutChange = event => {
-    const newFadeOut = parseFloat(event.target.value);
-    setFadeOut(newFadeOut);
-  };
+  // const handleFadeOutChange = event => {
+  //   const newFadeOut = parseFloat(event.target.value);
+  //   setFadeOut(newFadeOut);
+  // };
 
   return (
-    <div style={{ border: isSelected ? "2px solid blue" : "none" }}>
-      <div ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }}>
-        <Waveform
-          file={file}
-          waveformColor="#b3ecec"
-          onSelectionChange={handleSelectionChange}
-          onWaveformClick={handleWaveformClick}
-          isTrimmed={isTrimmed}
-          audioPlayedId={audioPlayedId}
-          isDragging={isDragging}
-          drag={drag}
-        />
-      </div>
+    <AudioPlayerContainer>
+      <Waveform
+        file={file}
+        waveformColor="#b3ecec"
+        onSelectionChange={handleSelectionChange}
+        onWaveformClick={handleWaveformClick}
+        isTrimmed={isTrimmed}
+        audioPlayedId={audioPlayedId}
+      />
+      <Controls
+        playSound={playSound}
+        pauseSound={pauseSound}
+        stopSound={stopSound}
+        handlePitchChange={handlePitchChange}
+        handleTempoChange={handleTempoChange}
+        // handleDroppedWaveform={handleDroppedWaveform}
+      />
       <SliderContainer>
         <SliderInput
           type="range"
@@ -358,34 +319,9 @@ function AudioPlayer({
           style={{ width: "100%" }}
         />
       </SliderContainer>
-      <VerticalSliderWrapper>
-        <VerticalSlider
-          label="Fade In"
-          min="0"
-          max="10"
-          step="0.1"
-          value={fadeIn}
-          onChange={handleFadeInChange}
-        />
-        <VerticalSlider
-          label="Fade Out"
-          min="0"
-          max="10"
-          step="0.1"
-          value={fadeOut}
-          onChange={handleFadeOutChange}
-        />
-      </VerticalSliderWrapper>
+      <AudioStorage audioBuffer={audioBuffer} userData={userData} />
       <Button onClick={trimAudioBuffer}>Trim Audio</Button>
-      <Button onClick={spliceWaveform}>Splice Waveform</Button>
-      <Button onClick={playSound}>start</Button>
-      <Button onClick={pauseSound}>pause</Button>
-      <Button onClick={stopSound}>stop</Button>
-      <Button onCLick={() => handlePitchChange(0.1)}>pitch + 1</Button>
-      <Button onCLick={() => handlePitchChange(-0.1)}>pitch - 1</Button>
-      <Button onClick={() => handleTempoChange(0.1)}>tempo + 1</Button>
-      <Button onClick={() => handleTempoChange(-0.1)}>tempo - 1</Button>
-    </div>
+    </AudioPlayerContainer>
   );
 }
 export default AudioPlayer;

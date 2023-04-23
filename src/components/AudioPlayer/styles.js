@@ -50,3 +50,13 @@ export const VerticalSliderWrapper = styled.div`
   justify-content: flex-end;
   align-items: flex-end;
 `;
+
+export const AudioPlayerContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+`;

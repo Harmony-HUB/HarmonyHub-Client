@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
-import "./Waveform.css";
 import { useDispatch, useSelector } from "react-redux";
+// import WaveformCanvas from "./styles";
 import ProgressBar from "../Progressbar";
 import WaveSelection from "../Selection";
 import {
@@ -27,19 +27,11 @@ function Waveform({
 
   const dispatch = useDispatch();
 
-  const audioBuffer = useSelector(
-    state => state.audioPlayer.instances[audioPlayedId]?.audioBuffer
-  );
+  const { audioBuffer, progressPosition, volume, selectedStart, selectedEnd } =
+    useSelector(state => state.audioPlayer.instances[audioPlayedId] || {});
 
   const reduxAudioBuffer = useSelector(state => state.audioPlayer.audioBuffer);
   const bufferToUse = audioBuffer || reduxAudioBuffer;
-
-  const selectedStart = useSelector(state => state.audioPlayer.selectedStart);
-  const selectedEnd = useSelector(state => state.audioPlayer.selectedEnd);
-  const progressPosition = useSelector(
-    state => state.audioPlayer.instances[audioPlayedId]?.progressPosition
-  );
-  const volume = useSelector(state => state.audioPlayer.volume);
 
   const duration = audioBuffer ? audioBuffer.duration : 0;
 
@@ -150,8 +142,7 @@ function Waveform({
       />
       <ProgressBar progressPosition={progressPosition} duration={duration} />
       <WaveSelection
-        selectedStart={selectedStart}
-        selectedEnd={selectedEnd}
+        audioPlayedId={audioPlayedId}
         onSelectionChange={onSelectionChange}
         selectionActive={selectionActive}
         setSelectionActive={setSelectionActive}

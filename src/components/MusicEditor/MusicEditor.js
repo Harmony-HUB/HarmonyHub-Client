@@ -1,32 +1,24 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable react/no-array-index-key */
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
-import Button from "../common/Button/Button";
 import { Editor, SelectFileButton, FileInput } from "./styles";
 import AudioPlayer from "../AudioPlayer/AudioPlayer";
 
-function MusicEditor() {
+function MusicEditor({ userData }) {
   const [audioFiles, setAudioFiles] = useState([]);
-  const [cutWaveformBuffer, setCutWaveformBuffer] = useState(null);
-  const [selectedAudioPlayerIndex, setSelectedAudioPlayerIndex] =
-    useState(null);
+  const selectedAudioPlayerIndex = null;
+  const fields = [1, 2, 3];
 
-  const editSelectedAudioPlayerSource = newFileURL => {
+  const editSelectedAudioPlayerSource = (index, newFileURL, audioBuffer) => {
     if (selectedAudioPlayerIndex === null) return;
 
     const updatedAudioFiles = [...audioFiles];
-    updatedAudioFiles[selectedAudioPlayerIndex] = {
+    updatedAudioFiles[index] = {
       file: newFileURL,
       isUploaded: true,
+      audioBuffer,
     };
     setAudioFiles(updatedAudioFiles);
-  };
-
-  const handleAddFileField = () => {
-    setAudioFiles([...audioFiles, { file: "", isUploaded: false }]);
   };
 
   const handleFileChange = (event, index) => {
@@ -45,28 +37,17 @@ function MusicEditor() {
     }
   };
 
-  const handleAudioPlayerClick = index => {
-    if (selectedAudioPlayerIndex === index) {
-      setSelectedAudioPlayerIndex(null); // Deselect the audio player if it is clicked again
-    } else {
-      setSelectedAudioPlayerIndex(index);
-    }
-  };
-
   return (
     <Editor>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        {audioFiles.map((audioFile, index) => (
-          <div
-            key={`audio-file-${index}`}
-            onClick={() => handleAudioPlayerClick(index)}
-          >
-            {audioFile.isUploaded ? (
+        {fields.map((field, index) => (
+          <div key={`field-${field}`} style={{ marginBottom: "15px" }}>
+            {audioFiles[index]?.isUploaded ? (
               <AudioPlayer
-                file={audioFile.file}
-                cutWaveformBuffer={cutWaveformBuffer}
-                setCutWaveformBuffer={setCutWaveformBuffer}
+                file={audioFiles[index].file}
+                cutWaveformBuffer={audioFiles[index].audioBuffer}
                 isSelected={selectedAudioPlayerIndex === index}
+                userData={userData}
               />
             ) : (
               <SelectFileButton>
@@ -80,7 +61,6 @@ function MusicEditor() {
           </div>
         ))}
       </div>
-      <Button onClick={handleAddFileField}>+</Button>
     </Editor>
   );
 }

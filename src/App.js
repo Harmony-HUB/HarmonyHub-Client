@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import MusicEditor from "./components/MusicEditor/MusicEditor";
 import Login from "./components/Auth/Login";
+import MP3Modal from "./components/common/Modal/MP3Modal";
 import Logout from "./components/Auth/Logout";
+import SongsList from "./components/MusicList";
+import Button from "./components/common/Button/Button";
 
 const Header = styled.header`
   display: flex;
@@ -35,6 +38,8 @@ const Title = styled.h1`
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userData, setUserdata] = useState({});
+  const [isSongsListModalOpen, setIsSongsListModalOpen] = useState(false);
 
   const handleLogin = () => {
     setIsLoggedIn(true);
@@ -43,20 +48,63 @@ function App() {
   const handleLogout = () => {
     setIsLoggedIn(false);
   };
+
+  const openSongsListModal = () => {
+    setIsSongsListModalOpen(true);
+  };
+
+  const closeSongsListModal = () => {
+    setIsSongsListModalOpen(false);
+  };
+
+  useEffect(() => {
+    const auth = getAuth();
+
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      if (user) {
+        setUserdata({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+        });
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+  console.log(userData);
+
   return (
-    <DndProvider backend={HTML5Backend}>
-      <Container>
-        <Header>
-          {isLoggedIn ? (
-            <Logout onLogout={handleLogout} />
-          ) : (
-            <Login onLogin={handleLogin} />
-          )}
-        </Header>
-        <Title>Harmony HUB</Title>
-        <MusicEditor />
-      </Container>
-    </DndProvider>
+    <div>
+      <Router>
+        <Container>
+          <Header>
+            <Button onClick={openSongsListModal}>My Songs List</Button>
+            {isLoggedIn ? (
+              <Logout onLogout={handleLogout} />
+            ) : (
+              <Login onLogin={handleLogin} />
+            )}
+          </Header>
+          <Link to="/">
+            <Title>Harmony HUB</Title>
+          </Link>
+          <Routes>
+            <Route path="/" element={<MusicEditor userData={userData} />} />
+          </Routes>
+        </Container>
+        <MP3Modal
+          isOpen={isSongsListModalOpen}
+          onRequestClose={closeSongsListModal}
+          contentLabel="Songs List Modal"
+        >
+          <SongsList />
+          <Button onClick={closeSongsListModal}>Close</Button>
+        </MP3Modal>
+      </Router>
+    </div>
   );
 }
 

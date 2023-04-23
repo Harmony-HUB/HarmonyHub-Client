@@ -2,16 +2,18 @@ import styled from "styled-components";
 
 export const Editor = styled.div`
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  /* justify-content: center; */
   align-items: center;
   position: relative;
   width: 90%;
-  height: 80%;
+  height: 100%;
   padding: 1rem;
   font-size: 1.2rem;
-  border: 1px solid #ccc;
+  border: 1px solid #cccc;
   border-radius: 4px;
   resize: none;
+  margin-top: 100px;
 `;
 
 export const SelectFileButton = styled.label`

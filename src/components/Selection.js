@@ -1,15 +1,20 @@
 import { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { setSelectedStart, setSelectedEnd } from "../feature/audioPlayerSlice";
 
 const SelectionHandle = styled.div`
   position: absolute;
-  top: -50%;
+  top: -5%;
   width: 10px;
-  height: 200%;
+  height: 100%;
   cursor: col-resize;
   z-index: 1000;
+  background-color: #6bb9f0;
+  border: 1px solid white;
+  box-sizing: border-box;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 `;
 
 const SelectionHandleLeft = styled(SelectionHandle)`
@@ -20,23 +25,27 @@ const SelectionHandleRight = styled(SelectionHandle)`
   right: -5px;
 `;
 
-function WaveSelection({ selectedStart, selectedEnd, setSelectionActive }) {
+function WaveSelection({ setSelectionActive, audioPlayedId }) {
   const selectionCanvasRef = useRef(null);
   const [dragging, setDragging] = useState(null);
   const dispatch = useDispatch();
+
+  const { selectedStart, selectedEnd } = useSelector(
+    state => state.audioPlayer.instances[audioPlayedId] || {}
+  );
 
   const drawSelection = () => {
     const canvas = selectionCanvasRef.current;
     const ctx = canvas.getContext("2d");
     const { width, height } = canvas;
 
-    const handleWidth = 4;
+    const handleWidth = 6;
     const leftHandleX = selectedStart * width - handleWidth / 2;
     const rightHandleX = selectedEnd * width - handleWidth / 2;
 
     ctx.clearRect(0, 0, width, height);
 
-    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+    ctx.fillStyle = "rgba(100, 100, 100, 0.6)";
     ctx.fillRect(0, 0, leftHandleX, height);
     ctx.fillRect(
       rightHandleX + handleWidth,
@@ -45,7 +54,7 @@ function WaveSelection({ selectedStart, selectedEnd, setSelectionActive }) {
       height
     );
 
-    ctx.fillStyle = "#0047AB";
+    ctx.fillStyle = "#6bb9f0";
     ctx.fillRect(leftHandleX, 0, handleWidth, height);
     ctx.fillRect(rightHandleX, 0, handleWidth, height);
     ctx.strokeStyle = "white";
@@ -67,7 +76,7 @@ function WaveSelection({ selectedStart, selectedEnd, setSelectionActive }) {
     const leftHandleX = selectedStart * canvas.width - handleWidth / 2;
     const rightHandleX = selectedEnd * canvas.width - handleWidth / 2;
 
-    const threshold = 5;
+    const threshold = 10;
 
     const startDistance = Math.abs(x - leftHandleX);
     const endDistance = Math.abs(x - rightHandleX);
@@ -102,9 +111,19 @@ function WaveSelection({ selectedStart, selectedEnd, setSelectionActive }) {
     const position = x / canvas.width;
 
     if (dragging === "start") {
-      dispatch(setSelectedStart(Math.min(Math.max(0, position), selectedEnd)));
+      dispatch(
+        setSelectedStart({
+          audioPlayedId,
+          selectedStart: Math.min(Math.max(0, position), selectedEnd),
+        })
+      );
     } else {
-      dispatch(setSelectedEnd(Math.max(Math.min(1, position), selectedStart)));
+      dispatch(
+        setSelectedEnd({
+          audioPlayedId,
+          selectedEnd: Math.max(Math.min(1, position), selectedStart),
+        })
+      );
     }
   };
 
