@@ -17,6 +17,7 @@ function Modal({ isOpen, children, onClose }) {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        zIndex: 2000,
       }}
       onClick={onClose}
     >

@@ -104,8 +104,10 @@ function App() {
         onRequestClose={closeSongsListModal}
         contentLabel="Songs List Modal"
       >
-        <SongsList />
-        <Button onClick={closeSongsListModal}>Close</Button>
+        <SongsList
+          isOpen={isSongsListModalOpen}
+          closeModal={closeSongsListModal}
+        />
       </MP3Modal>
       <AudioRecorder isOpen={IsCircleModalOpen} onClose={closeCircleModal} />
     </div>

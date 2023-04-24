@@ -118,7 +118,7 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
     });
     newAudioSource.connect(audioContext.pitchShift);
     audioContext.gainNode.connect(audioContext.context.destination);
-    newAudioSource.playbackRate = 1;
+    newAudioSource.playbackRate = tempo;
     newAudioSource.loop = false;
 
     const playbackOffset = isTrimmed
@@ -317,7 +317,7 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
           style={{ width: "100%" }}
         />
       </SliderContainer>
-      <AudioStorage audioBuffer={audioBuffer} userData={userData} />
+      <AudioStorage audioPlayedId={audioPlayedId} userData={userData} />
       <Button onClick={trimAudioBuffer}>Trim Audio</Button>
     </AudioPlayerContainer>
   );

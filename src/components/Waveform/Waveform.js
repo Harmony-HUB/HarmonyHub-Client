@@ -27,7 +27,7 @@ function Waveform({
 
   const dispatch = useDispatch();
 
-  const { audioBuffer, progressPosition, volume, selectedStart, selectedEnd } =
+  const { audioBuffer, progressPosition, selectedStart, selectedEnd } =
     useSelector(state => state.audioPlayer.instances[audioPlayedId] || {});
 
   const reduxAudioBuffer = useSelector(state => state.audioPlayer.audioBuffer);
@@ -112,7 +112,7 @@ function Waveform({
 
   useEffect(() => {
     drawWaveform();
-  }, [audioBuffer, volume, bufferToUse]);
+  }, [audioBuffer, bufferToUse]);
 
   useEffect(() => {
     if (onSelectionChange) {
