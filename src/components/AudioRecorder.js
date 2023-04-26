@@ -1,195 +1,171 @@
-/* eslint-disable jsx-a11y/media-has-caption */
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import AudioRecorderStorage from "./AudioRecorderStorage";
 import Button from "./common/Button/Button";
 import CircleModal from "./common/Modal/CircleModal";
-import AudioStorage from "./AudioStorage";
 
-function AudioRecorder({ isOpen, onClose }) {
-  const [isRecording, setIsRecording] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState(null);
-  const [audioURL, setAudioURL] = useState("");
-  const [audioPlaybackURL, setAudioPlaybackURL] = useState(null);
-  const [isAudioReady, setIsAudioReady] = useState(false);
-  const [bufferSource, setBufferSource] = useState(null);
-  const [finalAudioURL, setFinalAudioURL] = useState(null);
+function AudioRecorder({ isOpen, onClose, userData }) {
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [recording, setRecording] = useState(false);
+  const [recordedChunks, setRecordedChunks] = useState([]);
+  const [mediaRecorderInstance, setMediaRecorder] = useState(null);
+  const [recordedAudioURL, setRecordedAudioURL] = useState(null);
+  const [combinedAudioBuffer, setCombinedAudioBuffer] = useState(null);
 
-  const audioRef = useRef();
+  const audioContext = useRef(new AudioContext());
+  const uploadedBuffer = useRef(null);
+  const recordedBuffer = useRef(null);
+  const bufferSourceRef = useRef(null);
+  const uploadedBufferSourceRef = useRef(null); // Add ref for the uploaded audio buffer source
 
-  const initRecorder = async () => {
-    if (!isOpen) return;
-
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const recorder = new MediaRecorder(stream);
-    setMediaRecorder(recorder);
-
-    recorder.addEventListener("dataavailable", e => {
-      const url = URL.createObjectURL(e.data);
-      setAudioURL(url);
-    });
-  };
-
-  useEffect(() => {
-    initRecorder();
-  }, [isOpen]);
-
-  const mergeAudio = async (audio1Url, audio2Url) => {
-    const audioContext = new (window.AudioContext ||
-      window.webkitAudioContext)();
-
-    const fetchAudio1 = fetch(audio1Url).then(response =>
-      response.arrayBuffer()
-    );
-    const fetchAudio2 = fetch(audio2Url).then(response =>
-      response.arrayBuffer()
-    );
-
-    const [audio1Buffer, audio2Buffer] = await Promise.all([
-      fetchAudio1,
-      fetchAudio2,
-    ]);
-    const audio1Decoded = await audioContext.decodeAudioData(audio1Buffer);
-    const audio2Decoded = await audioContext.decodeAudioData(audio2Buffer);
-
-    const duration = Math.max(audio1Decoded.duration, audio2Decoded.duration);
-    const maxChannels = Math.max(
-      audio1Decoded.numberOfChannels,
-      audio2Decoded.numberOfChannels
-    );
-    const mergedBuffer = audioContext.createBuffer(
-      maxChannels,
-      audioContext.sampleRate * duration,
-      audioContext.sampleRate
-    );
-
-    for (let channel = 0; channel < maxChannels; channel += 1) {
-      const channelData = mergedBuffer.getChannelData(channel);
-      const channelData1 =
-        audio1Decoded.numberOfChannels > channel
-          ? audio1Decoded.getChannelData(channel)
-          : new Float32Array(mergedBuffer.length);
-      const channelData2 =
-        audio2Decoded.numberOfChannels > channel
-          ? audio2Decoded.getChannelData(channel)
-          : new Float32Array(mergedBuffer.length);
-      for (let i = 0; i < channelData.length; i += 1) {
-        channelData[i] = channelData1[i] + (channelData2[i] || 0);
-      }
-    }
-
-    const newBufferSource = audioContext.createBufferSource(); // Renamed variable
-    newBufferSource.buffer = mergedBuffer;
-    newBufferSource.connect(audioContext.destination);
-
-    setBufferSource(newBufferSource); // Updated function call
-  };
-
-  const handleFileUpload = e => {
+  const handleFileUpload = async e => {
     const file = e.target.files[0];
-    setAudioPlaybackURL(URL.createObjectURL(file));
-    setIsAudioReady(false);
+    setUploadedFile(file);
+
+    const arrayBuffer = await file.arrayBuffer();
+    const audioBuffer = await audioContext.current.decodeAudioData(arrayBuffer);
+    uploadedBuffer.current = audioBuffer;
   };
-
-  const handleBackgroundAudioEnded = () => {
-    if (!finalAudioURL) {
-      bufferSource.exportBuffer().then(mergedAudioBuffer => {
-        const mergedAudioBlob = new Blob([mergedAudioBuffer], {
-          type: "audio/mpeg",
-        });
-        setFinalAudioURL(URL.createObjectURL(mergedAudioBlob));
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.addEventListener("canplaythrough", () => {
-        setIsAudioReady(true);
-      });
-
-      audioRef.current.addEventListener("ended", handleBackgroundAudioEnded);
-    }
-  }, [audioPlaybackURL]);
 
   const startRecording = async () => {
-    if (mediaRecorder && audioRef.current) {
-      try {
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              mediaRecorder.start();
-              setIsRecording(true);
-            })
-            .catch(error => {
-              console.error("Error starting playback and recording:", error);
-            });
-        }
-      } catch (error) {
-        console.error("Error starting playback and recording:", error);
-      }
+    // Start playing the uploaded audio
+    if (uploadedBuffer.current) {
+      const bufferSource = audioContext.current.createBufferSource();
+      bufferSource.buffer = uploadedBuffer.current;
+      bufferSource.connect(audioContext.current.destination);
+      bufferSource.start();
+      uploadedBufferSourceRef.current = bufferSource;
     }
+
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const newMediaRecorder = new MediaRecorder(stream);
+    setMediaRecorder(newMediaRecorder);
+
+    newMediaRecorder.ondataavailable = e => {
+      if (e.data.size > 0) {
+        setRecordedChunks(prev => [...prev, e.data]);
+      }
+    };
+
+    newMediaRecorder.start();
+    setRecording(true);
   };
 
   const stopRecording = () => {
-    if (mediaRecorder) {
-      mediaRecorder.addEventListener("dataavailable", async e => {
-        const recordedAudioBlob = e.data;
-        const recordedAudioUrl = URL.createObjectURL(recordedAudioBlob);
+    if (mediaRecorderInstance) {
+      mediaRecorderInstance.stop();
+      setRecording(false);
+    }
 
-        if (audioPlaybackURL) {
-          await mergeAudio(audioPlaybackURL, recordedAudioUrl);
-        } else {
-          setAudioURL(recordedAudioUrl);
-        }
+    if (uploadedBufferSourceRef.current) {
+      uploadedBufferSourceRef.current.stop();
+      uploadedBufferSourceRef.current = null;
+    }
+  };
+
+  const combineAndPlay = async () => {
+    if (!uploadedBuffer.current || !recordedBuffer.current) return;
+
+    const combinedBuffer = new AudioBuffer({
+      length: Math.max(
+        uploadedBuffer.current.length,
+        recordedBuffer.current.length
+      ),
+      numberOfChannels: 2,
+      sampleRate: audioContext.current.sampleRate,
+    });
+
+    combinedBuffer.copyToChannel(uploadedBuffer.current.getChannelData(0), 0);
+    combinedBuffer.copyToChannel(recordedBuffer.current.getChannelData(0), 1);
+
+    setCombinedAudioBuffer(combinedBuffer);
+    console.log(combinedAudioBuffer);
+
+    const bufferSource = audioContext.current.createBufferSource();
+    bufferSource.buffer = combinedBuffer;
+    bufferSource.connect(audioContext.current.destination);
+    bufferSource.start();
+    bufferSourceRef.current = bufferSource;
+  };
+
+  const stopCombinedAudio = () => {
+    if (bufferSourceRef.current) {
+      bufferSourceRef.current.stop();
+      bufferSourceRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (recording) {
+        stopRecording();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (uploadedBuffer.current && recordedBuffer.current) {
+      const combinedBuffer = new AudioBuffer({
+        length: Math.max(
+          uploadedBuffer.current.length,
+          recordedBuffer.current.length
+        ),
+        numberOfChannels: 2,
+        sampleRate: audioContext.current.sampleRate,
       });
 
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      mediaRecorder.stop();
-      setIsRecording(false);
-    }
-  };
+      combinedBuffer.copyToChannel(uploadedBuffer.current.getChannelData(0), 0);
+      combinedBuffer.copyToChannel(recordedBuffer.current.getChannelData(0), 1);
 
-  const toggleRecording = () => {
-    if (!isRecording) {
-      startRecording();
-    } else {
-      stopRecording();
+      setCombinedAudioBuffer(combinedBuffer);
     }
-  };
+  }, [uploadedBuffer.current, recordedBuffer.current]);
+
+  useEffect(() => {
+    if (recordedChunks.length > 0) {
+      const recordedBlob = new Blob(recordedChunks, { type: "audio/webm" });
+      const recordedURL = URL.createObjectURL(recordedBlob);
+      setRecordedAudioURL(recordedURL);
+
+      const reader = new FileReader();
+      reader.onload = async e => {
+        const arrayBuffer = e.target.result;
+        const audioBuffer = await audioContext.current.decodeAudioData(
+          arrayBuffer
+        );
+        recordedBuffer.current = audioBuffer;
+      };
+      reader.readAsArrayBuffer(recordedBlob);
+    }
+  }, [recordedChunks]);
+
   return (
     <CircleModal isOpen={isOpen} onClose={onClose}>
-      <h1>Audio Recorder</h1>
-      {!isAudioReady && (
-        <input type="file" onChange={handleFileUpload} accept="audio/*" />
+      <input type="file" accept="audio/*" onChange={handleFileUpload} />
+      {uploadedFile && (
+        <>
+          <Button onClick={recording ? stopRecording : startRecording}>
+            {recording ? "Stop Recording" : "Start Recording"}
+          </Button>
+          {recordedAudioURL && (
+            <>
+              <h3>Recorded Audio:</h3>
+              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+              <audio src={recordedAudioURL} controls />
+            </>
+          )}
+          {recordedAudioURL && uploadedFile && (
+            <>
+              <h3>Combined Audio:</h3>
+              <Button onClick={combineAndPlay}>Play Combined Audio</Button>
+              <Button onClick={stopCombinedAudio}>Stop Combined Audio</Button>
+            </>
+          )}
+        </>
       )}
-      {audioPlaybackURL && (
-        <audio
-          ref={audioRef}
-          src={audioPlaybackURL}
-          style={{ display: "none" }}
-        />
-      )}
-      {isAudioReady && (
-        <Button onClick={toggleRecording} disabled={!isAudioReady}>
-          {isRecording ? "Stop Recording" : "Start Recording"}
-        </Button>
-      )}
-      {finalAudioURL ? (
-        <audio
-          src={finalAudioURL}
-          controls
-          onPlay={() => {
-            if (bufferSource) {
-              bufferSource.start(0);
-            }
-          }}
-        />
-      ) : (
-        audioURL && <audio src={audioURL} controls />
-      )}
-
-      <AudioStorage recordedAudioURL={audioURL} />
+      <AudioRecorderStorage
+        audioBuffer={combinedAudioBuffer}
+        userData={userData}
+      />
     </CircleModal>
   );
 }

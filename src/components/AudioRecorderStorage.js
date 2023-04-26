@@ -1,20 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
-import * as Tone from "tone";
-import { useSelector } from "react-redux";
 import toWav from "audiobuffer-to-wav";
 import Button from "./common/Button/Button";
 import Modal from "./common/Modal/Modal";
-
-async function applyAdjustments(buffer, pitch, tempo) {
-  return Tone.Offline(async () => {
-    const pitchShift = new Tone.PitchShift(pitch);
-    const source = new Tone.BufferSource(buffer).connect(pitchShift);
-    source.playbackRate = tempo;
-    pitchShift.toDestination();
-    source.start(0);
-  }, buffer.duration * (1 / tempo));
-}
 
 function bufferToWav(buffer) {
   const wavArrayBuffer = toWav(buffer);
@@ -22,25 +10,15 @@ function bufferToWav(buffer) {
   return wavBlob;
 }
 
-function AudioStorage({ userData, audioPlayedId, audioBuffer }) {
+function AudioRecorderStorage({ audioBuffer, userData }) {
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  const { pitch, tempo } = useSelector(
-    state => state.audioPlayer.instances[audioPlayedId] || {}
-  );
-
   const handleSaveAudio = async () => {
-    if (!audioBuffer || !audioBuffer.duration || !tempo) return;
+    if (!audioBuffer) return;
 
-    const adjustedBuffer = await applyAdjustments(
-      audioBuffer,
-      pitch - 1,
-      tempo
-    );
-
-    const audioBlob = bufferToWav(adjustedBuffer);
+    const audioBlob = bufferToWav(audioBuffer);
     const formData = new FormData();
     formData.append("audio", audioBlob, `${title}.wav`);
     formData.append("title", title);
@@ -89,4 +67,4 @@ function AudioStorage({ userData, audioPlayedId, audioBuffer }) {
   );
 }
 
-export default AudioStorage;
+export default AudioRecorderStorage;

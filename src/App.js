@@ -109,7 +109,11 @@ function App() {
           closeModal={closeSongsListModal}
         />
       </MP3Modal>
-      <AudioRecorder isOpen={IsCircleModalOpen} onClose={closeCircleModal} />
+      <AudioRecorder
+        isOpen={IsCircleModalOpen}
+        onClose={closeCircleModal}
+        userData={userData}
+      />
     </div>
   );
 }

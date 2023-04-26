@@ -317,7 +317,11 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
           style={{ width: "100%" }}
         />
       </SliderContainer>
-      <AudioStorage audioPlayedId={audioPlayedId} userData={userData} />
+      <AudioStorage
+        audioPlayedId={audioPlayedId}
+        userData={userData}
+        audioBuffer={audioBuffer}
+      />
       <Button onClick={trimAudioBuffer}>Trim Audio</Button>
     </AudioPlayerContainer>
   );
