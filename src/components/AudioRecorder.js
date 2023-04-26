@@ -18,6 +18,11 @@ function AudioRecorder({ isOpen, onClose, userData }) {
   const uploadedBufferSourceRef = useRef(null); // Add ref for the uploaded audio buffer source
 
   const handleFileUpload = async e => {
+    if (!e.target.files.length) {
+      setUploadedFile(null);
+      return;
+    }
+
     const file = e.target.files[0];
     setUploadedFile(file);
 
@@ -27,7 +32,6 @@ function AudioRecorder({ isOpen, onClose, userData }) {
   };
 
   const startRecording = async () => {
-    // Start playing the uploaded audio
     if (uploadedBuffer.current) {
       const bufferSource = audioContext.current.createBufferSource();
       bufferSource.buffer = uploadedBuffer.current;
@@ -140,7 +144,28 @@ function AudioRecorder({ isOpen, onClose, userData }) {
 
   return (
     <CircleModal isOpen={isOpen} onClose={onClose}>
-      <input type="file" accept="audio/*" onChange={handleFileUpload} />
+      {uploadedFile ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <input
+            type="file"
+            accept="audio/*"
+            onChange={handleFileUpload}
+            style={{ display: "none" }}
+          />
+          <Button onClick={e => e.target.previousSibling.click()}>
+            Change File
+          </Button>
+        </div>
+      ) : (
+        <input type="file" accept="audio/*" onChange={handleFileUpload} />
+      )}
       {uploadedFile && (
         <>
           <Button onClick={recording ? stopRecording : startRecording}>

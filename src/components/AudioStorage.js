@@ -22,23 +22,35 @@ function bufferToWav(buffer) {
   return wavBlob;
 }
 
-function AudioStorage({ userData, audioPlayedId, audioBuffer }) {
+function AudioStorage({ audioBuffer, userData, audioPlayedId }) {
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+
+  const isModalOpen = () => {
+    setShowModal(true);
+  };
 
   const { pitch, tempo } = useSelector(
     state => state.audioPlayer.instances[audioPlayedId] || {}
   );
 
   const handleSaveAudio = async () => {
-    if (!audioBuffer || !audioBuffer.duration || !tempo) return;
+    if (!audioBuffer) return;
+
+    const adjustedPitch = pitch !== undefined ? pitch - 1 : 0;
+    const adjustedTempo = tempo !== undefined ? tempo : 1;
 
     const adjustedBuffer = await applyAdjustments(
       audioBuffer,
-      pitch - 1,
-      tempo
+      adjustedPitch,
+      adjustedTempo
     );
+
+    if (!adjustedBuffer) {
+      console.error("Error applying adjustments to audio buffer.");
+      return;
+    }
 
     const audioBlob = bufferToWav(adjustedBuffer);
     const formData = new FormData();
@@ -68,7 +80,7 @@ function AudioStorage({ userData, audioPlayedId, audioBuffer }) {
 
   return (
     <div>
-      <Button onClick={() => setShowModal(true)}>Save Audio</Button>
+      {userData.email && <Button onClick={isModalOpen}>Save Audio</Button>}
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
         <h3>제목을 입력해주세요</h3>
         <input

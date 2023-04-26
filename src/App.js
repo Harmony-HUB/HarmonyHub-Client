@@ -76,6 +76,9 @@ function App() {
           email: user.email,
           displayName: user.displayName,
         });
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
       }
     });
 

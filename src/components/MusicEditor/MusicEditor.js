@@ -6,6 +6,7 @@ import { Editor, SelectFileButton, FileInput, BottomBar } from "./styles";
 import AudioPlayer from "../AudioPlayer/AudioPlayer";
 import Button from "../common/Button/Button";
 import AudioStorage from "../AudioStorage";
+import DownloadAudio from "../DownloadAudio";
 
 function MusicEditor({ userData }) {
   const [audioFiles, setAudioFiles] = useState([]);
@@ -70,6 +71,7 @@ function MusicEditor({ userData }) {
     if (nonNullBuffers.length >= 2) {
       setCombinedAudioBuffer(concatenateAudioBuffers(nonNullBuffers));
     }
+    console.log(combinedAudioBuffer);
   };
 
   const moveAudioPlayer = (index, direction) => {
@@ -131,6 +133,7 @@ function MusicEditor({ userData }) {
         <AudioStorage userData={userData} audioBuffer={combinedAudioBuffer}>
           저장하기
         </AudioStorage>
+        <DownloadAudio audioBuffer={combinedAudioBuffer} />
       </BottomBar>
     </Editor>
   );

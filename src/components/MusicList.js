@@ -56,7 +56,12 @@ function SongsList({ isOpen }) {
   useEffect(() => {
     async function fetchSongs() {
       try {
-        const response = await axios.get("http://localhost:3001/songs");
+        const token = localStorage.getItem("access_token");
+        const response = await axios.get("http://localhost:3001/songs", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setSongs(response.data);
       } catch (error) {
         console.error("Error fetching songs:", error);
@@ -89,25 +94,26 @@ function SongsList({ isOpen }) {
           <ModalContent>
             <SongListContainer>
               <ul>
-                {songs.map((song, index) => (
-                  <SongButton
-                    type="button"
-                    key={song.key}
-                    tabIndex={index}
-                    onClick={() => setSelectedIndex(index)}
-                    onKeyDown={e => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        setSelectedIndex(index);
-                      }
-                    }}
-                    isSelected={selectedIndex === index}
-                  >
-                    <div>
-                      <h3>{song.title}</h3>
-                      <p>{new Date(song.creationTime).toLocaleString()}</p>
-                    </div>
-                  </SongButton>
-                ))}
+                {Array.isArray(songs) &&
+                  songs.map((song, index) => (
+                    <SongButton
+                      type="button"
+                      key={song.key}
+                      tabIndex={index}
+                      onClick={() => setSelectedIndex(index)}
+                      onKeyDown={e => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          setSelectedIndex(index);
+                        }
+                      }}
+                      isSelected={selectedIndex === index}
+                    >
+                      <div>
+                        <h3>{song.title}</h3>
+                        <p>{new Date(song.creationTime).toLocaleString()}</p>
+                      </div>
+                    </SongButton>
+                  ))}
               </ul>
             </SongListContainer>
             <button type="button" onClick={onModalPlayClick}>

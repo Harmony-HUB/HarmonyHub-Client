@@ -17,12 +17,17 @@ const CircleModalOverlay = styled.div`
 
 const CircleModalWrapper = styled.div`
   background-color: white;
-  border-radius: 15px;
+  border: 5px solid #555;
+  border-radius: 50%;
   padding: 2rem;
   position: relative;
-  max-width: 80%;
-  max-height: 80%;
-  overflow-y: auto;
+  width: 400px;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
 const CloseButton = styled.button`
