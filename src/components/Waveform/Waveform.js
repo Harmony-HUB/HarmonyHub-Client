@@ -27,8 +27,12 @@ function Waveform({
 
   const dispatch = useDispatch();
 
-  const { audioBuffer, progressPosition, selectedStart, selectedEnd } =
-    useSelector(state => state.audioPlayer.instances[audioPlayedId] || {});
+  const {
+    audioBuffer,
+    progressPosition = 0,
+    selectedStart,
+    selectedEnd,
+  } = useSelector(state => state.audioPlayer.instances[audioPlayedId] || {});
 
   const reduxAudioBuffer = useSelector(state => state.audioPlayer.audioBuffer);
   const bufferToUse = audioBuffer || reduxAudioBuffer;
@@ -140,7 +144,11 @@ function Waveform({
           pointerEvents: selectionActive ? "none" : "auto",
         }}
       />
-      <ProgressBar progressPosition={progressPosition} duration={duration} />
+      <ProgressBar
+        duration={duration}
+        audioPlayedId={audioPlayedId}
+        progressPosition={progressPosition}
+      />
       <WaveSelection
         audioPlayedId={audioPlayedId}
         onSelectionChange={onSelectionChange}

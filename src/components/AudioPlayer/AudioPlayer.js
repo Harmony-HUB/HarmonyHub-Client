@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import * as Tone from "tone";
 import { useSelector, useDispatch } from "react-redux";
 import Waveform from "../Waveform/Waveform";
-import { SliderContainer, SliderInput, AudioPlayerContainer } from "./styles";
+import {
+  SliderContainer,
+  SliderInput,
+  AudioPlayerContainer,
+  ButtonContainer,
+} from "./styles";
 import AudioStorage from "../AudioStorage";
 import Button from "../common/Button/Button";
 import {
@@ -176,7 +181,9 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
 
     audioSource.stop();
     dispatch(setAudioSource({ audioPlayedId, audioSource: null }));
-    dispatch(setPausedTime({ audioPlayedId, pausedTime: 0 }));
+
+    const newPausedTime = selectedStart * audioBuffer.duration;
+    dispatch(setPausedTime({ audioPlayedId, pausedTime: newPausedTime }));
 
     dispatch(
       setProgressPosition({
@@ -265,6 +272,10 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
   };
 
   const handleWaveformClick = progressPercentage => {
+    if (isPlaying) {
+      pauseSound();
+    }
+
     dispatch(
       setProgressPosition({
         audioPlayedId,
@@ -276,6 +287,8 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
       const newPausedTime = (progressPercentage / 100) * audioBuffer.duration;
       dispatch(setPausedTime({ audioPlayedId, pausedTime: newPausedTime }));
     }
+
+    playSound();
   };
 
   // const handleFadeInChange = event => {
@@ -304,7 +317,6 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
         stopSound={stopSound}
         handlePitchChange={handlePitchChange}
         handleTempoChange={handleTempoChange}
-        // handleDroppedWaveform={handleDroppedWaveform}
       />
       <SliderContainer>
         <SliderInput
@@ -317,12 +329,14 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
           style={{ width: "100%" }}
         />
       </SliderContainer>
-      <AudioStorage
-        audioPlayedId={audioPlayedId}
-        userData={userData}
-        audioBuffer={audioBuffer}
-      />
-      <Button onClick={trimAudioBuffer}>Trim Audio</Button>
+      <ButtonContainer>
+        <Button onClick={trimAudioBuffer}>Trim Audio</Button>
+        <AudioStorage
+          audioPlayedId={audioPlayedId}
+          userData={userData}
+          audioBuffer={audioBuffer}
+        />
+      </ButtonContainer>
     </AudioPlayerContainer>
   );
 }

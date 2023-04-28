@@ -9,6 +9,7 @@ const StyledButton = styled.button`
   font-size: ${props => props.fontSize};
   cursor: pointer;
   margin: ${props => props.margin};
+  ${({ style }) => style}
   &:hover {
     background-color: ${props => props.hoverBackgroundColor};
   }

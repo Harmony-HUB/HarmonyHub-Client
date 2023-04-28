@@ -6,6 +6,10 @@ const WaveformCanvas = styled.div`
   height: 100px;
   background-color: #ffffff;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    height: 70px;
+  }
 `;
 
 export default WaveformCanvas;

@@ -1,8 +1,24 @@
 import React, { useState } from "react";
 import axios from "axios";
 import toWav from "audiobuffer-to-wav";
+import styled from "styled-components";
 import Button from "./common/Button/Button";
 import Modal from "./common/Modal/Modal";
+import Spinner from "./common/Spinner";
+
+const StyledFormContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  h3 {
+    margin-bottom: 8px;
+  }
+
+  input,
+  textarea {
+    margin-bottom: 16px;
+  }
+`;
 
 function bufferToWav(buffer) {
   const wavArrayBuffer = toWav(buffer);
@@ -14,9 +30,12 @@ function AudioRecorderStorage({ audioBuffer, userData }) {
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSaveAudio = async () => {
     if (!audioBuffer) return;
+
+    setLoading(true);
 
     const audioBlob = bufferToWav(audioBuffer);
     const formData = new FormData();
@@ -27,11 +46,15 @@ function AudioRecorderStorage({ audioBuffer, userData }) {
     formData.append("userEmail", userData.email);
 
     try {
+      const token = localStorage.getItem("access_token");
       const response = await axios.post(
         "http://localhost:3001/uploadAudio",
         formData,
         {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -41,6 +64,8 @@ function AudioRecorderStorage({ audioBuffer, userData }) {
       }
     } catch (error) {
       console.error("Error uploading audio file:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,20 +73,24 @@ function AudioRecorderStorage({ audioBuffer, userData }) {
     <div>
       <Button onClick={() => setShowModal(true)}>Save Audio</Button>
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
-        <h3>제목을 입력해주세요</h3>
-        <input
-          type="text"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-          placeholder="Title"
-        />
-        <h3>설명을 입력해 주세요</h3>
-        <textarea
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-          placeholder="Description"
-        />
-        <Button onClick={handleSaveAudio}>Save</Button>
+        <StyledFormContainer>
+          <h3>제목을 입력해주세요</h3>
+          <input
+            type="text"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            placeholder="Title"
+          />
+          <h3>설명을 입력해 주세요</h3>
+          <textarea
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            placeholder="Description"
+          />
+          <Button onClick={handleSaveAudio}>
+            {loading ? <Spinner /> : "Save"}
+          </Button>
+        </StyledFormContainer>
       </Modal>
     </div>
   );

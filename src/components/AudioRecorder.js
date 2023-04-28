@@ -1,7 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
+import {
+  faStop,
+  faMicrophone,
+  faPlay,
+  faUpload,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AudioRecorderStorage from "./AudioRecorderStorage";
 import Button from "./common/Button/Button";
 import CircleModal from "./common/Modal/CircleModal";
+import { SelectFileButton, FileInput } from "./MusicEditor/styles";
 
 function AudioRecorder({ isOpen, onClose, userData }) {
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -10,12 +18,14 @@ function AudioRecorder({ isOpen, onClose, userData }) {
   const [mediaRecorderInstance, setMediaRecorder] = useState(null);
   const [recordedAudioURL, setRecordedAudioURL] = useState(null);
   const [combinedAudioBuffer, setCombinedAudioBuffer] = useState(null);
+  const [stage, setStage] = useState(0);
+  const [playing, setPlaying] = useState(false);
 
   const audioContext = useRef(new AudioContext());
   const uploadedBuffer = useRef(null);
   const recordedBuffer = useRef(null);
   const bufferSourceRef = useRef(null);
-  const uploadedBufferSourceRef = useRef(null); // Add ref for the uploaded audio buffer source
+  const uploadedBufferSourceRef = useRef(null);
 
   const handleFileUpload = async e => {
     if (!e.target.files.length) {
@@ -29,6 +39,8 @@ function AudioRecorder({ isOpen, onClose, userData }) {
     const arrayBuffer = await file.arrayBuffer();
     const audioBuffer = await audioContext.current.decodeAudioData(arrayBuffer);
     uploadedBuffer.current = audioBuffer;
+
+    setStage(1);
   };
 
   const startRecording = async () => {
@@ -64,37 +76,40 @@ function AudioRecorder({ isOpen, onClose, userData }) {
       uploadedBufferSourceRef.current.stop();
       uploadedBufferSourceRef.current = null;
     }
+
+    setStage(2);
   };
 
-  const combineAndPlay = async () => {
+  const togglePlayStop = async () => {
     if (!uploadedBuffer.current || !recordedBuffer.current) return;
 
-    const combinedBuffer = new AudioBuffer({
-      length: Math.max(
-        uploadedBuffer.current.length,
-        recordedBuffer.current.length
-      ),
-      numberOfChannels: 2,
-      sampleRate: audioContext.current.sampleRate,
-    });
+    if (!playing) {
+      const combinedBuffer = new AudioBuffer({
+        length: Math.max(
+          uploadedBuffer.current.length,
+          recordedBuffer.current.length
+        ),
+        numberOfChannels: 2,
+        sampleRate: audioContext.current.sampleRate,
+      });
 
-    combinedBuffer.copyToChannel(uploadedBuffer.current.getChannelData(0), 0);
-    combinedBuffer.copyToChannel(recordedBuffer.current.getChannelData(0), 1);
+      combinedBuffer.copyToChannel(uploadedBuffer.current.getChannelData(0), 0);
+      combinedBuffer.copyToChannel(recordedBuffer.current.getChannelData(0), 1);
 
-    setCombinedAudioBuffer(combinedBuffer);
-    console.log(combinedAudioBuffer);
+      setCombinedAudioBuffer(combinedBuffer);
 
-    const bufferSource = audioContext.current.createBufferSource();
-    bufferSource.buffer = combinedBuffer;
-    bufferSource.connect(audioContext.current.destination);
-    bufferSource.start();
-    bufferSourceRef.current = bufferSource;
-  };
-
-  const stopCombinedAudio = () => {
-    if (bufferSourceRef.current) {
-      bufferSourceRef.current.stop();
-      bufferSourceRef.current = null;
+      const bufferSource = audioContext.current.createBufferSource();
+      bufferSource.buffer = combinedBuffer;
+      bufferSource.connect(audioContext.current.destination);
+      bufferSource.start();
+      bufferSourceRef.current = bufferSource;
+      setPlaying(true);
+    } else {
+      if (bufferSourceRef.current) {
+        bufferSourceRef.current.stop();
+        bufferSourceRef.current = null;
+      }
+      setPlaying(false);
     }
   };
 
@@ -116,7 +131,6 @@ function AudioRecorder({ isOpen, onClose, userData }) {
         numberOfChannels: 2,
         sampleRate: audioContext.current.sampleRate,
       });
-
       combinedBuffer.copyToChannel(uploadedBuffer.current.getChannelData(0), 0);
       combinedBuffer.copyToChannel(recordedBuffer.current.getChannelData(0), 1);
 
@@ -129,7 +143,6 @@ function AudioRecorder({ isOpen, onClose, userData }) {
       const recordedBlob = new Blob(recordedChunks, { type: "audio/webm" });
       const recordedURL = URL.createObjectURL(recordedBlob);
       setRecordedAudioURL(recordedURL);
-
       const reader = new FileReader();
       reader.onload = async e => {
         const arrayBuffer = e.target.result;
@@ -142,55 +155,84 @@ function AudioRecorder({ isOpen, onClose, userData }) {
     }
   }, [recordedChunks]);
 
+  const buttonStyles = {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "5rem",
+    borderRadius: "50%",
+    border: "none",
+    background: "gray",
+    outline: "black",
+    zIndex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+  };
+
   return (
     <CircleModal isOpen={isOpen} onClose={onClose}>
-      {uploadedFile ? (
+      {stage === 0 && (
+        <SelectFileButton>
+          <FontAwesomeIcon icon={faUpload} /> 파일 선택
+          <FileInput type="file" onChange={handleFileUpload} />
+        </SelectFileButton>
+      )}
+      {stage === 1 && (
         <div
           style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
+            width: "100%",
+            height: "100%",
+            position: "relative",
           }}
         >
-          <input
-            type="file"
-            accept="audio/*"
-            onChange={handleFileUpload}
-            style={{ display: "none" }}
-          />
-          <Button onClick={e => e.target.previousSibling.click()}>
-            Change File
-          </Button>
+          <button
+            type="button"
+            style={buttonStyles}
+            onClick={recording ? stopRecording : startRecording}
+          >
+            <FontAwesomeIcon icon={recording ? faStop : faMicrophone} />
+          </button>
         </div>
-      ) : (
-        <input type="file" accept="audio/*" onChange={handleFileUpload} />
       )}
-      {uploadedFile && (
-        <>
-          <Button onClick={recording ? stopRecording : startRecording}>
-            {recording ? "Stop Recording" : "Start Recording"}
-          </Button>
-          {recordedAudioURL && (
-            <>
-              <h3>Recorded Audio:</h3>
-              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-              <audio src={recordedAudioURL} controls />
-            </>
-          )}
-          {recordedAudioURL && uploadedFile && (
-            <>
-              <h3>Combined Audio:</h3>
-              <Button onClick={combineAndPlay}>Play Combined Audio</Button>
-              <Button onClick={stopCombinedAudio}>Stop Combined Audio</Button>
-            </>
-          )}
-        </>
+      {stage === 2 && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <div>
+            {recordedAudioURL && (
+              <>
+                {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                <audio src={recordedAudioURL} controls />
+              </>
+            )}
+          </div>
+          <div>
+            {recordedAudioURL && uploadedFile && (
+              <Button onClick={togglePlayStop}>
+                <FontAwesomeIcon icon={playing ? faStop : faPlay} />
+              </Button>
+            )}
+          </div>
+          <AudioRecorderStorage
+            audioBuffer={combinedAudioBuffer}
+            userData={userData}
+          />
+        </div>
       )}
-      <AudioRecorderStorage
-        audioBuffer={combinedAudioBuffer}
-        userData={userData}
-      />
     </CircleModal>
   );
 }

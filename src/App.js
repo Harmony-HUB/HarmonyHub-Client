@@ -11,12 +11,12 @@ import AudioRecorder from "./components/AudioRecorder";
 
 const Header = styled.header`
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   width: 88%;
   height: 15%;
   padding: 1rem 2rem;
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
 `;
@@ -90,27 +90,30 @@ function App() {
   return (
     <div>
       <Container>
-        <Header>
-          <Button onClick={openSongsListModal}>My Songs List</Button>
-          {isLoggedIn ? (
-            <Logout onLogout={handleLogout} />
-          ) : (
-            <Login onLogin={handleLogin} />
-          )}
-          <Button onClick={openCircleModal}>Open Circle Modal</Button>
-        </Header>
         <Title>Harmony HUB</Title>
+        <Header>
+          {isLoggedIn && (
+            <div>
+              <Button onClick={openSongsListModal}>My Songs List</Button>
+              <Button onClick={openCircleModal}>노래 녹음</Button>
+            </div>
+          )}
+          <div style={{ position: "absolute", right: 0, top: "50%" }}>
+            {isLoggedIn ? (
+              <Logout onLogout={handleLogout} />
+            ) : (
+              <Login onLogin={handleLogin} />
+            )}
+          </div>
+        </Header>
         <MusicEditor userData={userData} />
       </Container>
       <MP3Modal
         isOpen={isSongsListModalOpen}
-        onRequestClose={closeSongsListModal}
+        onClose={closeSongsListModal}
         contentLabel="Songs List Modal"
       >
-        <SongsList
-          isOpen={isSongsListModalOpen}
-          closeModal={closeSongsListModal}
-        />
+        <SongsList closeModal={closeSongsListModal} />
       </MP3Modal>
       <AudioRecorder
         isOpen={IsCircleModalOpen}

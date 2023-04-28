@@ -1,4 +1,4 @@
-import React from "react";
+import { useRef } from "react";
 import ReactDOM from "react-dom";
 import styled from "styled-components";
 
@@ -16,7 +16,8 @@ const CircleModalOverlay = styled.div`
 `;
 
 const CircleModalWrapper = styled.div`
-  background-color: white;
+  background-color: #f8f9fa;
+  color: #333;
   border: 5px solid #555;
   border-radius: 50%;
   padding: 2rem;
@@ -30,25 +31,19 @@ const CircleModalWrapper = styled.div`
   box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
-const CloseButton = styled.button`
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-`;
-
 function CircleModal({ isOpen, onClose, children }) {
   if (!isOpen) return null;
 
+  const wrapperRef = useRef();
+
+  const handleWrapperClick = e => {
+    e.stopPropagation(); // Stop event propagation
+  };
+
   return ReactDOM.createPortal(
-    <CircleModalOverlay>
-      <CircleModalWrapper>
+    <CircleModalOverlay onClick={onClose}>
+      <CircleModalWrapper ref={wrapperRef} onClick={handleWrapperClick}>
         {children}
-        <CloseButton type="button" onClick={onClose}>
-          Close
-        </CloseButton>
       </CircleModalWrapper>
     </CircleModalOverlay>,
     document.getElementById("modal-root")

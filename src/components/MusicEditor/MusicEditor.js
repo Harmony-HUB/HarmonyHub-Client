@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUpload } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUpload,
+  faArrowUp,
+  faArrowDown,
+} from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import { Editor, SelectFileButton, FileInput, BottomBar } from "./styles";
 import AudioPlayer from "../AudioPlayer/AudioPlayer";
@@ -97,43 +101,62 @@ function MusicEditor({ userData }) {
         {audioFiles.map((_, index) => (
           <div key={`field-${index + 3}`} style={{ marginBottom: "15px" }}>
             <div style={{ display: "flex", alignItems: "center" }}>
-              <button
-                type="button"
-                onClick={() => moveAudioPlayer(index, "up")}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  marginRight: "10px",
+                }}
               >
-                Up
-              </button>
-              <button
-                type="button"
-                onClick={() => moveAudioPlayer(index, "down")}
-              >
-                Down
-              </button>
+                <Button
+                  type="button"
+                  onClick={() => moveAudioPlayer(index, "up")}
+                >
+                  <FontAwesomeIcon icon={faArrowUp} />
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => moveAudioPlayer(index, "down")}
+                >
+                  <FontAwesomeIcon icon={faArrowDown} />
+                </Button>
+              </div>
+              {audioFiles[index]?.isUploaded ? (
+                <div style={{ flex: 1 }}>
+                  <AudioPlayer
+                    file={audioFiles[index].file}
+                    cutWaveformBuffer={audioFiles[index].audioBuffer}
+                    isSelected={selectedAudioPlayerIndex === index}
+                    userData={userData}
+                    audioPlayedId={index}
+                  />
+                </div>
+              ) : null}
             </div>
-            {audioFiles[index]?.isUploaded ? (
-              <AudioPlayer
-                file={audioFiles[index].file}
-                cutWaveformBuffer={audioFiles[index].audioBuffer}
-                isSelected={selectedAudioPlayerIndex === index}
-                userData={userData}
-                audioPlayedId={index}
-              />
-            ) : null}
           </div>
         ))}
       </div>
       <BottomBar>
-        <SelectFileButton>
-          <FontAwesomeIcon icon={faUpload} /> 파일 선택
-          <FileInput type="file" onChange={handleFileChange} multiple />
-        </SelectFileButton>
-        <Button onClick={handleMergeAudioClick} style={{ marginRight: "10px" }}>
-          합치기
-        </Button>
-        <AudioStorage userData={userData} audioBuffer={combinedAudioBuffer}>
-          저장하기
-        </AudioStorage>
-        <DownloadAudio audioBuffer={combinedAudioBuffer} />
+        <div>
+          <SelectFileButton>
+            <FontAwesomeIcon icon={faUpload} /> 파일 선택
+            <FileInput type="file" onChange={handleFileChange} />
+          </SelectFileButton>
+        </div>
+        <div>
+          {audioFiles.length >= 2 && (
+            <Button
+              onClick={handleMergeAudioClick}
+              style={{ marginRight: "10px" }}
+            >
+              오디오 결합
+            </Button>
+          )}
+        </div>
+        <div>
+          <AudioStorage userData={userData} audioBuffer={combinedAudioBuffer} />
+          <DownloadAudio audioBuffer={combinedAudioBuffer} />
+        </div>
       </BottomBar>
     </Editor>
   );

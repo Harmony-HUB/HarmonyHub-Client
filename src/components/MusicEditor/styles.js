@@ -14,6 +14,10 @@ export const Editor = styled.div`
   border-radius: 4px;
   overflow-y: auto;
   margin-top: 100px;
+
+  @media (max-width: 768px) {
+    margin-top: 50px;
+  }
 `;
 
 export const SelectFileButton = styled.label`
@@ -53,7 +57,7 @@ export const FieldWrapper = styled.div`
 
 export const BottomBar = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   position: fixed;
   bottom: 0;
@@ -62,6 +66,10 @@ export const BottomBar = styled.div`
   padding: 10px;
   background-color: #f8f9fa;
   border-top: 1px solid #dee2e6;
+
+  @media (max-width: 768px) {
+    padding: 5px;
+  }
 `;
 
 export const SideBar = styled.div``;
@@ -78,4 +86,8 @@ export const StyledSidebar = styled.div`
   overflow-y: auto;
   padding: 20px;
   z-index: 10;
+
+  @media (max-width: 768px) {
+    width: 200px;
+  }
 `;

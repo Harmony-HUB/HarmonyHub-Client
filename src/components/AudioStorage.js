@@ -3,8 +3,24 @@ import axios from "axios";
 import * as Tone from "tone";
 import { useSelector } from "react-redux";
 import toWav from "audiobuffer-to-wav";
+import styled from "styled-components";
 import Button from "./common/Button/Button";
 import Modal from "./common/Modal/Modal";
+import Spinner from "./common/Spinner";
+
+const StyledFormContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  h3 {
+    margin-bottom: 8px;
+  }
+
+  input,
+  textarea {
+    margin-bottom: 16px;
+  }
+`;
 
 async function applyAdjustments(buffer, pitch, tempo) {
   return Tone.Offline(async () => {
@@ -26,6 +42,7 @@ function AudioStorage({ audioBuffer, userData, audioPlayedId }) {
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const isModalOpen = () => {
     setShowModal(true);
@@ -37,6 +54,8 @@ function AudioStorage({ audioBuffer, userData, audioPlayedId }) {
 
   const handleSaveAudio = async () => {
     if (!audioBuffer) return;
+
+    setLoading(true);
 
     const adjustedPitch = pitch !== undefined ? pitch - 1 : 0;
     const adjustedTempo = tempo !== undefined ? tempo : 1;
@@ -61,11 +80,15 @@ function AudioStorage({ audioBuffer, userData, audioPlayedId }) {
     formData.append("userEmail", userData.email);
 
     try {
+      const token = localStorage.getItem("access_token");
       const response = await axios.post(
         "http://localhost:3001/uploadAudio",
         formData,
         {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -75,27 +98,33 @@ function AudioStorage({ audioBuffer, userData, audioPlayedId }) {
       }
     } catch (error) {
       console.error("Error uploading audio file:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div>
-      {userData.email && <Button onClick={isModalOpen}>Save Audio</Button>}
+      {userData.email && <Button onClick={isModalOpen}>서버에 저장</Button>}
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
-        <h3>제목을 입력해주세요</h3>
-        <input
-          type="text"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-          placeholder="Title"
-        />
-        <h3>설명을 입력해 주세요</h3>
-        <textarea
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-          placeholder="Description"
-        />
-        <Button onClick={handleSaveAudio}>Save</Button>
+        <StyledFormContainer>
+          <h3>제목을 입력해주세요</h3>
+          <input
+            type="text"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            placeholder="Title"
+          />
+          <h3>설명을 입력해 주세요</h3>
+          <textarea
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            placeholder="Description"
+          />
+        </StyledFormContainer>
+        <Button onClick={handleSaveAudio}>
+          {loading ? <Spinner /> : "Save"}
+        </Button>
       </Modal>
     </div>
   );

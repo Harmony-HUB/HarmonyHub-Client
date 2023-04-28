@@ -5,7 +5,9 @@ import {
   faPause,
   faStop,
   faMinus,
-  faPlus,
+  faHashtag,
+  faBackwardFast,
+  faForwardFast,
 } from "@fortawesome/free-solid-svg-icons";
 import Button from "../common/Button/Button";
 
@@ -43,19 +45,19 @@ function Controls({
     },
     {
       id: "pitch-up-button",
-      icon: faPlus,
+      icon: faHashtag,
       margin: "0 0 0 1rem",
       onClick: () => handlePitchChange(0.1),
     },
     {
       id: "tempo-down-button",
-      icon: faMinus,
+      icon: faBackwardFast,
       margin: "0 0 0 1rem",
       onClick: () => handleTempoChange(-0.1),
     },
     {
       id: "tempo-up-button",
-      icon: faPlus,
+      icon: faForwardFast,
       margin: "0 0 0 1rem",
       onClick: () => handleTempoChange(0.1),
     },

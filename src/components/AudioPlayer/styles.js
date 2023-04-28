@@ -40,6 +40,10 @@ export const AudioPlayerWrapper = styled.div`
   display: flex;
   flex-direction: ${({ orientation }) =>
     orientation === "vertical" ? "column" : "row"};
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 `;
 
 export const VerticalSliderWrapper = styled.div`
@@ -49,6 +53,11 @@ export const VerticalSliderWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
+
+  @media (max-width: 768px) {
+    position: static;
+    align-items: center;
+  }
 `;
 
 export const AudioPlayerContainer = styled.div`
@@ -59,4 +68,16 @@ export const AudioPlayerContainer = styled.div`
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
+`;
+
+export const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 1rem;
 `;

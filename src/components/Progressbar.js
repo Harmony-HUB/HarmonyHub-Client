@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-function ProgressBar({ progressPosition, duration }) {
+function ProgressBar({ duration, progressPosition }) {
   const currentTime = (duration * progressPosition) / 100;
 
   const progressCanvasRef = useRef(null);
