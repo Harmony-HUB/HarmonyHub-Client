@@ -1,9 +1,11 @@
 import styled from "styled-components";
 
-export const SliderContainer = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
+export const VolumeSliderContainer = styled.div`
+  position: absolute;
+  width: 100px;
+  height: 0;
+  overflow: hidden;
+  transition: height 0.2s ease-in-out;
 `;
 
 export const SliderInput = styled.input`
@@ -15,6 +17,9 @@ export const SliderInput = styled.input`
   outline: none;
   opacity: 0.7;
   transition: opacity 0.2s;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.2s linear;
   &:hover {
     opacity: 1;
   }
@@ -33,6 +38,20 @@ export const SliderInput = styled.input`
     border-radius: 50%;
     background: #4caf50;
     cursor: pointer;
+  }
+`;
+
+export const SliderContainer = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+  &:hover ${() => SliderInput} {
+    visibility: visible;
+    opacity: 1;
+  }
+  &:hover ${() => VolumeSliderContainer} {
+    height: 100px;
   }
 `;
 
@@ -80,4 +99,9 @@ export const ButtonContainer = styled.div`
   align-items: center;
   width: 100%;
   margin-top: 1rem;
+`;
+
+export const VolumeIconContainer = styled.div`
+  position: relative;
+  cursor: pointer;
 `;

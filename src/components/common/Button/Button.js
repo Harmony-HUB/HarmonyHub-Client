@@ -9,6 +9,7 @@ function Button({
   fontSize,
   hoverBackgroundColor,
   margin,
+  border,
 }) {
   return (
     <StyledButton
@@ -18,6 +19,7 @@ function Button({
       fontSize={fontSize}
       hoverBackgroundColor={hoverBackgroundColor}
       margin={margin}
+      border={border}
     >
       {children}
     </StyledButton>
@@ -32,16 +34,18 @@ Button.propTypes = {
   fontSize: PropTypes.string,
   hoverBackgroundColor: PropTypes.string,
   margin: PropTypes.string,
+  border: PropTypes.string,
 };
 
 Button.defaultProps = {
   children: null,
   onClick: null,
-  backgroundColor: "#3bd6c6",
-  color: "#fff",
+  backgroundColor: "#fff",
+  color: "#3bd6c6",
   fontSize: "1rem",
   hoverBackgroundColor: "#2bc5b4",
   margin: "0.5rem 0",
+  border: "#3bd6c6",
 };
 
 export default Button;

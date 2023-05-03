@@ -8,10 +8,9 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AudioRecorderStorage from "./AudioRecorderStorage";
 import Button from "./common/Button/Button";
-import CircleModal from "./common/Modal/CircleModal";
 import { SelectFileButton, FileInput } from "./MusicEditor/styles";
 
-function AudioRecorder({ isOpen, onClose, userData }) {
+function AudioRecorder({ userData }) {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [recording, setRecording] = useState(false);
   const [recordedChunks, setRecordedChunks] = useState([]);
@@ -173,7 +172,7 @@ function AudioRecorder({ isOpen, onClose, userData }) {
   };
 
   return (
-    <CircleModal isOpen={isOpen} onClose={onClose}>
+    <div>
       {stage === 0 && (
         <SelectFileButton>
           <FontAwesomeIcon icon={faUpload} /> 파일 선택
@@ -233,7 +232,7 @@ function AudioRecorder({ isOpen, onClose, userData }) {
           />
         </div>
       )}
-    </CircleModal>
+    </div>
   );
 }
 

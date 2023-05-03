@@ -23,7 +23,7 @@ function DownloadAudio({ audioBuffer }) {
 
   return (
     <Button onClick={handleDownload} disabled={!audioBuffer}>
-      컴퓨터에 저장하기
+      내 컴퓨터에 저장하기
     </Button>
   );
 }

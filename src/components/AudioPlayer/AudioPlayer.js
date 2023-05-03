@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import * as Tone from "tone";
 import { useSelector, useDispatch } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faScissors, faVolumeUp } from "@fortawesome/free-solid-svg-icons";
 import Waveform from "../Waveform/Waveform";
 import {
   SliderContainer,
   SliderInput,
   AudioPlayerContainer,
   ButtonContainer,
+  VolumeIconContainer,
 } from "./styles";
 import AudioStorage from "../AudioStorage";
 import Button from "../common/Button/Button";
@@ -319,18 +322,22 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
         handleTempoChange={handleTempoChange}
       />
       <SliderContainer>
-        <SliderInput
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value={volume}
-          onChange={handleVolumeChange}
-          style={{ width: "100%" }}
-        />
+        <VolumeIconContainer>
+          <FontAwesomeIcon icon={faVolumeUp} />
+          <SliderInput
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={volume}
+            onChange={handleVolumeChange}
+          />
+        </VolumeIconContainer>
       </SliderContainer>
       <ButtonContainer>
-        <Button onClick={trimAudioBuffer}>Trim Audio</Button>
+        <Button onClick={trimAudioBuffer}>
+          <FontAwesomeIcon icon={faScissors} />
+        </Button>
         <AudioStorage
           audioPlayedId={audioPlayedId}
           userData={userData}
