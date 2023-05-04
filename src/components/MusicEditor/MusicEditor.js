@@ -11,10 +11,20 @@ import AudioPlayer from "../AudioPlayer/AudioPlayer";
 import Button from "../common/Button/Button";
 import AudioStorage from "../AudioStorage";
 import DownloadAudio from "../DownloadAudio";
+import Modal from "../common/Modal/Modal";
 
 function MusicEditor({ userData }) {
   const [audioFiles, setAudioFiles] = useState([]);
   const [combinedAudioBuffer, setCombinedAudioBuffer] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const openModal = () => {
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
 
   const selectedAudioPlayerIndex = null;
 
@@ -75,7 +85,6 @@ function MusicEditor({ userData }) {
     if (nonNullBuffers.length >= 2) {
       setCombinedAudioBuffer(concatenateAudioBuffers(nonNullBuffers));
     }
-    console.log(combinedAudioBuffer);
   };
 
   const moveAudioPlayer = (index, direction) => {
@@ -153,10 +162,16 @@ function MusicEditor({ userData }) {
             </Button>
           )}
         </div>
-        <div>
-          <AudioStorage userData={userData} audioBuffer={combinedAudioBuffer} />
-          <DownloadAudio audioBuffer={combinedAudioBuffer} />
-        </div>
+        <Button onClick={openModal}>Save</Button>
+        {showModal && (
+          <Modal isOpen={showModal} onClose={closeModal}>
+            <AudioStorage
+              userData={userData}
+              audioBuffer={combinedAudioBuffer}
+            />
+            <DownloadAudio audioBuffer={combinedAudioBuffer} />
+          </Modal>
+        )}
       </BottomBar>
     </Editor>
   );

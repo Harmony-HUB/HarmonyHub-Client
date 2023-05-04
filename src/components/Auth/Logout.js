@@ -1,5 +1,4 @@
 import PropTypes from "prop-types";
-import Button from "../common/Button/Button";
 
 function Logout({ onLogout }) {
   const handleGoogleLogin = () => {
@@ -8,7 +7,11 @@ function Logout({ onLogout }) {
 
     onLogout();
   };
-  return <Button onClick={handleGoogleLogin}>Logout</Button>;
+  return (
+    <button type="button" onClick={handleGoogleLogin}>
+      Logout
+    </button>
+  );
 }
 
 export default Logout;

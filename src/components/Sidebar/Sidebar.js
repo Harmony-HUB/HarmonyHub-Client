@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import Logout from "../Auth/Logout";
 import {
   OpenButton,
   OpenButtonSpan,
@@ -10,7 +11,7 @@ import {
   NavLink,
 } from "./styles";
 
-function Sidebar() {
+function Sidebar({ onLogout }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -25,6 +26,7 @@ function Sidebar() {
         </OpenButton>
       )}
       <StyledSidebar isOpen={isOpen}>
+        <Logout onLogout={onLogout} />
         <ToggleButton onClick={toggleSidebar}>
           <ToggleButtonSpan>&#9776;</ToggleButtonSpan>
         </ToggleButton>
@@ -35,7 +37,9 @@ function Sidebar() {
           <NavLink href="">
             <Link to="/">Home</Link>
           </NavLink>
-          <NavLink href="#link3">Link 3</NavLink>
+          <NavLink href="#link3">
+            <Link to="audioplayer">Audio Editor</Link>
+          </NavLink>
           <NavLink href="#link4">Link 4</NavLink>
         </NavLinks>
       </StyledSidebar>

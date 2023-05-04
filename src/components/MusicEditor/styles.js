@@ -8,7 +8,7 @@ export const Editor = styled.div`
   width: 90%;
   height: 80%;
   max-height: calc(100vh - 100px - 50px);
-  padding: 1rem;
+  padding: 0.5rem;
   font-size: 1.2rem;
   border: 1px solid #cccc;
   border-radius: 4px;

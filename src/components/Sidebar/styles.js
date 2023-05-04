@@ -4,7 +4,7 @@ export const StyledSidebar = styled.div`
   position: fixed;
   top: 0;
   left: ${props => (props.isOpen ? "0" : "-200px")};
-  width: 100px;
+  width: 4%;
   height: 100%;
   background-color: #333;
   padding-top: 20px;

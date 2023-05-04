@@ -3,24 +3,24 @@ import styled from "styled-components";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import MusicEditor from "./components/MusicEditor/MusicEditor";
+import AudioPlayer from "./components/AudioPlayer/AudioPlayer";
 import Login from "./components/Auth/Login";
 import MP3Modal from "./components/common/Modal/MP3Modal";
-import Logout from "./components/Auth/Logout";
 import SongsList from "./components/MusicList";
 import Button from "./components/common/Button/Button";
 import AudioRecorder from "./components/AudioRecorder";
 import Sidebar from "./components/Sidebar/Sidebar";
 
 const Header = styled.header`
-  display: absolute;
+  display: flex;
   justify-content: space-between;
   align-items: center;
   width: 88%;
-  height: 80%;
+  height: 5%;
   padding: 1rem 2rem;
-  position: absolute;
   top: 0;
   left: 0;
+  position: relative;
 `;
 
 const Container = styled.div`
@@ -36,6 +36,12 @@ const Title = styled.h1`
   font-size: 2.5rem;
   color: #3bd6c6;
   margin-bottom: 1rem;
+`;
+
+const MyMusicButton = styled.div`
+  position: absolute;
+  top: 10%;
+  right: 5%;
 `;
 
 function App() {
@@ -80,25 +86,15 @@ function App() {
     };
   }, []);
 
-  return (
-    <Router>
-      <div>
-        <Container>
-          <Title>Harmony HUB</Title>
+  const renderContent = () => {
+    if (isLoggedIn) {
+      return (
+        <>
           <Header>
-            <Sidebar />
-            {isLoggedIn && (
-              <div>
-                <Button onClick={openSongsListModal}>My Songs List</Button>
-              </div>
-            )}
-            <div style={{ position: "absolute", right: 0, top: "50%" }}>
-              {isLoggedIn ? (
-                <Logout onLogout={handleLogout} />
-              ) : (
-                <Login onLogin={handleLogin} />
-              )}
-            </div>
+            <Sidebar onLogout={handleLogout} />
+            <MyMusicButton>
+              <Button onClick={openSongsListModal}>내 음악</Button>
+            </MyMusicButton>
           </Header>
           <Routes>
             <Route
@@ -106,8 +102,30 @@ function App() {
               element={<AudioRecorder userData={userData} />}
             />
             <Route path="/" element={<MusicEditor userData={userData} />} />
+            <Route
+              path="audioplayer"
+              element={<AudioPlayer userData={userData} />}
+            />
           </Routes>
-        </Container>
+        </>
+      );
+    }
+    return (
+      <>
+        <div>
+          <Title>Harmony HUB</Title>
+        </div>
+        <div>
+          <Login onLogin={handleLogin} />
+        </div>
+      </>
+    );
+  };
+
+  return (
+    <Router>
+      <div>
+        <Container>{renderContent()}</Container>
         <MP3Modal
           isOpen={isSongsListModalOpen}
           onClose={closeSongsListModal}
