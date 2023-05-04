@@ -8,7 +8,7 @@ import Login from "./components/Auth/Login";
 import MP3Modal from "./components/common/Modal/MP3Modal";
 import SongsList from "./components/MusicList";
 import Button from "./components/common/Button/Button";
-import AudioRecorder from "./components/AudioRecorder";
+import AudioRecorder from "./components/Recorder/AudioRecorder";
 import Sidebar from "./components/Sidebar/Sidebar";
 
 const Header = styled.header`

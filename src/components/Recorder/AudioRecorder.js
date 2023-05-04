@@ -6,9 +6,9 @@ import {
   faUpload,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import AudioRecorderStorage from "./AudioRecorderStorage";
-import Button from "./common/Button/Button";
-import { SelectFileButton, FileInput } from "./MusicEditor/styles";
+import AudioRecorderStorage from "../Storage/AudioRecorderStorage";
+import Button from "../common/Button/Button";
+import { SelectFileButton, FileInput } from "../MusicEditor/styles";
 
 function AudioRecorder({ userData }) {
   const [uploadedFile, setUploadedFile] = useState(null);

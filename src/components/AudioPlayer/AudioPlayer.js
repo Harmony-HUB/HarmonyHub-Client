@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import * as Tone from "tone";
+import { getContext, Gain, PitchShift, GrainPlayer } from "tone";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faScissors } from "@fortawesome/free-solid-svg-icons";
 import Waveform from "../Waveform/Waveform";
 import { AudioPlayerContainer, ButtonContainer } from "./styles";
-import AudioStorage from "../AudioStorage";
+import AudioStorage from "../Storage/AudioStorage";
 import Button from "../common/Button/Button";
 import {
   setAudioContext,
@@ -64,9 +64,9 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
   }, [cutWaveformBuffer]);
 
   useEffect(() => {
-    const newAudioContext = Tone.getContext();
-    const gainNode = new Tone.Gain(1).toDestination();
-    const pitchShift = new Tone.PitchShift(0).connect(gainNode);
+    const newAudioContext = getContext();
+    const gainNode = new Gain(1).toDestination();
+    const pitchShift = new PitchShift(0).connect(gainNode);
 
     dispatch(
       setAudioContext({
@@ -115,7 +115,7 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
 
     dispatch(setIsPlaying({ audioPlayedId, isPlaying: true }));
 
-    const newAudioSource = new Tone.GrainPlayer(audioBuffer, () => {
+    const newAudioSource = new GrainPlayer(audioBuffer, () => {
       dispatch(setIsPlaying({ audioPlayedId, isPlaying: false }));
     });
     newAudioSource.connect(audioContext.pitchShift);

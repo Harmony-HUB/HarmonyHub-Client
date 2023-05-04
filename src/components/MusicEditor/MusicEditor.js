@@ -9,8 +9,8 @@ import { useSelector } from "react-redux";
 import { Editor, SelectFileButton, FileInput, BottomBar } from "./styles";
 import AudioPlayer from "../AudioPlayer/AudioPlayer";
 import Button from "../common/Button/Button";
-import AudioStorage from "../AudioStorage";
-import DownloadAudio from "../DownloadAudio";
+import AudioStorage from "../Storage/AudioStorage";
+import DownloadAudio from "../Storage/DownloadAudio";
 import Modal from "../common/Modal/Modal";
 
 function MusicEditor({ userData }) {

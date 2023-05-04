@@ -1,6 +1,6 @@
 import React from "react";
 import wav from "audiobuffer-to-wav";
-import Button from "./common/Button/Button";
+import Button from "../common/Button/Button";
 
 function DownloadAudio({ audioBuffer }) {
   const bufferToWavBlob = buffer => {

@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // import WaveformCanvas from "./styles";
-import ProgressBar from "../Progressbar";
-import WaveSelection from "../Selection";
+import ProgressBar from "../AudioPlayer/Progressbar";
+import WaveSelection from "../AudioPlayer/Selection";
 import {
   setProgressPosition,
   setAudioBuffer,

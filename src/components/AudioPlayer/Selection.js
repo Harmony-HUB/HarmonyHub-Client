@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { setSelectedStart, setSelectedEnd } from "../feature/audioPlayerSlice";
+import {
+  setSelectedStart,
+  setSelectedEnd,
+} from "../../feature/audioPlayerSlice";
 
 const SelectionHandle = styled.div`
   position: absolute;
