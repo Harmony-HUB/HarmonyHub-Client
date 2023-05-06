@@ -31,7 +31,7 @@ function Login({ onLogin }) {
       };
 
       const response = await axios.post(
-        "http://localhost:3001/user",
+        `${process.env.REACT_APP_API_URL}/user`,
         userObject,
         {
           method: "POST",
@@ -52,14 +52,18 @@ function Login({ onLogin }) {
 
       const token = localStorage.getItem("access_token");
       const protectedResponse = await axios.get(
-        "http://localhost:3001/protected",
+        `${process.env.REACT_APP_API_URL}/protected`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(protectedResponse);
+      if (process.env.NODE_ENV !== "production") {
+        console.log(protectedResponse);
+      }
     } catch (error) {
-      console.error("Error logging in with Google", error);
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Error logging in with Google", error);
+      }
     }
   };
 

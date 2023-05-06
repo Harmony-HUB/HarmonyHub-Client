@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import styled from "styled-components";
+import refreshAccessToken from "./Auth/refreshAccessToken";
 
 const SongsListContent = styled.div`
   border-radius: 20px;
@@ -36,16 +37,49 @@ function SongsList() {
 
   useEffect(() => {
     async function fetchSongs() {
+      let newToken;
       try {
         const token = localStorage.getItem("access_token");
-        const response = await axios.get("http://localhost:3001/songs", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/songs`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setSongs(response.data);
       } catch (error) {
-        console.error("Error fetching songs:", error);
+        if (error.response && error.response.status === 403) {
+          newToken = await refreshAccessToken();
+
+          if (!newToken) {
+            if (process.env.NODE_ENV !== "production") {
+              console.error("유효하지 않은 토큰입니다. 다시 로그인 해주세요.");
+            }
+            return;
+          }
+        }
+
+        try {
+          const response = await axios.get(
+            `${process.env.REACT_APP_API_URL}/songs`,
+            {
+              headers: {
+                Authorization: `Bearer ${newToken}`,
+              },
+            }
+          );
+
+          setSongs(response.data);
+        } catch (retryError) {
+          if (process.env.NODE_ENV !== "production") {
+            console.error(
+              "액세스 토큰을 새로 고친 후 음악 리스트를 불러오는 동안 오류가 발생했습니다.",
+              retryError
+            );
+          }
+        }
       }
     }
 

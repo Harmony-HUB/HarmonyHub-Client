@@ -23,7 +23,7 @@ import {
   // handleDroppedWaveform,
 } from "../../feature/audioPlayerSlice";
 // import VerticalSlider from "../VerticalSlider";
-import Controls from "./Control";
+import Controls from "./Controls";
 
 function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
   // const [fadeIn, setFadeIn] = useState(0);
