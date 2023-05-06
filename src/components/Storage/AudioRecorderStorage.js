@@ -48,7 +48,7 @@ function AudioRecorderStorage({ audioBuffer, userData }) {
     try {
       const token = localStorage.getItem("access_token");
       const response = await axios.post(
-        "http://localhost:3001/uploadAudio",
+        `${process.env.REACT_APP_API_URL}/uploadAudio`,
         formData,
         {
           headers: {

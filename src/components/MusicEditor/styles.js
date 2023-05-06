@@ -71,23 +71,3 @@ export const BottomBar = styled.div`
     padding: 5px;
   }
 `;
-
-export const SideBar = styled.div``;
-
-export const StyledSidebar = styled.div`
-  display: ${({ isVisible }) => (isVisible ? "block" : "none")};
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 250px;
-  height: 100%;
-  background: #f8f9fa;
-  box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
-  overflow-y: auto;
-  padding: 20px;
-  z-index: 10;
-
-  @media (max-width: 768px) {
-    width: 200px;
-  }
-`;
