@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import MusicEditor from "./components/MusicEditor/MusicEditor";
-import AudioPlayer from "./components/AudioPlayer/AudioPlayer";
 import Login from "./components/Auth/Login";
 import MP3Modal from "./components/common/Modal/MP3Modal";
 import SongsList from "./components/MusicList";
@@ -97,14 +96,10 @@ function App() {
             </MyMusicButton>
           </Header>
           <Routes>
+            <Route path="/" element={<MusicEditor userData={userData} />} />
             <Route
               path="/audiorecorder"
               element={<AudioRecorder userData={userData} />}
-            />
-            <Route path="/" element={<MusicEditor userData={userData} />} />
-            <Route
-              path="audioplayer"
-              element={<AudioPlayer userData={userData} />}
             />
           </Routes>
         </>

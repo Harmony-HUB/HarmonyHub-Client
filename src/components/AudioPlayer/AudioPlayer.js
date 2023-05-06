@@ -299,7 +299,7 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
   // };
 
   return (
-    <AudioPlayerContainer>
+    <AudioPlayerContainer data-testid="audio-player-container">
       <Waveform
         file={file}
         waveformColor="#b3ecec"
@@ -318,7 +318,7 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
         handleVolumeChange={handleVolumeChange}
       />
       <ButtonContainer>
-        <Button onClick={trimAudioBuffer}>
+        <Button data-testid="trim-button" onClick={trimAudioBuffer}>
           <FontAwesomeIcon icon={faScissors} />
         </Button>
         <AudioStorage

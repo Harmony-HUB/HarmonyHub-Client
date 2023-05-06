@@ -10,6 +10,7 @@ function Button({
   hoverBackgroundColor,
   margin,
   border,
+  "data-testid": dataTestId,
 }) {
   return (
     <StyledButton
@@ -20,6 +21,7 @@ function Button({
       hoverBackgroundColor={hoverBackgroundColor}
       margin={margin}
       border={border}
+      data-testid={dataTestId}
     >
       {children}
     </StyledButton>

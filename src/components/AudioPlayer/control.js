@@ -81,6 +81,7 @@ function Controls({
       {horizontalButtonsConfig.map(config => (
         <Button
           id={config.id}
+          data-testid={config.id}
           margin={config.margin}
           key={config.id}
           onClick={config.onClick}
@@ -100,6 +101,7 @@ function Controls({
           style={{
             visibility: showSlider ? "visible" : "hidden",
           }}
+          data-testid="volume-slider"
         />
       </div>
     </div>

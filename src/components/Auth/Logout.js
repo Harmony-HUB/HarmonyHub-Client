@@ -1,4 +1,6 @@
 import PropTypes from "prop-types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 function Logout({ onLogout }) {
   const handleGoogleLogin = () => {
@@ -9,7 +11,7 @@ function Logout({ onLogout }) {
   };
   return (
     <button type="button" onClick={handleGoogleLogin}>
-      Logout
+      <FontAwesomeIcon icon={faRightFromBracket} />
     </button>
   );
 }

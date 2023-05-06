@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import styled from "styled-components";
 import Logout from "../Auth/Logout";
 import {
   OpenButton,
@@ -10,6 +11,23 @@ import {
   NavLinks,
   NavLink,
 } from "./styles";
+
+export const StyledLink = styled(RouterLink)`
+  color: inherit;
+  text-decoration: none;
+
+  &:visited {
+    color: inherit;
+  }
+
+  &:hover {
+    color: inherit;
+  }
+
+  &:active {
+    color: inherit;
+  }
+`;
 
 function Sidebar({ onLogout }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,19 +44,16 @@ function Sidebar({ onLogout }) {
         </OpenButton>
       )}
       <StyledSidebar isOpen={isOpen}>
-        <Logout onLogout={onLogout} />
         <ToggleButton onClick={toggleSidebar}>
           <ToggleButtonSpan>&#9776;</ToggleButtonSpan>
         </ToggleButton>
+        <Logout onLogout={onLogout} />
         <NavLinks>
           <NavLink href="">
-            <Link to="/audiorecorder">노래 녹음</Link>
+            <StyledLink to="/">Home</StyledLink>
           </NavLink>
           <NavLink href="">
-            <Link to="/">Home</Link>
-          </NavLink>
-          <NavLink href="#link3">
-            <Link to="audioplayer">Audio Editor</Link>
+            <StyledLink to="/audiorecorder">노래 녹음</StyledLink>
           </NavLink>
           <NavLink href="#link4">Link 4</NavLink>
         </NavLinks>

@@ -6,6 +6,17 @@ jest.mock("tone", () => {
     },
     connect: jest.fn(),
     disconnect: jest.fn(),
+    toDestination: jest.fn(),
+  };
+
+  const mockPitchShift = {
+    toDestination: jest.fn(),
+    connect: jest.fn(),
+  };
+
+  const mockGrainPlayer = {
+    toDestination: jest.fn(),
+    connect: jest.fn(),
   };
 
   const mockContext = {
@@ -17,9 +28,9 @@ jest.mock("tone", () => {
 
   return {
     getContext: jest.fn(() => mockContext),
-    Gain: jest.fn(),
-    PitchShift: jest.fn(),
-    GrainPlayer: jest.fn(),
+    Gain: jest.fn(() => mockGainNode),
+    PitchShift: jest.fn(() => mockPitchShift),
+    GrainPlayer: jest.fn(() => mockGrainPlayer),
   };
 });
 

@@ -125,7 +125,7 @@ function Waveform({
   }, [selectedStart, selectedEnd]);
 
   return (
-    <div style={{ position: "relative" }}>
+    <div data-testid="waveform" style={{ position: "relative" }}>
       <div
         className="waveform-drag-handle"
         ref={drag}
