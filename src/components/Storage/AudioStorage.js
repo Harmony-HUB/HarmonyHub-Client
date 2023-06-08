@@ -144,7 +144,7 @@ function AudioStorage({ audioBuffer, userData, audioPlayedId }) {
 
   return (
     <div>
-      {userData?.email && <Button onClick={isModalOpen}>저장</Button>}
+      {userData.email && <Button onClick={isModalOpen}>저장</Button>}
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
         <StyledFormContainer>
           <h3>제목을 입력해주세요</h3>

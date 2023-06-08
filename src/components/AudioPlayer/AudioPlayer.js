@@ -4,8 +4,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faScissors } from "@fortawesome/free-solid-svg-icons";
 import Waveform from "../Waveform/Waveform";
-import { AudioPlayerContainer, ButtonContainer } from "./styles";
 import AudioStorage from "../Storage/AudioStorage";
+import { AudioPlayerContainer, ButtonContainer } from "./styles";
 import Button from "../common/Button/Button";
 import {
   setAudioContext,
@@ -20,14 +20,10 @@ import {
   setTempo,
   setSelectedStart,
   setSelectedEnd,
-  // handleDroppedWaveform,
 } from "../../feature/audioPlayerSlice";
-// import VerticalSlider from "../VerticalSlider";
 import Controls from "./Controls";
 
 function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
-  // const [fadeIn, setFadeIn] = useState(0);
-  // const [fadeOut, setFadeOut] = useState(0);
   const [isTrimmed, setIsTrimmed] = useState(false);
 
   const {
@@ -92,17 +88,22 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
   };
 
   useEffect(() => {
-    if (isPlaying) {
-      const interval = setInterval(() => {
-        updateProgress();
-      }, 10);
+    let animationFrameId;
 
-      return () => {
-        clearInterval(interval);
-      };
+    const loop = () => {
+      updateProgress();
+      animationFrameId = requestAnimationFrame(loop);
+    };
+
+    if (isPlaying) {
+      loop();
+    } else {
+      updateProgress();
     }
 
-    return updateProgress();
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
   }, [isPlaying]);
 
   const playSound = async () => {
@@ -132,22 +133,6 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
       : (selectedEnd - selectedStart) * audioBuffer.duration - pausedTime;
 
     newAudioSource.start(0, playbackOffset, duration);
-
-    // if (fadeIn > 0) {
-    //   newAudioSource.volume.setValueAtTime(-Infinity, playbackOffset);
-    //   newAudioSource.volume.linearRampToValueAtTime(
-    //     0,
-    //     playbackOffset + fadeIn + duration
-    //   );
-    // }
-
-    // if (fadeOut > 0) {
-    //   newAudioSource.volume.setValueAtTime(0, playbackOffset + duration);
-    //   newAudioSource.volume.linearRampToValueAtTime(
-    //     -Infinity,
-    //     playbackOffset + duration - fadeOut * duration
-    //   );
-    // }
 
     dispatch(setAudioSource({ audioPlayedId, audioSource: newAudioSource }));
     dispatch(
@@ -220,6 +205,24 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
     }
   };
 
+  const copyAudioChannelData = (
+    oldBuffer,
+    newBuffer,
+    channel,
+    startRatio,
+    endRatio
+  ) => {
+    const oldChannelData = oldBuffer.getChannelData(channel);
+    const newChannelData = newBuffer.getChannelData(channel);
+
+    const startSample = Math.floor(startRatio * oldChannelData.length);
+    const endSample = Math.floor(endRatio * oldChannelData.length);
+
+    for (let i = startSample, j = 0; i < endSample; i += 1, j += 1) {
+      newChannelData[j] = oldChannelData[i];
+    }
+  };
+
   const trimAudioBuffer = () => {
     if (!audioBuffer) return;
 
@@ -234,15 +237,13 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
       channel < audioBuffer.numberOfChannels;
       channel += 1
     ) {
-      const oldChannelData = audioBuffer.getChannelData(channel);
-      const newChannelData = newBuffer.getChannelData(channel);
-
-      const startSample = Math.floor(selectedStart * oldChannelData.length);
-      const endSample = Math.floor(selectedEnd * oldChannelData.length);
-
-      for (let i = startSample, j = 0; i < endSample; i += 1, j += 1) {
-        newChannelData[j] = oldChannelData[i];
-      }
+      copyAudioChannelData(
+        audioBuffer,
+        newBuffer,
+        channel,
+        selectedStart,
+        selectedEnd
+      );
     }
 
     dispatch(setAudioBuffer({ audioPlayedId, audioBuffer: newBuffer }));
@@ -287,16 +288,6 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
 
     playSound();
   };
-
-  // const handleFadeInChange = event => {
-  //   const newFadeIn = parseFloat(event.target.value);
-  //   setFadeIn(newFadeIn);
-  // };
-
-  // const handleFadeOutChange = event => {
-  //   const newFadeOut = parseFloat(event.target.value);
-  //   setFadeOut(newFadeOut);
-  // };
 
   return (
     <AudioPlayerContainer data-testid="audio-player-container">
