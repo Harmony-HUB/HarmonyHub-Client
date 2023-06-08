@@ -8,12 +8,12 @@
 - [Usage](#Usage)
 - [Motivation](#Motivation)
 - [Challenge](#Challenge)
-  - [Audio Wave](#1)
+  - [Audio Wave](#1.-Audio-Wave)
     - [사용자가 음원을 업로드 했을 때, 어떻게 음원에 따른 파형을 그릴 수 있을까?](#사용자가-음원을-업로드-했을-때-어떻게-음원에-따른-파형을-그릴-수-있을까?)
-  - [오디오 자르기/붙이기](#2)
+  - [오디오 자르기/붙이기](#2.-오디오자르기-붙이기)
     - [음원의 어떤 속성을 자르고 붙여야 음원이 손상되지 않게 할 수 있을까?](#음원의어떤속성을자르고붙여야음원이손상되지않게할수있을까?)
-  - [Progress Bar](#3)
-    - [음원의 진행상황에 따른 Progress Bar 애니메이션 구현하기.](#음원의진행상황에따른ProgressBar애니메이션구현하기)
+  - [Progress Bar](#3.-Progress-Bar)
+    - [음원의 진행상황에 따른 Progress Bar 애니메이션 구현하기.](#음원의진행상황에따른Progress-Bar애니메이션구현하기)
 
 # Feature
 
