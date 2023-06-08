@@ -54,7 +54,9 @@ function SongsList() {
           newToken = await refreshAccessToken();
 
           if (!newToken) {
-            console.error("유효하지 않은 토큰입니다. 다시 로그인 해주세요.");
+            if (process.env.NODE_ENV !== "production") {
+              console.error("유효하지 않은 토큰입니다. 다시 로그인 해주세요.");
+            }
             return;
           }
         }
@@ -71,10 +73,12 @@ function SongsList() {
 
           setSongs(response.data);
         } catch (retryError) {
-          console.error(
-            "액세스 토큰을 새로 고친 후 음악 리스트를 불러오는 동안 오류가 발생했습니다.",
-            retryError
-          );
+          if (process.env.NODE_ENV !== "production") {
+            console.error(
+              "액세스 토큰을 새로 고친 후 음악 리스트를 불러오는 동안 오류가 발생했습니다.",
+              retryError
+            );
+          }
         }
       }
     }

@@ -68,7 +68,9 @@ function AudioStorage({ audioBuffer, userData, audioPlayedId }) {
     );
 
     if (!adjustedBuffer) {
-      console.error("Error applying adjustments to audio buffer.");
+      if (process.env.NODE_ENV !== "production") {
+        console.error("오디오 버퍼에 조정을 적용하는 중 오류가 발생했습니다.");
+      }
       return;
     }
 
@@ -95,7 +97,6 @@ function AudioStorage({ audioBuffer, userData, audioPlayedId }) {
       );
 
       if (response.status === 200) {
-        console.log("오디오 파일이 성공적으로 업로드 됐습니다.");
         setShowModal(false);
       }
     } catch (error) {
@@ -103,14 +104,16 @@ function AudioStorage({ audioBuffer, userData, audioPlayedId }) {
         newToken = await refreshAccessToken();
 
         if (!newToken) {
-          console.error("유효하지 않은 토큰입니다. 다시 로그인 해주세요.");
+          if (process.env.NODE_ENV !== "production") {
+            console.error("유효하지 않은 토큰입니다. 다시 로그인 해주세요.");
+          }
           return;
         }
       }
 
       try {
         const response = await axios.post(
-          "http://localhost:3001/uploadAudio",
+          `${process.env.REACT_APP_API_URL}/uploadAudio`,
           formData,
           {
             headers: {
@@ -121,14 +124,18 @@ function AudioStorage({ audioBuffer, userData, audioPlayedId }) {
         );
 
         if (response.status === 200) {
-          console.log("오디오 파일이 성공적으로 업로드 됐습니다.");
+          if (process.env.NODE_ENV !== "production") {
+            console.log("오디오 파일이 성공적으로 업로드 됐습니다.");
+          }
           setShowModal(false);
         }
       } catch (retryError) {
-        console.error(
-          "액세스 토큰을 새로 고친 후 오디오 파일을 업로드하는 동안 오류가 발생했습니다.",
-          retryError
-        );
+        if (process.env.NODE_ENV !== "production") {
+          console.error(
+            "액세스 토큰을 새로 고친 후 오디오 파일을 업로드하는 동안 오류가 발생했습니다.",
+            retryError
+          );
+        }
       }
     } finally {
       setLoading(false);

@@ -5,7 +5,9 @@ async function refreshAccessToken() {
     const refreshToken = localStorage.getItem("refresh_token");
 
     if (!refreshToken) {
-      console.error("Refresh token not found. Please log in again.");
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Refresh token not found. Please log in again.");
+      }
       return null;
     }
 
@@ -19,7 +21,9 @@ async function refreshAccessToken() {
     const newAccessToken = response.data.access_token;
     return newAccessToken;
   } catch (error) {
-    console.error("Error refreshing access token:", error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error refreshing access token:", error);
+    }
     return null;
   }
 }

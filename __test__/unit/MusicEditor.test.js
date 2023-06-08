@@ -42,7 +42,7 @@ describe("MusicEditor", () => {
       target: {
         files: [new File([""], "audio-file.mp3", { type: "audio/mpeg" })],
       },
-      absoluteURL: "https://localhost:3000/audio-file.mp3",
+      absoluteURL: `${process.env.REACT_APP_API_URL}/audio-file.mp3`,
     });
 
     expect(screen.getByText("오디오 결합")).toBeInTheDocument();

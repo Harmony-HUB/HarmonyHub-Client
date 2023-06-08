@@ -48,9 +48,11 @@ function MusicEditor({ userData }) {
 
   function concatenateAudioBuffers(buffers) {
     if (buffers.length === 0 || buffers.some(buffer => buffer === null)) {
-      console.error(
-        "Invalid input: buffers array is empty or contains null elements."
-      );
+      if (process.env.NODE_ENV !== "production") {
+        console.error(
+          "Invalid input: buffers array is empty or contains null elements."
+        );
+      }
 
       return null;
     }

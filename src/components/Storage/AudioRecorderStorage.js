@@ -59,11 +59,12 @@ function AudioRecorderStorage({ audioBuffer, userData }) {
       );
 
       if (response.status === 200) {
-        console.log("Audio file uploaded successfully");
         setShowModal(false);
       }
     } catch (error) {
-      console.error("Error uploading audio file:", error);
+      if (process.env.NODE_ENV !== "production") {
+        console.error("업로드 도중 오류가 발생했습니다.", error);
+      }
     } finally {
       setLoading(false);
     }
