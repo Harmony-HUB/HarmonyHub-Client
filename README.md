@@ -19,6 +19,11 @@
 - [Tone.js 사용 이유](#Tone-js-사용-이유)
 - [Time Line](#Time-Line)
 
+# Preview
+
+![Harmony-HUB](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/a6872f41-930e-42d3-87e8-5f8dbf970ee3)
+
+
 # Motivation
 
 평소 음악을 즐겨들으며 노래를 흥얼흥얼 따라 부르기를 좋아하던 저는 유튜브의 노래방 컨텐츠를 이용하고는 했습니다. 이 컨텐츠를 이용하며 아쉬운점이 있었는데, 너무 노래가 높거나 낮으면 노래방에서 처럼 키를 조절해 노래를 부를 수 없다는것이 아쉬웠습니다. 음원 파일을 갖고있다면 내가 원하는대로 음정을 조절하며 노래를 부를 수 있으면 어떨까? 더 나아가 음원을 내가 원하는 대로 편집 할 수 있으면 어떨까? 라는 생각에서 해당 프로젝트를 기획했습니다.
@@ -183,7 +188,7 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
 
   ### 초기 발생 문제
 
-  #### 1. 샘플링 빈도와 채널 수 일치
+  #### 샘플링 빈도와 채널 수 일치
 
   오디오를 결합하기 위해서는 각 음원의 오디오 버퍼 객체 안에 있는 샘플링 빈도와, 채널의 수가 일치해야 합니다. 초기에 mp3음원끼리 결합을 시도 할 때는 문제는 발생하지 않았습니다. 음악 파일의 샘플링 빈도는 표준적으로 44.1kHz(44100Hz)가 많이 사용되기 때문에, 개발 하면서 사용했던 파일들은 모두 결합이 원활하게 되었기 때문입니다. 하지만 녹음 기능을 구현 했을 때, 녹음 파일과 음원파일을 결합하려고 할 때 샘플링 빈도가 일치하지 않아 문제가 발생했습니다.
   
@@ -275,7 +280,6 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
 
   - 음원의 재생 상태가 변경될 때마다 `ProgressBar`의 위치를 업데이트 해야 했습니다. 이를 위해 음원의 재생 상태를 추적하고, 상태가 변경될 때마다 `ProgressBar`를 다시 그리는 방식을 사용했습니다. 이를 위해, 현재 재생 위치를 percentage로 계산하고, 이 값을 `ProgressBar` 컴포넌트에 전달하여, 진행 상황에 따라 그릴 위치를 업데이트했습니다.
 
-
 ## 4. 구간 선택
 
 ### Canvas API를 사용하여 구간선택 구현하기.
@@ -354,10 +358,13 @@ const rightHandleX = selectedEnd * width - handleWidth / 2;
 - 2~3 주차: 기능 개발
 - 4 주차: 테스트코드 작성, 발표
 
+# Repository Link
+[Frontend](https://github.com/Harmony-HUB/HarmonyHub-Client)
+
+[Backend](https://github.com/Harmony-HUB/HarmonyHUB-Server)
+
 # 회고
-
-
-
-
-
-
+기획부터 구현까지 혼자서 진행한 프로젝트인 만큼 애정이 큰 프로젝트 였고, 그만큼 아쉬움이 많이 남는 프로젝트라고 생각하고 있습니다.
+WEB AUDIO API라는 새로운 기술을 사용하여 그 전까지 경험해보지 못했던 오디오 처리 중심 개발을 진행한것은 재미있었고 좋은 경험이지만,
+한편으로는 근본적인 코드구조, 클린코드에 대해서 신경을 많이 쓰지 못했던점이 많이 아쉽습니다.
+하지만 저의 개발은 이 프로젝트가 끝이 아니기 때문에 이번 개인 프로젝트 경험이 앞으로의 개발에 많은 도움이 될 것이라고 확신합니다.
