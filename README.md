@@ -34,11 +34,12 @@
 
   ## 1. Audio Wave
 
-  ### 사용자가 음원을 업로드 했을 때, 어떻게 음원에 따른 파형을 그릴 수 있을까?
+  ### 어떻게하면 사용자가 업로드한 음원으로 음원에 따른 파형을 그릴 수 있을까?
 
-  1. 파형을 그릴 수 있는 데이터를 어디서 어떻게 취할 수 있을까?
+  1. 파형을 그릴 수 있는 데이터 취득하기
 
-  - fetch API를 이용해서 사용자가 업로드한 파일을 가져온 후, AudioContext의 decodeAudioData 메서드를 이용하여 가져온 파일을 오디오 버퍼로 변환했습니다.
+  - fetch API를 이용해서 사용자가 업로드한 파일을 가져온 후, AudioContext의 `decodeAudioData` 메서드를 이용하여 가져온 파일을 오디오 버퍼로 변환했습니다.
+  - decodeAudioData는 Web Audio API의 일부로, 인코딩된 오디오 파일 데이터를 AudioBuffer로 디코딩합니다. 이 AudioBuffer는 음원을 다루기 위해 필요한 여러 가지 작업을 수행하는데 사용했습니다.
   
   ```js
   src/Waveform/Waveform.js
@@ -225,6 +226,8 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
 
   ### 음원의 진행상황에 따른 Progress Bar 애니메이션 구현하기.
 
+  ![Progress Bar](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/f3606e85-f038-412d-8e13-3c0e0a5e4481)
+
   ### 1. `setInterval` vs `requestAnimationFrame`
 
   - 처음에는 `setInterval` 함수를 사용하여 `Progress Bar`의 위치를 지속적으로 업데이트하려고 했습니다.
@@ -286,9 +289,11 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
 
 ### Canvas API를 사용하여 구간선택 구현하기.
 
+![구간선택](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/b06f1d58-f9b2-493e-b614-9c5689a7840b)
+
 1. Wave Selection Handles Positioning
 
-문제: 캔버스의 상대적인 위치를 기반으로 선택 핸들의 위치를 계산하는 과정에서 문제가 발생했습니다. 이로 인해 드래그 핸들이 예상한 위치에서 이동하지 않고, 선택 영역이 제대로 표시되지 않는 문제가 발생했습니다.
+초기 문제: 캔버스의 상대적인 위치를 기반으로 선택 핸들의 위치를 계산하는 과정에서 문제가 발생했습니다. 이로 인해 드래그 핸들이 예상한 위치에서 이동하지 않고, 선택 영역이 제대로 표시되지 않는 문제가 발생했습니다.
 ```js
 const leftHandleX = selectedStart * width - handleWidth / 2;
 const rightHandleX = selectedEnd * width - handleWidth / 2;
@@ -305,7 +310,7 @@ const rightHandleX = selectedEnd * width - handleWidth / 2;
 
 2. Mouse Events Handling
 
-문제: 사용자가 드래그를 시작하거나 종료할 때 발생하는 마우스 이벤트를 처리하는 것이 어려웠습니다. 특히, 사용자가 드래그를 시작하거나 종료하는 시점을 정확히 감지하는 것이 중요했습니다.
+초기 문제: 사용자가 드래그를 시작하거나 종료할 때 발생하는 마우스 이벤트를 처리하는 것이 어려웠습니다. 특히, 사용자가 드래그를 시작하거나 종료하는 시점을 정확히 감지하는 것이 중요했습니다.
 
 해결방안: 이 문제를 해결하기 위해, onMouseDown, onMouseMove, onMouseUp 이벤트 핸들러를 사용했습니다. onMouseDown 이벤트에서는 사용자가 드래그를 시작한 시점을 감지하고, onMouseMove 이벤트에서는 사용자가 드래그를 하면서 마우스의 위치를 추적하였습니다. 마지막으로, onMouseUp 이벤트에서는 사용자가 드래그를 끝낸 시점을 감지하였습니다.
 
