@@ -44,20 +44,19 @@
   ```js
   src/Waveform/Waveform.js
   
-      const loadAudioFile = async () => {
-      try {
-        const response = await fetch(file);
-        const audioData = await response.arrayBuffer();
-        const newAudioBuffer = await audioContext.decodeAudioData(audioData);
-        dispatch(
-          setAudioBuffer({ audioPlayedId, audioBuffer: newAudioBuffer })
-        );
-      } catch (error) {
-        if (process.env.NODE_ENV !== "production") {
-          console.error(error);
-        }
+  const loadAudioFile = async () => {
+    try {
+      const response = await fetch(file);
+      const audioData = await response.arrayBuffer();
+      const newAudioBuffer = await audioContext.decodeAudioData(audioData);
+      dispatch(setAudioBuffer({ audioPlayedId, audioBuffer: newAudioBuffer }));
+    } catch (error) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error(error);
       }
-    };
+    }
+  };
+
    ```
   
   - 이 오디오 버퍼는 오디오 데이터의 전체 시간 동안 각 채널에 대한 PCM(Pulse Code Modulation) 데이터 샘플을 제공합니다.
@@ -129,13 +128,13 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
   오디오를 자르는 작업은 **새로운 오디오 버퍼를 생성하고**, 원래의 오디오 버퍼에서 **선택한 부분의 샘플들을 새로운 오디오 버퍼에 복사하는 것으로 진행**됩니다. 선택한 부분의 시작과 끝 위치는 샘플의 인덱스로 결정됩니다. 그런 다음 **새로운 오디오 버퍼가 원래의 오디오를 대체**합니다.
   ```js
       const newBuffer = audioContext.context.createBuffer(
-      audioBuffer.numberOfChannels,
-      Math.floor((selectedEnd - selectedStart) * audioBuffer.length),
-      audioBuffer.sampleRate
-    );
+        audioBuffer.numberOfChannels,
+        Math.floor((selectedEnd - selectedStart) * audioBuffer.length),
+        audioBuffer.sampleRate
+      );  
   ```
   ```js
-    const copyAudioChannelData = (
+  const copyAudioChannelData = (
     oldBuffer,
     newBuffer,
     channel,
@@ -144,14 +143,15 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
   ) => {
     const oldChannelData = oldBuffer.getChannelData(channel);
     const newChannelData = newBuffer.getChannelData(channel);
-
+  
     const startSample = Math.floor(startRatio * oldChannelData.length);
     const endSample = Math.floor(endRatio * oldChannelData.length);
-
+  
     for (let i = startSample, j = 0; i < endSample; i += 1, j += 1) {
       newChannelData[j] = oldChannelData[i];
     }
   };
+
   ```
 
   #### 2. 오디오 붙이기
@@ -169,29 +169,16 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
   3. 버퍼의 총 길이, 채널 수, 샘플 속도를 사용하여 새로운 AudioBuffer를 생성합니다.
   ```js
   const outputBuffer = new AudioBuffer({
-  length: totalLength,
-  numberOfChannels,
-  sampleRate,
+    length: totalLength,
+    numberOfChannels,
+    sampleRate,
   });
   ```
   4. 이제 각 입력 버퍼에 대해 반복하여 작업을 수행합니다. 각 버퍼에서 채널 데이터를 가져와 생성한 AudioBuffer에 복사합니다. 이 때, 각 채널 데이터를 복사할 위치는 이전 버퍼 데이터가 복사된 이후 위치입니다. 마지막으로, 생성된 AudioBuffer를 반환합니다.
-  ```js
-  let currentPosition = 0;
-  buffers.forEach(buffer => {
-  for (let channel = 0; channel < numberOfChannels; channel += 1) {
-    const outputData = outputBuffer.getChannelData(channel);
-    const inputData = buffer.getChannelData(channel);
-    outputData.set(inputData, currentPosition);
-  }
-  currentPosition += buffer.length;
-  });
-  
-  return outputBuffer;
-  ```
 
-  ### 초기 발생 문제
+### 초기 발생 문제
 
-  #### 샘플링 빈도와 채널 수 일치
+#### 샘플링 빈도와 채널 수 일치
 
   오디오를 결합하기 위해서는 각 음원의 오디오 버퍼 객체 안에 있는 샘플링 빈도와, 채널의 수가 일치해야 합니다. 초기에 mp3음원끼리 결합을 시도 할 때는 문제가 발생하지 않았습니다. 음악 파일의 샘플링 빈도는 표준적으로 44.1kHz(44100Hz)가 많이 사용되기 때문에, 개발 하면서 사용했던 파일들은 모두 결합이 원활하게 되었기 때문입니다. 하지만 녹음 기능을 구현 했을 때, 녹음 파일과 음원파일을 결합하려고 할 때 샘플링 빈도가 일치하지 않아 문제가 발생했습니다.
   
@@ -228,23 +215,29 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
 
   ![Progress Bar](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/f3606e85-f038-412d-8e13-3c0e0a5e4481)
 
+
+  ---
+
+  
+
   ### 1. `setInterval` vs `requestAnimationFrame`
 
   - 처음에는 `setInterval` 함수를 사용하여 `Progress Bar`의 위치를 지속적으로 업데이트하려고 했습니다.
   ```js
-    useEffect(() => {
+  useEffect(() => {
     if (isPlaying) {
       const interval = setInterval(() => {
         updateProgress();
       }, 10);
-
+  
       return () => {
         clearInterval(interval);
       };
     }
-
+  
     return updateProgress();
   }, [isPlaying]);
+
   ```
   -  그러나 만약 재생시간이 매우 긴, 예를들어 1시간 이상 정도의 음원 파일을 재생시켰을 때, 재생을 진행할 수록 progress bar와 재생 시간과의 정확도가 부정확하다는 문제를 발견했습니다.
 
@@ -260,7 +253,7 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
 
   저는 이를 해결하기 위해 `requestAnimationFrame` 함수를 사용하여 애니메이션을 최적화하였습니다. 
   ```js
-    useEffect(() => {
+  useEffect(() => {
     let animationFrameId;
 
     const loop = () => {
@@ -291,22 +284,50 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
 
 ![구간선택](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/b06f1d58-f9b2-493e-b614-9c5689a7840b)
 
-1. Wave Selection Handles Positioning
+---
 
-초기 문제: 캔버스의 상대적인 위치를 기반으로 선택 핸들의 위치를 계산하는 과정에서 문제가 발생했습니다. 이로 인해 드래그 핸들이 예상한 위치에서 이동하지 않고, 선택 영역이 제대로 표시되지 않는 문제가 발생했습니다.
-```js
-const leftHandleX = selectedStart * width - handleWidth / 2;
-const rightHandleX = selectedEnd * width - handleWidth / 2;
-```
-- 위의 코드는 선택 영역의 시작과 끝 위치를 계산하기 위해 사용된 코드입니다. selectedStart와 selectedEnd는 선택 영역의 시작과 끝을 캔버스 너비에 대한 상대적인 위치로 나타낸 것으로, 이 값이 항상 0과 1 사이라는 것을 가정하고 있습니다.
+1. 사용자의 마우스 이벤트 정확하게 감지하기.
 
-해결방안: 문제를 해결하기 위해, 캔버스의 너비를 사용하여 상대적 위치를 계산하고 이를 사용하여 핸들의 위치를 설정하였습니다. 이렇게 하면 핸들이 항상 올바른 위치에 표시되고, 사용자가 드래그를 통해 선택 영역을 올바르게 조정할 수 있습니다.
+- 초기 발생 문제
+    사용자가 waveform 캔버스를 클릭 했을 때, startSelection의 핸들만 이동하는 문제 
+
+![Selection Erorr](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/b68a904a-5517-450b-a77b-d41fcb698bba)
+
+- 문제 발생 이유
+
+  handleMouseDown 함수에서 먼저 startDistance에 가장 가까운지 확인하는 로직이 있기 때문입니다. 
+  만약 마우스 클릭 위치가 start 핸들과 end 핸들 사이라면, 가장 먼저 실행되는 `if (startDistance <= threshold)` 조건이 충족되어 start 핸들만 이동하게 됩니다.
+
+- 해결 방안
+
+  #### 임계값 설정
+  
+  `handleMouseDown` 함수에서 `threshold`(임계값)을 설정합니다. 임계값이 없거나 너무 크면 어느 위치에서든 항상 startDistance가 endDistance보다 작거나 같게 되어, 위의 이미지 처럼 start 핸들이
+  항상 이동하게 됩니다. 이로 인해 사용자가 end 핸들을 움직이려 해도 start 핸들이 움직이는 문제가 발생할 수 있습니다.
+  적절한 임계값을 설정하여 사용자가 핸들 주변의 특정 범위 내에서 클릭하면 핸들을 클릭한 것으로 간주되게 했습니다. 이를 통해 사용자의 손의 미세한 흔들림을 보정하고, 사용자 경험을 개선했습니다.
+  
 ```js
-const handleWidth = 6;
-const leftHandleX = selectedStart * width - handleWidth / 2;
-const rightHandleX = selectedEnd * width - handleWidth / 2;
+  const handleMouseDown = event => {
+
+    ...
+
+    const threshold = 50;
+
+    const startDistance = Math.abs(x - leftHandleX);
+    const endDistance = Math.abs(x - rightHandleX);
+
+    if (startDistance <= threshold) {
+      setDragging("start");
+      setSelectionActive(true);
+    } else if (endDistance <= threshold) {
+      setDragging("end");
+      setSelectionActive(true);
+    } else {
+      setDragging(null);
+    }
+  };
+  
 ```
-- 수정한 코드는 handleWidth를 고려하여 핸들의 X 좌표를 계산하고 있습니다. 이를 통해 핸들이 캔버스의 왼쪽 또는 오른쪽 경계를 벗어나는 것을 방지하며, 사용자가 선택 영역을 정확히 조절할 수 있도록 했습니다.
 
 2. Mouse Events Handling
 
