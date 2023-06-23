@@ -288,17 +288,17 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
 
 1. 사용자의 마우스 이벤트 정확하게 감지하기.
 
-- 초기 발생 문제
+- **초기 발생 문제**
     사용자가 waveform 캔버스를 클릭 했을 때, startSelection의 핸들만 이동하는 문제 
 
 ![Selection Erorr](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/b68a904a-5517-450b-a77b-d41fcb698bba)
 
-- 문제 발생 이유
+- **문제 발생 이유**
 
   handleMouseDown 함수에서 먼저 startDistance에 가장 가까운지 확인하는 로직이 있기 때문입니다. 
-  만약 마우스 클릭 위치가 start 핸들과 end 핸들 사이라면, 가장 먼저 실행되는 `if (startDistance <= threshold)` 조건이 충족되어 start 핸들만 이동하게 됩니다.
+  사용자가 start 핸들과 end 핸들 사이의 위치에서 클릭을 하면 항상 startDistance가 endDistance보다 작거나 같아지므로 start 핸들이 이동하게 됩니다. 가장 먼저 실행되는 `if (startDistance <= endDistance)` 조건이 충족되어 start 핸들만 이동하게 됩니다.
 
-- 해결 방안
+- **해결 방안**
 
   #### 임계값 설정
   
@@ -331,9 +331,25 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
 
 2. Mouse Events Handling
 
-초기 문제: 사용자가 드래그를 시작하거나 종료할 때 발생하는 마우스 이벤트를 처리하는 것이 어려웠습니다. 특히, 사용자가 드래그를 시작하거나 종료하는 시점을 정확히 감지하는 것이 중요했습니다.
+- **초기 발생 문제**
 
-해결방안: 이 문제를 해결하기 위해, onMouseDown, onMouseMove, onMouseUp 이벤트 핸들러를 사용했습니다. onMouseDown 이벤트에서는 사용자가 드래그를 시작한 시점을 감지하고, onMouseMove 이벤트에서는 사용자가 드래그를 하면서 마우스의 위치를 추적하였습니다. 마지막으로, onMouseUp 이벤트에서는 사용자가 드래그를 끝낸 시점을 감지하였습니다.
+사용자가 드래그를 시작하거나 종료할 때 발생하는 마우스 이벤트를 처리하는 것이 어려웠습니다. 특히, 사용자가 드래그를 시작하거나 종료하는 시점을 정확히 감지하는 것이 중요했습니다. 그러나 마우스 이벤트를 정확히 처리하지 못하면 사용자의 입력에 따라 예상한 대로 반응하지 않는 문제가 발생했습니다.
+
+- **문제 발생 이유**
+
+마우스 이벤트의 위치 정보는 브라우저 화면 전체에 대한 상대적 위치를 반환하므로, 이 정보를 그대로 사용하면 실제 요소의 위치와 차이가 발생했습니다. 즉, 클릭 이벤트의 위치 정보가 실제로 사용자가 클릭한 요소의 위치와 일치하지 않는 문제가 있었습니다.
+
+- **해결 방안**
+ 
+<img width="769" alt="image" src="https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/8704b037-84fb-4104-b408-8964835cf9f6">
+
+
+이 문제를 해결하기 위해, HTML 요소의 getBoundingClientRect() 메서드를 사용하여 이벤트 발생 위치를 정확히 파악했습니다. 이 메서드는 요소의 위치와 크기에 대한 정보를 제공하며, 이를 이용하여 마우스 이벤트가 발생한 실제 위치를 측정할 수 있었습니다.
+
+<img width="502" alt="image" src="https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/16846db0-b6a5-412c-a9cb-78ab710e1f8d">
+
+getBoundingClientRect()는 선택한 요소의 위치(top, bottom, left, right) 및 크기(width, height) 정보를 담은 DOMRect 객체를 반환합니다. 그리고 이 DOMRect 객체의 left 프로퍼티는 요소의 왼쪽 경계의 위치를 반환합니다. 따라서 이벤트가 발생한 클라이언트 x 좌표에서 요소의 왼쪽 경계 위치를 뺌으로써, 마우스 이벤트가 요소 내에서 어디에서 발생했는지를 정확히 계산할 수 있었습니다.
+
 
 # Feature
 
