@@ -28,7 +28,7 @@
 
 # Motivation
 
-평소 음악을 즐겨들으며 노래를 흥얼흥얼 따라 부르기를 좋아하던 저는 유튜브의 노래방 컨텐츠를 이용하고는 했습니다. 이 컨텐츠를 이용하며 아쉬운점이 있었는데, 너무 노래가 높거나 낮으면 노래방에서 처럼 키를 조절해 노래를 부를 수 없다는것이 아쉬웠습니다. 음원 파일을 갖고있다면 내가 원하는대로 음정을 조절하며 노래를 부를 수 있으면 어떨까? 더 나아가 음원을 내가 원하는 대로 편집 할 수 있으면 어떨까? 라는 생각에서 해당 프로젝트를 기획했습니다.
+평소 음악을 즐겨 들으며 노래를 따라 부르기를 좋아하던 저는 유튜브의 노래방 컨텐츠를 이용하고는 했습니다. 이 컨텐츠를 이용하며 아쉬운점이 있었는데, 너무 노래가 높거나 낮으면 노래방에서 처럼 키를 조절해 노래를 부를 수 없다는것이 아쉬웠습니다. 음원 파일을 갖고있다면 내가 원하는대로 음정을 조절하며 노래를 부를 수 있으면 어떨까? 더 나아가 음원을 내가 원하는 대로 편집 할 수 있으면 어떨까? 라는 생각에서 해당 프로젝트를 기획했습니다.
 
 # Challenge
 
@@ -40,6 +40,7 @@
 
   - fetch API를 이용해서 사용자가 업로드한 파일을 가져온 후, AudioContext의 `decodeAudioData` 메서드를 이용하여 가져온 파일을 오디오 버퍼로 변환했습니다.
   - decodeAudioData는 Web Audio API의 일부로, 인코딩된 오디오 파일 데이터를 AudioBuffer로 디코딩합니다. 이 AudioBuffer는 음원을 다루기 위해 필요한 여러 가지 작업을 수행하는데 사용했습니다.
+  - 이 오디오 버퍼는 오디오 데이터의 전체 시간 동안 각 채널에 대한 PCM(Pulse Code Modulation) 데이터 샘플을 제공합니다.
   
   ```js
   src/Waveform/Waveform.js
@@ -58,17 +59,15 @@
   };
 
    ```
-  
-  - 이 오디오 버퍼는 오디오 데이터의 전체 시간 동안 각 채널에 대한 PCM(Pulse Code Modulation) 데이터 샘플을 제공합니다.
 
-- 샘플 "샘플"이라는 용어는 디지털 오디오 처리에 널리 사용되며, 이는 아날로그 신호를 디지털 형태로 변환할 때 특정 시간 간격으로 측정한 신호의 강도를 나타냅니다. 오디오 데이터는 여러 샘플들의 연속적인 시퀀스로 구성되어 있습니다. 각 샘플은 특정 시간에 음향 파동의 강도를 나타냅니다
+- "샘플"이라는 용어는 디지털 오디오 처리에 널리 사용되며, 이는 아날로그 신호를 디지털 형태로 변환할 때 특정 시간 간격으로 측정한 신호의 강도를 나타냅니다. 오디오 데이터는 여러 샘플들의 연속적인 시퀀스로 구성되어 있습니다. 각 샘플은 특정 시간에 음향 파동의 강도를 나타냅니다
 
 audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/962983fc-6191-4c61-b367-37f40236639e)
 
 
   2. Waveform 그리기
 
-  - 추출된 오디오 버퍼를 가지고 나서 웨이브폼을 그리는 작업을 수행하였습니다. 이를 위해 canvas API를 사용하였습니다. 오디오 버퍼의 각 샘플 데이터를 순회하면서 해당 샘플의 최대 및 최소 값을 찾고, 그 값을 캔버스에 선으로 그려 웨이브폼을 생성하였습니다.
+  - 추출된 오디오 버퍼를 가지고 나서 웨이브폼을 그리는 작업을 수행하였습니다. 이를 위해 Canvas API를 사용하였습니다. 오디오 버퍼의 각 샘플 데이터를 순회하면서 해당 샘플의 최대 및 최소 값을 찾고, 그 값을 캔버스에 선으로 그려 웨이브폼을 생성하였습니다.
 
 ```js
     const data = audioBuffer.getChannelData(0);
@@ -76,12 +75,12 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
     const amplitude = height / 2;
 ```
 
-- `audioBuffer.getChannelData(0)`를 사용하여 첫 번째 오디오 채널의 PCM 데이터를 가져옵니다. 이 데이터는 배열 형태로 제공되며, 각 요소는 -1과 1 사이의 값입니다. 
+- `audioBuffer.getChannelData(0)`를 사용하여 첫 번째 오디오 채널의 PCM 데이터를 가져왔습니다. 이 데이터는 배열 형태로 제공되며, 각 요소는 -1과 1 사이의 값입니다. 
 
 <img width="280" alt="image" src="https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/681f7776-8b7e-4a64-be47-0f40fac367e1">
 
-- `step`은 화면 너비에 따라 샘플링 빈도를 결정합니다. 
-- `amplitude`는 캔버스 높이의 반으로 설정되며, 웨이브폼이 캔버스 중간에서 상하로 그려지도록 합니다.
+- `step` 변수에는 화면 너비에 따라 샘플링 빈도를 할당했습니다.
+- `amplitude`는 캔버스 높이의 반으로 설정되며, 웨이브폼이 캔버스 중간에서 상하로 그려지도록 하여 상하 대칭구조를 이룰 수 있도록 그림을 그렸습니다.
   
   ```js
     let maxAmplitude = 0;
@@ -95,7 +94,7 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
 
 `scaleFactor` 적용 전
 
-<img width="650" alt="image" src="https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/6b80b81c-c9f2-49af-89f5-78fca81aa2b1">
+![image](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/ef7fa619-c5d2-4011-9361-96c2934ee8fa)
 
 
 
@@ -119,6 +118,8 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
 ```
 - 캔버스의 각 픽셀에 대해, step만큼 샘플링한 데이터에서 최소값과 최대값을 찾습니다. 이 값들은 웨이브폼을 그릴 때 해당 픽셀의 상하한을 결정합니다. x는 현재 위치를 캔버스의 너비로 정규화한 값입니다.
 
+  ---
+
   ## 2. 오디오 자르기/붙이기
 
   ### 음원의 어떤 속성을 자르고 붙여야 음원이 손상되지 않게 할 수 있을까?
@@ -133,32 +134,12 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
         audioBuffer.sampleRate
       );  
   ```
-  ```js
-  const copyAudioChannelData = (
-    oldBuffer,
-    newBuffer,
-    channel,
-    startRatio,
-    endRatio
-  ) => {
-    const oldChannelData = oldBuffer.getChannelData(channel);
-    const newChannelData = newBuffer.getChannelData(channel);
-  
-    const startSample = Math.floor(startRatio * oldChannelData.length);
-    const endSample = Math.floor(endRatio * oldChannelData.length);
-  
-    for (let i = startSample, j = 0; i < endSample; i += 1, j += 1) {
-      newChannelData[j] = oldChannelData[i];
-    }
-  };
-
-  ```
 
   #### 2. 오디오 붙이기
 
   오디오를 붙이는 작업도 비슷한 과정을 거쳤습니다. 두 개 이상의 오디오 버퍼를 합치려면, **새로운 오디오 버퍼를 생성하고 각 오디오 버퍼의 샘플들을 순서대로 새로운 버퍼에 복사**합니다.
   
-  1. 첫 번째 버퍼에서 필요한 정보인 채널 수와 샘플 속도를 추출합니다. 이는 모든 AudioBuffer가 동일한 속성을 가지고 있다는 가정하에 사용됩니다.
+  1. 첫 번째 버퍼에서 필요한 정보인 채널 수와 샘플 속도를 추출합니다. 이는 모든 AudioBuffer가 동일한 속성을 가지고 있다는 가정하에 사용했습니다. 이에 대한 이유는 아래 [샘플링 빈도와 채널 수 일치](#샘플링-빈도와-채널-수-일치)에서 설명합니다.
   ```js
   const { numberOfChannels, sampleRate } = buffers[0];
   ```
@@ -176,13 +157,17 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
   ```
   4. 이제 각 입력 버퍼에 대해 반복하여 작업을 수행합니다. 각 버퍼에서 채널 데이터를 가져와 생성한 AudioBuffer에 복사합니다. 이 때, 각 채널 데이터를 복사할 위치는 이전 버퍼 데이터가 복사된 이후 위치입니다. 마지막으로, 생성된 AudioBuffer를 반환합니다.
 
-### 초기 발생 문제
+**초기 발생 문제**
 
-#### 샘플링 빈도와 채널 수 일치
+음원의 결합은 문제없이 되는 반면, MediaRecorder를 이용한 녹음 데이터와 일반 음원 데이터를 결합하려고 할 때 결합이 제대로 되지 않는 문제 발생.
 
-  오디오를 결합하기 위해서는 각 음원의 오디오 버퍼 객체 안에 있는 샘플링 빈도와, 채널의 수가 일치해야 합니다. 초기에 mp3음원끼리 결합을 시도 할 때는 문제가 발생하지 않았습니다. 음악 파일의 샘플링 빈도는 표준적으로 44.1kHz(44100Hz)가 많이 사용되기 때문에, 개발 하면서 사용했던 파일들은 모두 결합이 원활하게 되었기 때문입니다. 하지만 녹음 기능을 구현 했을 때, 녹음 파일과 음원파일을 결합하려고 할 때 샘플링 빈도가 일치하지 않아 문제가 발생했습니다.
-  
-  이 문제를 해결하기 위해, 각 오디오 클립을 별도의 AudioBuffer에 로드하고 동일한 AudioContext에서 재생하는 방식을 사용하였습니다. 이 방식을 통해, 각 오디오 버퍼의 샘플링 레이트가 서로 다르더라도 AudioContext가 이를 적절하게 처리하여 오디오 클립을 정상적으로 재생할 수 있게 되었습니다.
+**문제 원인**
+
+오디오를 결합하기 위해서는 각 음원의 오디오 버퍼 객체 안에 있는 샘플링 빈도와, 채널의 수가 일치해야 합니다. 초기에 일반 음원끼리 결합을 시도 할 때는 문제가 발생하지 않았습니다. 음악 파일의 샘플링 빈도는 표준적으로 44.1kHz(44100Hz)가 많이 사용되기 때문에, 개발 하면서 사용했던 파일들은 모두 결합이 원활하게 되었기 때문입니다. 하지만 녹음 기능을 구현 했을 때, 녹음 파일과 음원파일을 결합하려고 할 때 샘플링 빈도가 일치하지 않아 문제가 발생했습니다.
+
+  **해결 방안**
+
+이 문제를 해결하기 위해, 각 오디오 클립을 별도의 AudioBuffer에 로드하고 동일한 AudioContext에서 재생하는 방식을 사용하였습니다. 이 방식을 통해, 각 오디오 버퍼의 샘플링 레이트가 서로 다르더라도 AudioContext가 이를 적절하게 처리하여 오디오 클립을 정상적으로 재생할 수 있게 되었습니다.
   
   1. 재생 버퍼 생성 (uploadedBuffer와 recordedBuffer 중 더 긴 길이로 생성)
   ```js
@@ -209,15 +194,13 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
   bufferSource.start();
   ```
 
+---
+
   ## 3. `Progress Bar`
 
   ### 음원의 진행상황에 따른 Progress Bar 애니메이션 구현하기.
 
   ![Progress Bar](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/f3606e85-f038-412d-8e13-3c0e0a5e4481)
-
-
-  ---
-
   
 
   ### 1. `setInterval` vs `requestAnimationFrame`
@@ -276,7 +259,14 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
 
   ### 2. 음원의 진행률에 따른 `ProgressBar`를 `Waveform`위에 정확하게 그리기
 
-  - 음원의 재생 상태가 변경될 때마다 `ProgressBar`의 위치를 업데이트 해야 했습니다. 이를 위해 음원의 재생 상태를 추적하고, 상태가 변경될 때마다 `ProgressBar`를 다시 그리는 방식을 사용했습니다. 이를 위해, 현재 재생 위치를 percentage로 계산하고, 이 값을 `ProgressBar` 컴포넌트에 전달하여, 진행 상황에 따라 그릴 위치를 업데이트했습니다.
+  - 음원의 진행 상황에 따른 ProgressBar를 Waveform 위에 정확하게 그리기 위한 구현 전략에 대해 설명하겠습니다. 이 작업은 두 가지 주요 부분으로 나눌 수 있습니다: ProgressBar의 위치를 계산하고 업데이트하는 것과 실제 ProgressBar를 그리는 것입니다.
+
+  - 첫 번째 단계에서는 음원의 현재 재생 위치를 계산합니다. AudioContext의 `currentTime`을 사용해 현재 재생 위치를 파악합니다. 이 재생 위치는 `startTime`과 `pausedTime`을 빼서 계산하였고, 이 값은 음원의 총 길이에 대한 퍼센트로 변환 했습니다. 이렇게 계산된 퍼센트는 전체 ProgressBar의 위치를 나타내게 됩니다.
+  - 음원의 재생 상태가 변경될 때마다 이 updateProgress 함수를 호출하여 현재 진행률을 계산하고, 이를 상태로 저장했습니다. 이는 오디오 재생이 시작되거나 재생 위치가 변경될 때마다 발생하므로, ProgressBar는 항상 음원의 현재 재생 위치를 정확하게 반영할 수 있습니다.
+
+  - 두 번째 단계는 실제로 ProgressBar를 그리는 것입니다. 이 작업은 `drawProgress` 함수에서 이루어집니다. 이 함수는 현재 진행률을 기반으로 캔버스 위에 선을 그립니다. ProgressBar의 위치는 **캔버스의 너비와 현재 진행률(퍼센트)을 곱하여 계산**되며, 이 값은 선을 그리는 시작점(x 좌표)이 됩니다.
+
+    ---
 
 ## 4. 구간 선택
 
