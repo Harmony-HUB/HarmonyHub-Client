@@ -8,11 +8,11 @@ import {
 
 const SelectionHandle = styled.div`
   position: absolute;
-  top: -5%;
+  top: -10px;
   width: 10px;
-  height: 100%;
+  height: 120px;
   cursor: col-resize;
-  z-index: 1000;
+  z-index: 1px;
   background-color: #6bb9f0;
   border: 1px solid white;
   box-sizing: border-box;
@@ -28,7 +28,7 @@ const SelectionHandleRight = styled(SelectionHandle)`
   right: -5px;
 `;
 
-function WaveSelection({ setSelectionActive, audioPlayedId }) {
+function WaveSelection({ audioPlayedId }) {
   const selectionCanvasRef = useRef(null);
   const [dragging, setDragging] = useState(null);
   const dispatch = useDispatch();
@@ -70,36 +70,25 @@ function WaveSelection({ setSelectionActive, audioPlayedId }) {
     ctx.stroke();
   };
 
-  const handleMouseDown = (event, handleType) => {
+  const handleMouseDown = event => {
     const canvas = selectionCanvasRef.current;
     const rect = canvas.getBoundingClientRect();
+    console.log(rect);
     const x = event.clientX - rect.left;
 
     const handleWidth = 4;
     const leftHandleX = selectedStart * canvas.width - handleWidth / 2;
     const rightHandleX = selectedEnd * canvas.width - handleWidth / 2;
 
-    const threshold = 10;
+    const threshold = 50;
 
     const startDistance = Math.abs(x - leftHandleX);
     const endDistance = Math.abs(x - rightHandleX);
 
     if (startDistance <= threshold) {
       setDragging("start");
-      setSelectionActive(true);
     } else if (endDistance <= threshold) {
       setDragging("end");
-      setSelectionActive(true);
-    } else {
-      setDragging(null);
-    }
-
-    if (handleType === "left") {
-      setDragging("start");
-      setSelectionActive(true);
-    } else if (handleType === "right") {
-      setDragging("end");
-      setSelectionActive(true);
     } else {
       setDragging(null);
     }
@@ -133,7 +122,6 @@ function WaveSelection({ setSelectionActive, audioPlayedId }) {
   const handleMouseUp = () => {
     if (dragging) {
       setDragging(null);
-      setSelectionActive(false);
     }
   };
 

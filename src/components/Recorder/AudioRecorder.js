@@ -103,11 +103,10 @@ function AudioRecorder({ userData }) {
       bufferSource.start();
       bufferSourceRef.current = bufferSource;
       setPlaying(true);
+    } else if (bufferSourceRef.current) {
+      bufferSourceRef.current.stop();
+      bufferSourceRef.current = null;
     } else {
-      if (bufferSourceRef.current) {
-        bufferSourceRef.current.stop();
-        bufferSourceRef.current = null;
-      }
       setPlaying(false);
     }
   };

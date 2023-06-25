@@ -11,6 +11,8 @@ function ProgressBar({ duration, progressPosition }) {
     const { width, height } = canvas;
     const x = (progressPosition * width) / 100;
 
+    console.log(x);
+
     ctx.clearRect(0, 0, width, height);
     ctx.beginPath();
     ctx.moveTo(x, 0);
@@ -40,7 +42,7 @@ function ProgressBar({ duration, progressPosition }) {
         className="progress-time"
         style={{
           position: "absolute",
-          bottom: 0,
+          bottom: 100,
           left: `${progressPosition}%`,
           transform: "translateX(-50%)",
           color: "white",

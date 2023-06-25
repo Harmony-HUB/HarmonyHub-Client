@@ -1,6 +1,6 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// import WaveformCanvas from "./styles";
 import ProgressBar from "../AudioPlayer/Progressbar";
 import WaveSelection from "../AudioPlayer/Selection";
 import {
@@ -10,29 +10,21 @@ import {
 
 function Waveform({
   file,
-  waveformColor = "#b3ecec",
-  onSelectionChange,
+  waveformColor,
   onWaveformClick,
   isTrimmed,
   audioPlayedId,
-  isDragging,
-  drag,
 }) {
   const waveformCanvasRef = useRef(null);
 
   const [audioContext] = useState(
     new (window.AudioContext || window.webkitAudioContext)()
   );
-  const [selectionActive, setSelectionActive] = useState(false);
 
   const dispatch = useDispatch();
 
-  const {
-    audioBuffer,
-    progressPosition = 0,
-    selectedStart,
-    selectedEnd,
-  } = useSelector(state => state.audioPlayer.instances[audioPlayedId] || {});
+  const { audioBuffer, progressPosition, selectedStart, selectedEnd } =
+    useSelector(state => state.audioPlayer.instances[audioPlayedId] || {});
 
   const reduxAudioBuffer = useSelector(state => state.audioPlayer.audioBuffer);
   const bufferToUse = audioBuffer || reduxAudioBuffer;
@@ -43,6 +35,10 @@ function Waveform({
     const canvas = waveformCanvasRef.current;
     const { width } = canvas;
     const clickX = event.nativeEvent.offsetX;
+    console.log(
+      "🚀 ~ file: Waveform.js:38 ~ handleWaveformClick ~ clickX:",
+      clickX
+    );
     const progressPercentage = (clickX / width) * 100;
     onWaveformClick(progressPercentage);
 
@@ -87,9 +83,11 @@ function Waveform({
     const amplitude = height / 2;
 
     let maxAmplitude = 0;
+
     for (let i = 0; i < data.length; i += 1) {
       maxAmplitude = Math.max(maxAmplitude, Math.abs(data[i]));
     }
+
     const scaleFactor = maxAmplitude > 1 ? 1 / maxAmplitude : 1;
 
     ctx.clearRect(0, 0, width, height);
@@ -101,6 +99,7 @@ function Waveform({
       const min = Math.min.apply(null, data.slice(i * step, (i + 1) * step));
       const max = Math.max.apply(null, data.slice(i * step, (i + 1) * step));
       const x = i / width;
+
       if (isTrimmed) {
         if (x >= selectedStart && x <= selectedEnd) {
           ctx.lineTo(i, (1 + min * scaleFactor) * amplitude);
@@ -120,43 +119,21 @@ function Waveform({
     drawWaveform();
   }, [audioBuffer, bufferToUse]);
 
-  useEffect(() => {
-    if (onSelectionChange) {
-      onSelectionChange(selectedStart, selectedEnd);
-    }
-  }, [selectedStart, selectedEnd]);
-
   return (
-    <div data-testid="waveform" style={{ position: "relative" }}>
-      <div
-        className="waveform-drag-handle"
-        ref={drag}
-        style={{
-          opacity: isDragging ? 0.5 : 1,
-          pointerEvents: selectionActive ? "none" : "auto",
-        }}
-      />
+    <div
+      data-testid="waveform"
+      style={{ position: "relative" }}
+      onClick={handleWaveformClick}
+      onKeyDown={handleWaveformClick}
+    >
       <canvas
         ref={waveformCanvasRef}
         width="1350"
         height="90"
         className="waveform-canvas"
-        onClick={handleWaveformClick}
-        style={{
-          pointerEvents: selectionActive ? "none" : "auto",
-        }}
       />
-      <ProgressBar
-        duration={duration}
-        audioPlayedId={audioPlayedId}
-        progressPosition={progressPosition}
-      />
-      <WaveSelection
-        audioPlayedId={audioPlayedId}
-        onSelectionChange={onSelectionChange}
-        selectionActive={selectionActive}
-        setSelectionActive={setSelectionActive}
-      />
+      <ProgressBar duration={duration} progressPosition={progressPosition} />
+      <WaveSelection audioPlayedId={audioPlayedId} />
     </div>
   );
 }

@@ -82,7 +82,6 @@ function Sidebar({ onLogout }) {
           <NavLink>
             <StyledLink to="/audiorecorder">노래 녹음</StyledLink>
           </NavLink>
-          <NavLink href="#link4">Link 4</NavLink>
         </NavLinks>
       </StyledSidebar>
     </>

@@ -82,6 +82,8 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
     const currentTime =
       audioContext.context.currentTime - startTime + pausedTime;
     const progress = (currentTime / audioBuffer.duration) * 100;
+
+    console.log(progress);
     dispatch(
       setProgressPosition({ audioPlayedId, progressPosition: progress })
     );
@@ -252,23 +254,6 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
     setIsTrimmed(true);
   };
 
-  const handleSelectionChange = (start, end) => {
-    dispatch(setSelectedStart({ audioPlayedId, selectedStart: start }));
-    dispatch(setSelectedEnd({ audioPlayedId, selectedEnd: end }));
-
-    if (audioBuffer) {
-      const newPausedTime = start * audioBuffer.duration;
-      dispatch(setPausedTime({ audioPlayedId, pausedTime: newPausedTime }));
-      const newProgressPosition = start * 100;
-      dispatch(
-        setProgressPosition({
-          audioPlayedId,
-          progressPosition: newProgressPosition,
-        })
-      );
-    }
-  };
-
   const handleWaveformClick = progressPercentage => {
     if (isPlaying) {
       pauseSound();
@@ -285,8 +270,6 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
       const newPausedTime = (progressPercentage / 100) * audioBuffer.duration;
       dispatch(setPausedTime({ audioPlayedId, pausedTime: newPausedTime }));
     }
-
-    playSound();
   };
 
   return (
@@ -294,7 +277,6 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
       <Waveform
         file={file}
         waveformColor="#b3ecec"
-        onSelectionChange={handleSelectionChange}
         onWaveformClick={handleWaveformClick}
         isTrimmed={isTrimmed}
         audioPlayedId={audioPlayedId}
