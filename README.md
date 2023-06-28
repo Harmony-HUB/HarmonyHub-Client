@@ -63,7 +63,7 @@
 
    ```
 
-- "샘플"이라는 용어는 디지털 오디오 처리에 널리 사용되며, 이는 아날로그 신호를 디지털 형태로 변환할 때 특정 시간 간격으로 측정한 신호의 강도를 나타냅니다. 오디오 데이터는 여러 샘플들의 연속적인 시퀀스로 구성되어 있습니다. 각 샘플은 특정 시간에 음향 파동의 강도를 나타냅니다
+- "샘플"이라는 용어는 디지털 오디오 처리에 널리 사용되며, 이는 아날로그 신호를 디지털 형태로 변환할 때 특정 시간 간격으로 측정한 신호의 강도를 나타냅니다. 오디오 데이터는 여러 샘플들의 연속적인 시퀀스로 구성되어 있습니다. 각 샘플은 특정 시간에 음향 파동의 강도를 나타냅니다.
 
 audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/962983fc-6191-4c61-b367-37f40236639e)
 
@@ -166,9 +166,40 @@ audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/as
 
 **문제 원인**
 
-오디오를 결합하기 위해서는 각 음원의 오디오 버퍼 객체 안에 있는 샘플링 빈도와, 채널의 수가 일치해야 합니다. 초기에 일반 음원끼리 결합을 시도 할 때는 문제가 발생하지 않았습니다. 음악 파일의 샘플링 빈도는 표준적으로 44.1kHz(44100Hz)가 많이 사용되기 때문에, 개발 하면서 사용했던 파일들은 모두 결합이 원활하게 되었기 때문입니다. 하지만 녹음 기능을 구현 했을 때, 녹음 파일과 음원파일을 결합하려고 할 때 샘플링 빈도가 일치하지 않아 문제가 발생했습니다.
+### 샘플링 빈도와 채널 수 일치
+
+처음에는 사용자의 녹음 데이터와 업로드한 음원 데이터를 결합 하려고 할 때, 기존 음원 데이터간의 결합 기능을 그대로 사용하려고 했습니다. 하지만 결합이 제대로 이루어지지 않는 문제가 발생했습니다. 그 이유는 오디오를 결합하기 위해서는 각 음원의 오디오 버퍼 객체 안에 있는 샘플링 빈도와, 채널의 수가 일치해야 합니다.
+초기에 일반 음원끼리 결합을 시도 할 때는 문제가 발생하지 않았던 이유는 무엇일까요? 저는 분명 서로 다른 음원들끼리 결합을 시도 했었습니다. 이유는 다음과 같습니다.
+- 음악 파일의 샘플링 빈도는 표준적으로 44.1kHz(44100Hz)가 많이 사용되고, 채널의 수는 2개 입니다.
+일반적으로는 샘플레이트와 채널 숫자의 표준값을 정해놓기 때문에 녹음기능을 구현하기 전 음원 결합에는 문제가 없었던 것 이었습니다. 하지만 `MediaRecorder`를 이용한 녹음 파일은 사용자의 장치에 따라 샘플레이트가 다르기 때문에 문제가 발생했습니다.
 
   **해결 방안**
+
+### 어떻게 서로 다른 음원간 샘플레이트와 채널을 일치 시켜줄 수 있을까?
+
+1. 음원을 임의로 Resampling 하는 방법
+
+   ```js
+   function resampleAudioBuffer(audioBuffer, targetSampleRate) {
+    const numberOfChannels = audioBuffer.numberOfChannels;
+    const oldSampleRate = audioBuffer.sampleRate;
+    const newSampleRate = targetSampleRate;
+    const oldLength = audioBuffer.length;
+    const newLength = oldLength * newSampleRate / oldSampleRate;
+    const result = new OfflineAudioContext(numberOfChannels, newLength, newSampleRate);
+
+    const bufferSource = result.createBufferSource();
+    bufferSource.buffer = audioBuffer;
+
+    bufferSource.connect(result.destination);
+    bufferSource.start();
+
+    return result.startRendering().then((resampledBuffer) => {
+        return resampledBuffer;
+    });
+   }
+   ```
+음원을 리샘플링을 할 경우 결합된 음원의 품질이 낮아진다는것을 발견했습니다. 
 
 이 문제를 해결하기 위해, 각 오디오 클립을 별도의 AudioBuffer에 로드하고 동일한 AudioContext에서 재생하는 방식을 사용하였습니다. 이 방식을 통해, 각 오디오 버퍼의 샘플링 레이트가 서로 다르더라도 AudioContext가 이를 적절하게 처리하여 오디오 클립을 정상적으로 재생할 수 있게 되었습니다.
   
