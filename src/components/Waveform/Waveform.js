@@ -23,22 +23,14 @@ function Waveform({
 
   const dispatch = useDispatch();
 
-  const { audioBuffer, progressPosition, selectedStart, selectedEnd } =
-    useSelector(state => state.audioPlayer.instances[audioPlayedId] || {});
-
-  const reduxAudioBuffer = useSelector(state => state.audioPlayer.audioBuffer);
-  const bufferToUse = audioBuffer || reduxAudioBuffer;
-
-  const duration = audioBuffer ? audioBuffer.duration : 0;
+  const { audioBuffer, selectedStart, selectedEnd } = useSelector(
+    state => state.audioPlayer.instances[audioPlayedId] || {}
+  );
 
   const handleWaveformClick = event => {
     const canvas = waveformCanvasRef.current;
     const { width } = canvas;
     const clickX = event.nativeEvent.offsetX;
-    console.log(
-      "🚀 ~ file: Waveform.js:38 ~ handleWaveformClick ~ clickX:",
-      clickX
-    );
     const progressPercentage = (clickX / width) * 100;
     onWaveformClick(progressPercentage);
 
@@ -117,7 +109,7 @@ function Waveform({
 
   useEffect(() => {
     drawWaveform();
-  }, [audioBuffer, bufferToUse]);
+  }, [audioBuffer]);
 
   return (
     <div
@@ -132,7 +124,7 @@ function Waveform({
         height="90"
         className="waveform-canvas"
       />
-      <ProgressBar duration={duration} progressPosition={progressPosition} />
+      <ProgressBar audioPlayedId={audioPlayedId} />
       <WaveSelection audioPlayedId={audioPlayedId} />
     </div>
   );

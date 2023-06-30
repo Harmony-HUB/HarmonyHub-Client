@@ -98,10 +98,12 @@ function AudioRecorder({ userData }) {
       setCombinedAudioBuffer(combinedBuffer);
 
       const bufferSource = audioContext.current.createBufferSource();
+
       bufferSource.buffer = combinedBuffer;
       bufferSource.connect(audioContext.current.destination);
       bufferSource.start();
       bufferSourceRef.current = bufferSource;
+
       setPlaying(true);
     } else if (bufferSourceRef.current) {
       bufferSourceRef.current.stop();

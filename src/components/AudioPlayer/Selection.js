@@ -71,8 +71,10 @@ function WaveSelection({ audioPlayedId }) {
   };
 
   const handleMouseDown = event => {
+    console.log(event);
     const canvas = selectionCanvasRef.current;
     const rect = canvas.getBoundingClientRect();
+
     console.log(rect);
     const x = event.clientX - rect.left;
 

@@ -83,7 +83,6 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
       audioContext.context.currentTime - startTime + pausedTime;
     const progress = (currentTime / audioBuffer.duration) * 100;
 
-    console.log(progress);
     dispatch(
       setProgressPosition({ audioPlayedId, progressPosition: progress })
     );
@@ -121,6 +120,7 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
     const newAudioSource = new GrainPlayer(audioBuffer, () => {
       dispatch(setIsPlaying({ audioPlayedId, isPlaying: false }));
     });
+
     newAudioSource.connect(audioContext.pitchShift);
     audioContext.gainNode.connect(audioContext.context.destination);
     newAudioSource.playbackRate = tempo;
@@ -226,7 +226,7 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
   };
 
   const trimAudioBuffer = () => {
-    if (!audioBuffer) return;
+    if (!audioBuffer || audioBuffer.duration <= 1) return;
 
     const newBuffer = audioContext.context.createBuffer(
       audioBuffer.numberOfChannels,
@@ -254,30 +254,24 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
     setIsTrimmed(true);
   };
 
-  const handleWaveformClick = progressPercentage => {
+  const onWaveformClick = progressPercentage => {
     if (isPlaying) {
       pauseSound();
     }
 
-    dispatch(
-      setProgressPosition({
-        audioPlayedId,
-        progressPosition: progressPercentage,
-      })
-    );
-
-    if (audioBuffer) {
-      const newPausedTime = (progressPercentage / 100) * audioBuffer.duration;
-      dispatch(setPausedTime({ audioPlayedId, pausedTime: newPausedTime }));
-    }
+    const newPausedTime = (progressPercentage / 100) * audioBuffer.duration;
+    dispatch(setPausedTime({ audioPlayedId, pausedTime: newPausedTime }));
   };
+
+  console.log("Audio Context: ", audioContext);
+  console.log("Audio Buffer: ", audioBuffer);
 
   return (
     <AudioPlayerContainer data-testid="audio-player-container">
       <Waveform
         file={file}
         waveformColor="#b3ecec"
-        onWaveformClick={handleWaveformClick}
+        onWaveformClick={onWaveformClick}
         isTrimmed={isTrimmed}
         audioPlayedId={audioPlayedId}
         volume={volume}
