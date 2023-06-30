@@ -263,9 +263,6 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
     dispatch(setPausedTime({ audioPlayedId, pausedTime: newPausedTime }));
   };
 
-  console.log("Audio Context: ", audioContext);
-  console.log("Audio Buffer: ", audioBuffer);
-
   return (
     <AudioPlayerContainer data-testid="audio-player-container">
       <Waveform

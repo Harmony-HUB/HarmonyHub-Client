@@ -67,21 +67,18 @@ function App() {
   useEffect(() => {
     const auth = getAuth();
 
-    const unsubscribe = onAuthStateChanged(auth, user => {
+    const unSubscribe = onAuthStateChanged(auth, user => {
       if (user) {
         setUserdata({
           uid: user.uid,
           email: user.email,
           displayName: user.displayName,
         });
-        setIsLoggedIn(true);
-      } else {
-        setIsLoggedIn(false);
       }
     });
 
     return () => {
-      unsubscribe();
+      unSubscribe();
     };
   }, []);
 

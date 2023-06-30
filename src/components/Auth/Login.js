@@ -40,8 +40,11 @@ function Login({ onLogin }) {
           withCredentials: true,
         }
       );
-
-      onLogin();
+      if (response.status !== 200) {
+        throw new Error("서버가 원활하지 않습니다. 잠시후 다시 시도해 주세요.");
+      } else {
+        onLogin();
+      }
 
       const { accessToken, refreshToken } = response.data;
 
@@ -57,6 +60,7 @@ function Login({ onLogin }) {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       if (process.env.NODE_ENV !== "production") {
         console.log(protectedResponse);
       }
