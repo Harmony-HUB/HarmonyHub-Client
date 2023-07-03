@@ -1,31 +1,15 @@
 import styled from "styled-components";
 
-export const StyledSidebar = styled.div`
-  position: fixed;
-  top: 0;
-  left: ${props => (props.isOpen ? "0" : "-200px")};
-  width: 4%;
-  height: 100%;
-  background-color: #333;
-  padding-top: 20px;
-  transition: left 0.3s;
-`;
-
 export const ToggleButton = styled.button`
+  position: absolute;
+  top: 10px;
+  margin-left: 5px;
   background-color: transparent;
   border: none;
+  font-size: 30px;
   cursor: pointer;
   outline: none;
-  padding: 0;
-  margin: 0;
-`;
-
-export const ToggleButtonSpan = styled.span`
-  display: block;
-  padding: 10px;
-  color: black;
-  text-decoration: none;
-  text-align: center;
+  z-index: 1;
 `;
 
 export const NavLinks = styled.nav`
@@ -53,6 +37,7 @@ export const NavLink = styled.a`
 
 export const OpenButton = styled.button`
   position: fixed;
+  font-size: 30px;
   top: 10px;
   left: 10px;
   background-color: transparent;

@@ -54,16 +54,10 @@ function Login({ onLogin }) {
       closeModal();
 
       const token = localStorage.getItem("access_token");
-      const protectedResponse = await axios.get(
-        `${process.env.REACT_APP_API_URL}/protected`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
 
-      if (process.env.NODE_ENV !== "production") {
-        console.log(protectedResponse);
-      }
+      await axios.get(`${process.env.REACT_APP_API_URL}/protected`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
     } catch (error) {
       if (process.env.NODE_ENV !== "production") {
         console.error("Error logging in with Google", error);

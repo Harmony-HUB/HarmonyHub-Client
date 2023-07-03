@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { useMediaQuery } from "react-responsive";
 import MusicEditor from "./components/MusicEditor/MusicEditor";
 import Login from "./components/Auth/Login";
 import MP3Modal from "./components/common/Modal/MP3Modal";
@@ -43,10 +44,21 @@ const MyMusicButton = styled.div`
   right: 5%;
 `;
 
+const GuideDesktop = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+`;
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserdata] = useState({});
   const [isSongsListModalOpen, setIsSongsListModalOpen] = useState(false);
+
+  const isDesktopOrLaptop = useMediaQuery({
+    query: "(min-width: 1274px)",
+  });
 
   const handleLogin = () => {
     setIsLoggedIn(true);
@@ -83,6 +95,15 @@ function App() {
   }, []);
 
   const renderContent = () => {
+    if (!isDesktopOrLaptop) {
+      return (
+        <GuideDesktop>
+          <Title>Harmony HUB</Title>
+          <h1>이 사이트는 데스크탑에서 이용할 수 있습니다.</h1>
+        </GuideDesktop>
+      );
+    }
+
     if (isLoggedIn) {
       return (
         <>

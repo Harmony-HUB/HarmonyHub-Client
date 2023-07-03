@@ -19,7 +19,6 @@ const ModalContent = styled.div`
   border-radius: 20px;
   width: 300px;
   height: 450px;
-  max-width: 80%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -34,14 +33,15 @@ const ModalContent = styled.div`
 const ContentArea = styled.div`
   background-color: #000;
   border-radius: 10px;
-  width: 100%;
-  height: 50%;
+  width: 300px;
+  height: 200px;
   margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   overflow-y: auto;
+  cursor: pointer;
 `;
 
 const PlayButtonWrapper = styled.div`

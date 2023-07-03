@@ -23,7 +23,7 @@ const SongsListContent = styled.div`
 
 const SongButton = styled.button`
   background-color: ${({ isSelected }) =>
-    isSelected ? "rgba(355, 355, 355, 0.1)" : ""};
+    isSelected ? "rgba(355, 355, 355, 0.3)" : ""};
   border: none;
   width: 100%;
   text-align: left;

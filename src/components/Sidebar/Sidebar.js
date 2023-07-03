@@ -1,14 +1,10 @@
 import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 import Logout from "../Auth/Logout";
-import {
-  OpenButton,
-  OpenButtonSpan,
-  ToggleButton,
-  ToggleButtonSpan,
-  NavLinks,
-} from "./styles";
+import { OpenButton, ToggleButton, NavLinks } from "./styles";
 
 export const StyledLink = styled(RouterLink)`
   color: inherit;
@@ -30,16 +26,16 @@ export const StyledLink = styled(RouterLink)`
 
 const StyledSidebar = styled.div`
   height: 100%;
-  width: ${({ isOpen }) => (isOpen ? "100px" : "0")};
+  width: 100px;
   position: fixed;
   z-index: 1;
   top: 0;
   left: 0;
   background-color: #f1f1f1;
-  overflow-x: hidden;
-  transition: 0.5s;
+  transition: transform 0.3s ease-in-out;
   padding-top: 60px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+  transform: translateX(${({ isOpen }) => (isOpen ? "0" : "-100px")});
 `;
 
 const NavLink = styled.a`
@@ -67,13 +63,15 @@ function Sidebar({ onLogout }) {
     <>
       {!isOpen && (
         <OpenButton onClick={toggleSidebar}>
-          <OpenButtonSpan>&#9776;</OpenButtonSpan>
+          <FontAwesomeIcon icon={faBars} />
         </OpenButton>
       )}
       <StyledSidebar isOpen={isOpen}>
-        <ToggleButton onClick={toggleSidebar}>
-          <ToggleButtonSpan>&#9776;</ToggleButtonSpan>
-        </ToggleButton>
+        {isOpen && (
+          <ToggleButton onClick={toggleSidebar}>
+            <FontAwesomeIcon icon={faBars} />
+          </ToggleButton>
+        )}
         <Logout onLogout={onLogout} />
         <NavLinks>
           <NavLink>
