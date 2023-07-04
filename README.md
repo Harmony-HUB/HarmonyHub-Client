@@ -25,100 +25,125 @@
 - [Time Line](#Time-Line)
 - [Repository Link](#Repository-Link)
 
-# Preview
+# 미리보기
 
 ![Harmony-HUB](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/a6872f41-930e-42d3-87e8-5f8dbf970ee3)
 
-# Motivation
+# 개발 동기
+첫 개인 프로젝트를 아이템을 준비하며 생각했던건 "내가 좋아하는것과 연관있는걸 해보자!" 였습니다. 평소 음악 듣는것을 좋아하여 음악과 관련된 웹사이트를 개발하고 싶었고 이에 따라 웹 음원 편집 사이트를 개발했습니다.
+다만 일반적인 음원 편집 사이트는 도전적인 요소가 다소 부족할 것이라고 생각해 **외부 라이브러리 의존을 최소화**하여 개발 하는것을 목표로 했습니다.
+# 개발 과정
 
-평소 음악을 즐겨 들으며 노래를 따라 부르기를 좋아하던 저는 유튜브의 노래방 컨텐츠를 이용하고는 했습니다. 이 컨텐츠를 이용하며 아쉬운점이 있었는데, 너무 노래가 높거나 낮으면 노래방에서 처럼 키를 조절해 노래를 부를 수 없다는것이 아쉬웠습니다. 음원 파일을 갖고있다면 내가 원하는대로 음정을 조절하며 노래를 부를 수 있으면 어떨까? 더 나아가 음원을 내가 원하는 대로 편집 할 수 있으면 어떨까? 라는 생각에서 해당 프로젝트를 기획했습니다.
+## 1. 업로드한 음원 시각화
 
-# Challenge
+### 음원 파일을 디지털 데이터로 변환하기
 
-## 1. Audio Wave
+#### decodeAudioData()
 
-### 어떻게하면 사용자가 업로드한 음원으로 음원에 따른 파형을 그릴 수 있을까?
+음원의 정보를 획득해 이에 따른 시각화 작업을 진행하기 위해서는 파일을 데이터로 변환하는 작업이 필요했습니다. WEB Audio API가 제공하는 `decodeAudioData()`를 사용해 오디오 디코딩을 진행했습니다. `decodeAudioData()`의 파라미터가 `arrayBuffer`였기 때문에 `fetch API`의 `arrayBuffer`매서드를 사용해서 음원 파일을 변환했습니다.
 
-1. 파형을 그릴 수 있는 데이터 취득하기
+⬇️ 파일을 디코딩한 오디오 버퍼 데이터 
 
-- fetch API를 이용해서 사용자가 업로드한 파일을 가져온 후, AudioContext의 `decodeAudioData` 메서드를 이용하여 가져온 파일을 오디오 버퍼로 변환했습니다.
-- decodeAudioData는 Web Audio API의 일부로, 인코딩된 오디오 파일 데이터를 AudioBuffer로 디코딩합니다. 이 AudioBuffer는 음원을 다루기 위해 필요한 여러 가지 작업을 수행하는데 사용했습니다.
-- 이 오디오 버퍼는 오디오 데이터의 전체 시간 동안 각 채널에 대한 PCM(Pulse Code Modulation) 데이터 샘플을 제공합니다.
+<img width="216" alt="image" src="https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/92c8c02c-5f64-46f0-8092-db9e6bb763b5">
 
-```js
-src / Waveform / Waveform.js;
+### 어떤 데이터를 사용해 시각화를 해야할까?
 
-const loadAudioFile = async () => {
-  try {
-    const response = await fetch(file);
-    const audioData = await response.arrayBuffer();
-    const newAudioBuffer = await audioContext.decodeAudioData(audioData);
-    dispatch(setAudioBuffer({ audioPlayedId, audioBuffer: newAudioBuffer }));
-  } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(error);
-    }
-  }
-};
-```
+음원이 담고있는 정보는 예상했던 것보다 훨씬 다양했습니다. 음원의 채널 수, 샘플레이트, 음원의 길이 등등. 그러나 일반적으로 생각했을때 음원의 상태를 가장 다이나믹하게 시각화 할 수 있는 음정, 진폭, 볼륨 데이터를 찾을 수 없었습니다.
+분명 MDN 문서에서 "Audio Buffer는 오디오 에셋울 나타낸다." 라고 명시되어있기 때문에 여기에 제가 찾는 데이터가 있다고 생각하고 각각의 속성들 더 나아가 메서드들을 조사해 보았고 그 결과 getChnnelData()를 찾아냈습니다.
 
-- "샘플"이라는 용어는 디지털 오디오 처리에 널리 사용되며, 이는 아날로그 신호를 디지털 형태로 변환할 때 특정 시간 간격으로 측정한 신호의 강도를 나타냅니다. 오디오 데이터는 여러 샘플들의 연속적인 시퀀스로 구성되어 있습니다. 각 샘플은 특정 시간에 음향 파동의 강도를 나타냅니다.
+#### getChnnelData()
 
-audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/962983fc-6191-4c61-b367-37f40236639e)
+`getChnnelData(0)` 는 음원의 0번 쨰 채널의 Float32Array가 반환됩니다. 이 배열의 각 요소는 이 배열의 각 요소는 시간에 따른 소리의 진폭을 나타내는 값을 -1.0 부터 1.0 사이의 값으로 나타냅니다. 이를 통해 시각화 하기 적합한 음원 데이터를 획득할 수 있었습니다.
 
-2. Waveform 그리기
+### 어떤 도구로 오디오 파형을 그리는게 좋을까?
 
-- 추출된 오디오 버퍼를 가지고 나서 웨이브폼을 그리는 작업을 수행하였습니다. 이를 위해 Canvas API를 사용하였습니다. 오디오 버퍼의 각 샘플 데이터를 순회하면서 해당 샘플의 최대 및 최소 값을 찾고, 그 값을 캔버스에 선으로 그려 웨이브폼을 생성하였습니다.
+#### Canvas API VS SVG
 
-```js
-const data = audioBuffer.getChannelData(0);
-const step = Math.ceil(data.length / width);
-const amplitude = height / 2;
-```
+시각화를 위한 도구는 크게 Canvas API, SVG 2가지 였습니다. 프로젝트에 많은 영향을 줄것 같은 요소들을 비교해보니 아래와 같은 표가 나왔고,
 
-- `audioBuffer.getChannelData(0)`를 사용하여 첫 번째 오디오 채널의 PCM 데이터를 가져왔습니다. 이 데이터는 배열 형태로 제공되며, 각 요소는 -1과 1 사이의 값입니다.
+| 기능 / 특징      | Canvas API                                     | SVG                                           |
+| ---------------- | ---------------------------------------------- | --------------------------------------------- |
+| 렌더링 방식      | 비트맵 그래픽                                  | 벡터 그래픽                                   |
+| 그래픽 변경      | 전체 캔버스를 다시 그림                        | 개별 요소의 속성변경 가능                     |
+| 해상도           | 고정                                           | 확장 가능                                     |
+| 대량 데이터 처리 | 효율적 (픽셀 수준의 접근으로 빠른 렌더링 가능) | 비효율적 (DOM 요소가 많아지면 성능 저하 가능) |
+
+이러한 특징을 바탕으로 제 프로젝트에 적용해 보니 아래와 같은 결과가 나왔습니다.
+
+| 기능 / 특징        | Canvas API                                                           | SVG                                                                                                                        |
+| ------------------ | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 오디오 데이터 표현 | 픽셀 단위의 그래픽으로 빠르게 오디오 데이터를 표현할 수 있음         | 복잡한 그래픽 구조를 통해 오디오 데이터를 표현 가능하지만 대규모 데이터에 대한 처리는 느릴 수 있음                         |
+| 이벤트             | 라이브러리나 추가 코드를 이용하여 캔버스 위에서의 위치를 계산해야 함 | 개별 요소에 직접 이벤트 핸들러를 붙일 수 있어 좀 더 세밀한 제어 가능                                                       |
+| 렌더링 성능        | 대규모 데이터 또는 복잡한 애니메이션에 더 우수한 성능을 보임         | 복잡한 형태의 그래픽이나 텍스트를 화면 크기에 따라 깨끗하게 확장시키는 데 우수하지만, 대량의 데이터 처리에는 적합하지 않음 |
+
+이렇게 각 기술의 장단점을 비교해본 결과 Canvas API 사용이라는 결론이 나왔습니다.
+
+이유는 오디오 데이터의 시각화와 대량 데이터 처리에 관한 우수한 성능 때문입니다. 오디오 데이터는 일반적으로 매우 대량이며, 이러한 대량의 데이터를 효과적으로 렌더링하고 변형하는 데 Canvas API가 더 적합합니다.
+
+Canvas API는 비트맵 그래픽을 사용하여 픽셀 수준에서 그래픽을 제어할 수 있습니다. 이는 오디오 파형이나 스펙트럼과 같이 대량의 데이터를 빠르게 렌더링하고 업데이트하는 데 매우 유용합니다.
+
+또한, 오디오 데이터의 **빠른 시각화**가 필요한 프로젝트에서는 성능이 중요한 요소라고 생각했습니다. Canvas는 이러한 대량의 데이터를 신속하게 처리하고 렌더링하는 데 SVG보다 더 뛰어납니다.
+
+반면에, SVG는 벡터 기반의 그래픽을 제공하므로, 복잡한 형태의 그래픽을 그리거나 확장하는 데 더 적합하지만, 대량의 데이터를 처리하는 데는 비효율적일 수 있습니다. 또한, SVG는 개별 요소에 직접 이벤트 핸들러를 추가할 수 있어서 세밀한 제어가 가능하지만, 이 프로젝트의 경우에는 그렇게 세밀한 제어가 필요하지 않았습니다.
+
+따라서, 프로젝트의 주요 요구 사항과 가장 잘 맞는 기술이 Canvas API였습니다.
+
+### Canvas와 Float32Array 조합해서 오디오 파형 시각화하기
+
+ Float32Array의 요소는 특정 시간에 대한 오디오 샘플 값을 나타내며, 이 값은 -1.0에서 1.0 사이의 범위에 있습니다. 이 값은 Waveform에 그릴 특정 포인트의 진폭(amplitude)을 나타냅니다.
+
+⬇️ Float32Array
 
 <img width="280" alt="image" src="https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/681f7776-8b7e-4a64-be47-0f40fac367e1">
+<img width="256" alt="image" src="https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/302a3e6b-2b12-4350-a510-1cc575a5568a">
 
-- `step` 변수에는 화면 너비에 따라 샘플링 빈도를 할당했습니다.
-- `amplitude`는 캔버스 높이의 반으로 설정되며, 웨이브폼이 캔버스 중간에서 상하로 그려지도록 하여 상하 대칭구조를 이룰 수 있도록 그림을 그렸습니다.
+첫번째로 useRef를 이용해서 캔버스의 크기를 측정했습니다. 그리고 캔버스의 x좌표를 음원의 진행시간 y좌표를 소리의 진폭으로 표현했습니다.
 
-  ```js
-  let maxAmplitude = 0;
-  for (let i = 0; i < data.length; i += 1) {
-    maxAmplitude = Math.max(maxAmplitude, Math.abs(data[i]));
-  }
-  const scaleFactor = maxAmplitude > 1 ? 1 / maxAmplitude : 1;
-  ```
+```js
+const canvas = waveformCanvasRef.current;
+const ctx = canvas.getContext("2d");
+const { width, height } = canvas;
 
-  - 코드는 `data` 배열의 모든 요소를 순회하면서 가장 큰 절댓값을 찾습니다. 이 최대값(maxAmplitude)은 나중에 웨이브폼을 정규화하는 데 사용됩니다.
-  - `scaleFactor`는 웨이브폼이 캔버스 내에서 너무 크지 않게 조정하는 스케일 팩터입니다.
-
-`scaleFactor` 적용 전
+// 계산된 진폭에 따라 그래프를 그립니다.
+for (let i = 0; i < width; i += 1) {
+  const min = Math.min.apply(null, data.slice(i * step, (i + 1) * step));
+  const max = Math.max.apply(null, data.slice(i * step, (i + 1) * step));
+  ctx.lineTo(i, (1 + min) * amplitude);
+  ctx.lineTo(i, (1 + max) * amplitude);
+}
+```
+이 과정을 거쳐 시각화를 하니 이런 결과가 출력됐습니다.
 
 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/ef7fa619-c5d2-4011-9361-96c2934ee8fa)
 
-`scaleFactor` 적용 후
+물론 x좌표는 음원의 길이를, y좌표는 소리의 절댓값을 잘 표현했지만, 각 샘플의 절댓값이 캔버스의 height보다 클 경우 그래픽이 잘려 보이는 상황이 발생했습니다.
+여기서 각 샘플의 절댓값은 해당 샘플의 진폭을 나타내며, 이는 소리의 크기를 나타냅니다. 그러므로 이 값이 캔버스의 높이를 초과하면 그래픽이 잘리게 됩니다.
+따라서 캔버스의 높이에 따라 y좌표의 데이터를 조정해야 했습니다.
+
+#### 어떻게 진폭이 캔버스의 높이를 넘지 않게 조정할 수 있을까?
+
+가장 먼저 떠올랐던 아이디어는 그리려는 데이터의 범위를 캔버스의 높이로 나누는 것이었습니다. 이렇게 하면 우리가 그리려는 데이터의 최대값이 캔버스의 높이를 넘지 않게 될 것입니다.
+하지만, 여기서 한 가지 문제점이 있습니다. 그리려는 데이터의 최대값이 항상 1이라는 보장이 없습니다. 
+
+그래서 그리려는 데이터에서 최대값을 찾아 그 값으로 나누는 방법을 생각해 내었습니다.
+이렇게 하면 그리려는 데이터의 최대값이 1이 되고, 다른 모든 값들은 0과 1 사이의 값이 됩니다. 그리고 이 값을 다시 캔버스의 높이로 곱하면,그리려는 데이터의 범위가 캔버스의 높이를 넘지 않게 됩니다.
+
+```js
+  const scaleFactor = maxAmplitude > 1 ? 1 / maxAmplitude : 1;
+
+  for (let i = 0; i < width; i += 1) {
+    const min = Math.min.apply(null, data.slice(i * step, (i + 1) * step));
+    const max = Math.max.apply(null, data.slice(i * step, (i + 1) * step));
+    ctx.lineTo(i, (1 + min * scaleFactor) * amplitude);
+    ctx.lineTo(i, (1 + max * scaleFactor) * amplitude);
+  }
+```
+
+이 값을 적용하니 이렇게 원하는 결과를 얻을 수 있었습니다.
 
 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/5beb8fb7-7d8e-4dc4-8d6f-b3045ce902a5)
 
-```js
-ctx.clearRect(0, 0, width, height);
-ctx.beginPath();
-ctx.moveTo(0, amplitude);
-```
 
-- clearRect를 사용하여 이전에 그려진 모든 내용을 지웁니다.
-- 그런 다음 새로운 경로를 시작하고, 그리기 시작할 지점을 캔버스의 중간으로 설정합니다.
-
-```js
-    for (let i = 0; i < width; i += 1) {
-      const min = Math.min.apply(null, data.slice(i * step, (i + 1) * step));
-      const max = Math.max.apply(null, data.slice(i * step, (i + 1) * step));
-      const x = i / width;
-```
-
-- 캔버스의 각 픽셀에 대해, step만큼 샘플링한 데이터에서 최소값과 최대값을 찾습니다. 이 값들은 웨이브폼을 그릴 때 해당 픽셀의 상하한을 결정합니다. x는 현재 위치를 캔버스의 너비로 정규화한 값입니다.
 
   ***
 
