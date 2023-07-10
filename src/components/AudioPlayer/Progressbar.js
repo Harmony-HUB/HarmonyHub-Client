@@ -5,10 +5,7 @@ import { setProgressPosition } from "../../feature/audioPlayerSlice";
 
 const ProgressBarContainer = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0px;
 `;
 
 const ProgressTime = styled.div`

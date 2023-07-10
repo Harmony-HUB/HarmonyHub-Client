@@ -10,12 +10,12 @@ import {
 
 function Waveform({
   file,
-  waveformColor = "#b3ecec",
   onWaveformClick,
   isTrimmed,
   audioPlayedId,
   recording,
 }) {
+  const waveformColor = "#b3ecec";
   const waveformCanvasRef = useRef(null);
 
   const [audioContext] = useState(
@@ -92,18 +92,20 @@ function Waveform({
 
     for (let i = 0; i < width; i += 1) {
       const sliceData = data.slice(i * step, (i + 1) * step);
-      const min = sliceData.reduce((a, b) => Math.min(a, b));
-      const max = sliceData.reduce((a, b) => Math.max(a, b));
-      const x = i / width;
+      if (sliceData.length > 0) {
+        const min = sliceData.reduce((a, b) => Math.min(a, b));
+        const max = sliceData.reduce((a, b) => Math.max(a, b));
+        const x = i / width;
 
-      if (isTrimmed) {
-        if (x >= selectedStart && x <= selectedEnd) {
+        if (isTrimmed) {
+          if (x >= selectedStart && x <= selectedEnd) {
+            ctx.lineTo(i, (1 + min * scaleFactor) * amplitude);
+            ctx.lineTo(i, (1 + max * scaleFactor) * amplitude);
+          }
+        } else {
           ctx.lineTo(i, (1 + min * scaleFactor) * amplitude);
           ctx.lineTo(i, (1 + max * scaleFactor) * amplitude);
         }
-      } else {
-        ctx.lineTo(i, (1 + min * scaleFactor) * amplitude);
-        ctx.lineTo(i, (1 + max * scaleFactor) * amplitude);
       }
     }
 
@@ -128,7 +130,7 @@ function Waveform({
         height="90"
         className="waveform-canvas"
       />
-      <ProgressBar audioPlayedId={audioPlayedId} />
+      {recording ? null : <ProgressBar audioPlayedId={audioPlayedId} />}
       {recording ? null : <WaveSelection audioPlayedId={audioPlayedId} />}
     </div>
   );

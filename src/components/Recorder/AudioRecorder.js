@@ -22,22 +22,19 @@ const RecordButton = styled.button`
   border-radius: 50%;
   border: 0.5 solid black;
   outline: 10px;
-  margin: 10px;
   cursor: pointer;
 `;
 
-const CompleteWrapper = styled.div`
+const StageWrapper = styled.div`
+  height: 500px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   flex-direction: column;
 `;
 
-const FirstStageWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+const ExplainStage = styled.h1`
+  margin: 0;
 `;
 
 function AudioRecorder({ userData }) {
@@ -165,42 +162,40 @@ function AudioRecorder({ userData }) {
   return (
     <div>
       {stage === 0 && (
-        <FirstStageWrapper>
-          <h1>함께 녹음할 음원 파일을 선택하세요</h1>
+        <StageWrapper>
+          <ExplainStage>함께 녹음할 음원 파일을 선택하세요</ExplainStage>
           <SelectFileButton>
             <FontAwesomeIcon icon={faUpload} /> 파일 선택
             <FileInput type="file" onChange={handleFileUpload} />
           </SelectFileButton>
-        </FirstStageWrapper>
+        </StageWrapper>
       )}
       {stage === 1 && (
-        <FirstStageWrapper>
+        <StageWrapper>
+          <ExplainStage>마이크 버튼을 누르면 음악이 재생됩니다.</ExplainStage>
           <Waveform
             file={uploadedFile}
             audioPlayedId={10}
             recording={isRecord}
           />
-          <h1>마이크 버튼을 누르면 음악이 재생됩니다.</h1>
           <RecordButton onClick={recording ? stopRecording : startRecording}>
             <FontAwesomeIcon icon={recording ? faStop : faMicrophone} />
           </RecordButton>
-        </FirstStageWrapper>
+        </StageWrapper>
       )}
       {stage === 2 && (
-        <CompleteWrapper>
-          <h1>녹음된 음원 재생하기</h1>
-          <div>
-            {recordedAudioURL && uploadedFile && (
-              <Button onClick={togglePlayStop}>
-                <FontAwesomeIcon icon={playing ? faStop : faPlay} />
-              </Button>
-            )}
-          </div>
+        <StageWrapper>
+          <ExplainStage>녹음된 음원 재생하기</ExplainStage>
+          {recordedAudioURL && uploadedFile && (
+            <Button onClick={togglePlayStop}>
+              <FontAwesomeIcon icon={playing ? faStop : faPlay} />
+            </Button>
+          )}
           <AudioRecorderStorage
             audioBuffer={combinedAudioBuffer}
             userData={userData}
           />
-        </CompleteWrapper>
+        </StageWrapper>
       )}
     </div>
   );

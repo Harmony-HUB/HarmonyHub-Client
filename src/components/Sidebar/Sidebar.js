@@ -3,7 +3,6 @@ import { Link as RouterLink } from "react-router-dom";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
-import Logout from "../Auth/Logout";
 import { OpenButton, ToggleButton, NavLinks } from "./styles";
 
 export const StyledLink = styled(RouterLink)`
@@ -39,6 +38,7 @@ const StyledSidebar = styled.div`
 `;
 
 const NavLink = styled.a`
+  margin-top: 20px;
   padding: 8px 16px 8px 16px;
   text-decoration: none;
   font-size: 18px;
@@ -59,6 +59,13 @@ function Sidebar({ onLogout }) {
     setIsOpen(!isOpen);
   };
 
+  const handleGoogleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+
+    onLogout();
+  };
+
   return (
     <>
       {!isOpen && (
@@ -73,7 +80,9 @@ function Sidebar({ onLogout }) {
           </ToggleButton>
         )}
         <NavLinks>
-          <Logout onLogout={onLogout} />
+          <NavLink>
+            <StyledLink onClick={handleGoogleLogout}>로그아웃</StyledLink>
+          </NavLink>
           <NavLink>
             <StyledLink to="/">Home</StyledLink>
           </NavLink>
