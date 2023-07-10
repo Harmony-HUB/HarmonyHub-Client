@@ -28,6 +28,8 @@ function MusicEditor({ userData }) {
     setShowModal(false);
   };
 
+  const selectedAudioPlayerIndex = null;
+
   const audioBuffers = useSelector(state => {
     const { instances } = state.audioPlayer;
     return [0, 1, 2, 3, 4].map(index => instances[index]?.audioBuffer || null);
@@ -39,7 +41,6 @@ function MusicEditor({ userData }) {
     const updatedAudioFiles = [...audioFiles];
 
     selectedFiles.forEach(selectedFile => {
-      console.log(selectedFile);
       const fileURL = URL.createObjectURL(selectedFile);
       updatedAudioFiles.push({ file: fileURL, isUploaded: true });
     });
@@ -127,8 +128,6 @@ function MusicEditor({ userData }) {
     setAudioFiles(updatedAudioFiles);
   };
 
-  console.log(audioFiles);
-
   return (
     <Editor>
       <div style={{ display: "flex", flexDirection: "column" }}>
@@ -159,6 +158,8 @@ function MusicEditor({ userData }) {
                 <div style={{ flex: 1 }}>
                   <AudioPlayer
                     file={audioFiles[index].file}
+                    cutWaveformBuffer={audioFiles[index].audioBuffer}
+                    isSelected={selectedAudioPlayerIndex === index}
                     userData={userData}
                     audioPlayedId={index}
                   />

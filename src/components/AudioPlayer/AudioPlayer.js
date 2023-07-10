@@ -23,7 +23,7 @@ import {
 } from "../../feature/audioPlayerSlice";
 import Controls from "./Controls";
 
-function AudioPlayer({ file, userData, audioPlayedId }) {
+function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
   const [isTrimmed, setIsTrimmed] = useState(false);
 
   const {
@@ -46,6 +46,18 @@ function AudioPlayer({ file, userData, audioPlayedId }) {
     dispatch(setSelectedStart({ audioPlayedId, selectedStart: 0 }));
     dispatch(setSelectedEnd({ audioPlayedId, selectedEnd: 1 }));
   }, []);
+
+  useEffect(() => {
+    if (cutWaveformBuffer) {
+      dispatch(
+        setAudioBuffer({
+          audioPlayedId,
+          audioBuffer: cutWaveformBuffer,
+        })
+      );
+      setIsTrimmed(true);
+    }
+  }, [cutWaveformBuffer]);
 
   useEffect(() => {
     const newAudioContext = getContext();
@@ -224,7 +236,7 @@ function AudioPlayer({ file, userData, audioPlayedId }) {
     <AudioPlayerContainer data-testid="audio-player-container">
       <Waveform
         file={file}
-        waveformColor
+        waveformColor="#b3ecec"
         onWaveformClick={onWaveformClick}
         isTrimmed={isTrimmed}
         audioPlayedId={audioPlayedId}
