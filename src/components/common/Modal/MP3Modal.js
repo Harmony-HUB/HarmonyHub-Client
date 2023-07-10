@@ -4,10 +4,10 @@ import styled from "styled-components";
 
 const ModalBackground = styled.div`
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
   background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
@@ -23,8 +23,8 @@ const ModalContent = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  padding: 16px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
   color: #fff;
   border: none;
   cursor: default;
@@ -35,7 +35,7 @@ const ContentArea = styled.div`
   border-radius: 10px;
   width: 300px;
   height: 200px;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
   display: flex;
   flex-direction: column;
   justify-content: center;

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
+import { setProgressPosition } from "../../feature/audioPlayerSlice";
 
 const ProgressBarContainer = styled.div`
   position: absolute;
@@ -25,11 +26,47 @@ const ProgressTime = styled.div`
 
 function ProgressBar({ audioPlayedId }) {
   const progressCanvasRef = useRef(null);
+  const dispatch = useDispatch();
 
-  const { audioBuffer, progressPosition } = useSelector(
-    state => state.audioPlayer.instances[audioPlayedId] || {}
-  );
+  const {
+    audioContext,
+    audioBuffer,
+    progressPosition,
+    isPlaying,
+    startTime,
+    pausedTime,
+  } = useSelector(state => state.audioPlayer.instances[audioPlayedId] || {});
 
+  const updateProgress = () => {
+    if (!audioContext || !audioBuffer || !isPlaying) return;
+
+    const currentTime =
+      audioContext.context.currentTime - startTime + pausedTime;
+    const progress = (currentTime / audioBuffer.duration) * 100;
+
+    dispatch(
+      setProgressPosition({ audioPlayedId, progressPosition: progress })
+    );
+  };
+
+  useEffect(() => {
+    let animationFrameId;
+
+    const loop = () => {
+      updateProgress();
+      animationFrameId = requestAnimationFrame(loop);
+    };
+
+    if (isPlaying) {
+      loop();
+    } else {
+      updateProgress();
+    }
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [isPlaying]);
   const duration = audioBuffer ? audioBuffer.duration : 0;
   const currentTime = (duration * progressPosition) / 100;
 

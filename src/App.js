@@ -11,18 +11,6 @@ import Button from "./components/common/Button/Button";
 import AudioRecorder from "./components/Recorder/AudioRecorder";
 import Sidebar from "./components/Sidebar/Sidebar";
 
-const Header = styled.header`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 88%;
-  height: 5%;
-  padding: 1rem 2rem;
-  top: 0;
-  left: 0;
-  position: relative;
-`;
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -40,7 +28,8 @@ const Title = styled.h1`
 
 const MyMusicButton = styled.div`
   position: absolute;
-  top: 10%;
+  bottom: 0;
+  top: 80px;
   right: 5%;
 `;
 
@@ -86,6 +75,9 @@ function App() {
           email: user.email,
           displayName: user.displayName,
         });
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
       }
     });
 
@@ -107,12 +99,11 @@ function App() {
     if (isLoggedIn) {
       return (
         <>
-          <Header>
-            <Sidebar onLogout={handleLogout} />
-            <MyMusicButton>
-              <Button onClick={openSongsListModal}>내 음악</Button>
-            </MyMusicButton>
-          </Header>
+          <Sidebar onLogout={handleLogout} />
+          <MyMusicButton>
+            <Button onClick={openSongsListModal}>내 음악</Button>
+          </MyMusicButton>
+
           <Routes>
             <Route path="/" element={<MusicEditor userData={userData} />} />
             <Route

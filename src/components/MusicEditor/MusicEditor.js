@@ -9,14 +9,16 @@ import { useSelector } from "react-redux";
 import { Editor, SelectFileButton, FileInput, BottomBar } from "./styles";
 import AudioPlayer from "../AudioPlayer/AudioPlayer";
 import Button from "../common/Button/Button";
-import AudioStorage from "../Storage/AudioStorage";
+import AudioStorage, { bufferToWav } from "../Storage/AudioStorage";
 import DownloadAudio from "../Storage/DownloadAudio";
 import Modal from "../common/Modal/Modal";
+import Spinner from "../common/Spinner";
 
 function MusicEditor({ userData }) {
   const [audioFiles, setAudioFiles] = useState([]);
   const [combinedAudioBuffer, setCombinedAudioBuffer] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const openModal = () => {
     setShowModal(true);
@@ -26,11 +28,9 @@ function MusicEditor({ userData }) {
     setShowModal(false);
   };
 
-  const selectedAudioPlayerIndex = null;
-
   const audioBuffers = useSelector(state => {
     const { instances } = state.audioPlayer;
-    return [0, 1, 2, 4, 5].map(index => instances[index]?.audioBuffer || null);
+    return [0, 1, 2, 3, 4].map(index => instances[index]?.audioBuffer || null);
   });
 
   const handleFileChange = event => {
@@ -39,6 +39,7 @@ function MusicEditor({ userData }) {
     const updatedAudioFiles = [...audioFiles];
 
     selectedFiles.forEach(selectedFile => {
+      console.log(selectedFile);
       const fileURL = URL.createObjectURL(selectedFile);
       updatedAudioFiles.push({ file: fileURL, isUploaded: true });
     });
@@ -72,7 +73,13 @@ function MusicEditor({ userData }) {
     buffers.forEach(buffer => {
       for (let channel = 0; channel < numberOfChannels; channel += 1) {
         const outputData = outputBuffer.getChannelData(channel);
-        const inputData = buffer.getChannelData(channel);
+        let inputData;
+
+        if (buffer.numberOfChannels > channel) {
+          inputData = buffer.getChannelData(channel);
+        }
+
+        inputData = buffer.getChannelData(0);
         outputData.set(inputData, currentPosition);
       }
       currentPosition += buffer.length;
@@ -85,7 +92,21 @@ function MusicEditor({ userData }) {
     const nonNullBuffers = audioBuffers.filter(buffer => buffer !== null);
 
     if (nonNullBuffers.length >= 2) {
-      setCombinedAudioBuffer(concatenateAudioBuffers(nonNullBuffers));
+      setIsLoading(true);
+
+      setTimeout(() => {
+        const newCombinedBuffer = concatenateAudioBuffers(nonNullBuffers);
+        setCombinedAudioBuffer(newCombinedBuffer);
+
+        const wavBlob = bufferToWav(newCombinedBuffer);
+        const url = URL.createObjectURL(wavBlob);
+
+        const newAudioFiles = [{ file: url, isUploaded: true }];
+
+        setAudioFiles(newAudioFiles);
+
+        setIsLoading(false);
+      }, 2000);
     }
   };
 
@@ -105,6 +126,8 @@ function MusicEditor({ userData }) {
     ];
     setAudioFiles(updatedAudioFiles);
   };
+
+  console.log(audioFiles);
 
   return (
     <Editor>
@@ -136,8 +159,6 @@ function MusicEditor({ userData }) {
                 <div style={{ flex: 1 }}>
                   <AudioPlayer
                     file={audioFiles[index].file}
-                    cutWaveformBuffer={audioFiles[index].audioBuffer}
-                    isSelected={selectedAudioPlayerIndex === index}
                     userData={userData}
                     audioPlayedId={index}
                   />
@@ -160,7 +181,7 @@ function MusicEditor({ userData }) {
               onClick={handleMergeAudioClick}
               style={{ marginRight: "10px" }}
             >
-              오디오 결합
+              {isLoading ? <Spinner /> : "오디오 결합"}
             </Button>
           )}
         </div>

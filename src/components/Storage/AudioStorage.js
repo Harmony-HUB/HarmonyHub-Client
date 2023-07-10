@@ -33,7 +33,7 @@ async function applyAdjustments(buffer, pitch, tempo) {
   }, buffer.duration * (1 / tempo));
 }
 
-function bufferToWav(buffer) {
+export function bufferToWav(buffer) {
   const wavArrayBuffer = toWav(buffer);
   const wavBlob = new Blob([wavArrayBuffer], { type: "audio/wav" });
   return wavBlob;

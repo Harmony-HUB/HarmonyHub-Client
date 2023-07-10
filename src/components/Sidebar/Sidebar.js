@@ -72,8 +72,8 @@ function Sidebar({ onLogout }) {
             <FontAwesomeIcon icon={faBars} />
           </ToggleButton>
         )}
-        <Logout onLogout={onLogout} />
         <NavLinks>
+          <Logout onLogout={onLogout} />
           <NavLink>
             <StyledLink to="/">Home</StyledLink>
           </NavLink>

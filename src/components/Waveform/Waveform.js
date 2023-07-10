@@ -10,10 +10,11 @@ import {
 
 function Waveform({
   file,
-  waveformColor,
+  waveformColor = "#b3ecec",
   onWaveformClick,
   isTrimmed,
   audioPlayedId,
+  recording,
 }) {
   const waveformCanvasRef = useRef(null);
 
@@ -28,6 +29,8 @@ function Waveform({
   );
 
   const handleWaveformClick = event => {
+    if (!onWaveformClick) return;
+
     const canvas = waveformCanvasRef.current;
     const { width } = canvas;
     const clickX = event.nativeEvent.offsetX;
@@ -88,8 +91,9 @@ function Waveform({
     ctx.strokeStyle = waveformColor;
 
     for (let i = 0; i < width; i += 1) {
-      const min = Math.min.apply(null, data.slice(i * step, (i + 1) * step));
-      const max = Math.max.apply(null, data.slice(i * step, (i + 1) * step));
+      const sliceData = data.slice(i * step, (i + 1) * step);
+      const min = sliceData.reduce((a, b) => Math.min(a, b));
+      const max = sliceData.reduce((a, b) => Math.max(a, b));
       const x = i / width;
 
       if (isTrimmed) {
@@ -125,7 +129,7 @@ function Waveform({
         className="waveform-canvas"
       />
       <ProgressBar audioPlayedId={audioPlayedId} />
-      <WaveSelection audioPlayedId={audioPlayedId} />
+      {recording ? null : <WaveSelection audioPlayedId={audioPlayedId} />}
     </div>
   );
 }

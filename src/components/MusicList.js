@@ -5,31 +5,47 @@ import axios from "axios";
 import styled from "styled-components";
 import refreshAccessToken from "./Auth/refreshAccessToken";
 
-const SongsListContent = styled.div`
-  border-radius: 20px;
-  width: 100%;
+const SongList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 200px;
   height: 100%;
-  max-width: 80%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  color: #fff;
-  border: none;
-  cursor: default;
+  overflow-y: scroll;
 `;
 
 const SongButton = styled.button`
-  background-color: ${({ isSelected }) =>
-    isSelected ? "rgba(355, 355, 355, 0.3)" : ""};
-  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1em;
+  border: 1 solid black;
   width: 100%;
   text-align: left;
+  cursor: pointer;
+  background-color: ${({ isSelected }) =>
+    isSelected ? "rgba(355, 355, 355, 0.3)" : ""};
 `;
 
-function SongsList() {
+const SongTitle = styled.h3`
+  margin: 0;
+  font-size: 1em;
+`;
+
+const SongCreationTime = styled.p`
+  margin: 0;
+  font-size: 0.8em;
+  color: #aaa;
+`;
+
+const SongInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+function MusicList() {
   const [songs, setSongs] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -104,33 +120,35 @@ function SongsList() {
 
   return (
     <div>
-      <SongsListContent onClick={e => e.stopPropagation()}>
-        <ul>
-          {Array.isArray(songs) &&
-            songs.map((song, index) => (
-              <SongButton
-                type="button"
-                key={song.key}
-                tabIndex={index}
-                onClick={() => handleSongSelection(index, song)}
-                onKeyDown={e => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    handleSongSelection(index, song);
-                  }
-                }}
-                isSelected={selectedIndex === index}
-              >
-                <div>
-                  <h3>{song.title}</h3>
-                  <p>{new Date(song.creationTime).toLocaleString()}</p>
-                </div>
-              </SongButton>
-            ))}
-        </ul>
-      </SongsListContent>
+      <SongList onClick={e => e.stopPropagation()}>
+        {Array.isArray(songs) &&
+          songs.map((song, index) => (
+            <SongButton
+              type="button"
+              key={song.key}
+              tabIndex={index}
+              onClick={() => handleSongSelection(index, song)}
+              onKeyDown={e => {
+                if (e.key === "Enter" || e.key === " ") {
+                  handleSongSelection(index, song);
+                }
+              }}
+              isSelected={selectedIndex === index}
+            >
+              <SongInfo>
+                <SongTitle>{song.title}</SongTitle>
+                <SongCreationTime>
+                  {new Date(song.creationTime).toLocaleString()}
+                </SongCreationTime>
+              </SongInfo>
+              {selectedIndex === index && playing && <span>🎵</span>}
+            </SongButton>
+          ))}
+      </SongList>
+      {/* </SongsListContent> */}
       <audio ref={audioRef} />
     </div>
   );
 }
 
-export default SongsList;
+export default MusicList;

@@ -1,5 +1,9 @@
 # 🎶 HARMONY-HUB
 
+# Deploy
+
+[사용 하기](#https://gleeful-figolla-ac39e2.netlify.app)
+
 <div align="center">
 웹브라우저에서 업로드한 음원을 사용하여 간단한 인터페이스를 이용해
 
@@ -7,291 +11,517 @@
 
 </div>
 
-# TOC
-
-- [Motivation](#Motivation)
-- [Challenge](#Challenge)
-  - [Audio Wave](#1-Audio-Wave)
-    - [사용자가 음원을 업로드 했을 때, 어떻게 음원에 따른 파형을 그릴 수 있을까?](#사용자가-음원을-업로드-했을-때-어떻게-음원에-따른-파형을-그릴-수-있을까)
-  - [오디오 자르기/붙이기](#2-오디오-자르기-붙이기)
-    - [음원의 어떤 속성을 자르고 붙여야 음원이 손상되지 않게 할 수 있을까?](#음원의-어떤-속성을-자르고-붙여야-음원이-손상되지-않게-할-수-있을까)
-  - [Progress Bar](#3-Progress-Bar)
-    - [음원의 진행상황에 따른 Progress Bar 애니메이션 구현하기.](#음원의-진행상황에-따른-Progress-Bar-애니메이션-구현하기)
-  - [구간 선택](#4-구간-선택)
-- [Feature](#Feature)
-- [Usage](#Usage)
-- [Tech Stack](#Tech-Stack)
-- [Tone.js 사용 이유](#Tone-js-사용-이유)
-- [Time Line](#Time-Line)
-- [Repository Link](#Repository-Link)
-
-# Preview
+# 미리보기
 
 ![Harmony-HUB](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/a6872f41-930e-42d3-87e8-5f8dbf970ee3)
 
-# Motivation
+# 목차
 
-평소 음악을 즐겨 들으며 노래를 따라 부르기를 좋아하던 저는 유튜브의 노래방 컨텐츠를 이용하고는 했습니다. 이 컨텐츠를 이용하며 아쉬운점이 있었는데, 너무 노래가 높거나 낮으면 노래방에서 처럼 키를 조절해 노래를 부를 수 없다는것이 아쉬웠습니다. 음원 파일을 갖고있다면 내가 원하는대로 음정을 조절하며 노래를 부를 수 있으면 어떨까? 더 나아가 음원을 내가 원하는 대로 편집 할 수 있으면 어떨까? 라는 생각에서 해당 프로젝트를 기획했습니다.
+- [개발 동기](#개발-동기)
+- [개발 과정](#개발-과정)
+  - [1. 오디오 시각화](#1.-오디오-시각화)
+    - [음원 파일을 디지털 데이터로 변환하기](#음원-파일을-디지털-데이터로-변환하기)
+    - [시각화를 위한 데이터 찾기](#시각화를-위한-데이터-찾기)
+    - [시각화 도구 선택하기](#시각화-도구-선택하기)
+    - [Canvas와 Float32Array를 조합해 오디오 파형 시각화하기](#Canvas와-Float32Array를-조합해-오디오-파형-시각화하기)
+    - [어떻게해야 진폭이 캔버스의 높이를 넘지 않을까?](#어떻게해야-진폭이-캔버스의-높이를-넘지-않을까?)
+  - [2. 오디오 파형을 이용한 음원 구간 선택하기](#2.-오디오-파형을-이용한-음원-구간-선택하기)
+    - [마우스 드래그 이벤트 구현하기](#마우스-드래그-이벤트-구현하기)
+    - [Element 뷰포인트의 상대값을 이용해 이벤트 정확성 높이기](#Element-뷰포인트의-상대값을-이용해-이벤트-정확성-높이기)
+  - [3. 음원 트리밍 & 결합 기능 구현하기](#3.-음원-트리밍-&-결합-기능-구현하기)
+    - [음원 트리밍](#음원-트리밍)
+    - [음원 결합](#음원-결합)
+    - [음원 결합 기능을 구현하며 만난 이슈](#음원-결합-기능을-구현하며-만난이슈)
+  - [4. 정확한 `Progress Bar` 기능 구현](#4.-정확한-`Progress-Bar`-기능-구현)
+    - [ProgressBar의 위치를 계산하고 업데이트 하기](#ProgressBar의-위치를-계산하고-업데이트-하기)
+    - [애니메이션 표현하기](#애니메이션-표현하기)
+- [기능](#기능)
+- [사용 기술](#사용-기술)
+- [Tone.js 사용 이유](#Tone-js-사용-이유)
+- [개발 기간](#개발-기간)
+- [Repository Link](#Repository-Link)
 
-# Challenge
+# 개발 동기
 
-## 1. Audio Wave
+<div align="center">
+첫 개인 프로젝트를 아이템을 준비하며 하게된 가장 큰 생각은 <br>
+<b>"내가 좋아하는것과 연관있는걸 해보자!"</b> 였습니다. <br>
+평소 음악 듣는것을 좋아하여 음악과 관련된 웹사이트를 개발하고 싶었고 이에 따라 웹 음원 편집 사이트를 개발했습니다.<br>
+다만 일반적인 음원 편집 사이트는 도전적인 요소가 다소 부족할 것이라고 생각해<br>
+<em><b>외부 라이브러리 의존을 최소화</b></em> 하여 개발 하는것을 목표로 했습니다.
+</div>
 
-### 어떻게하면 사용자가 업로드한 음원으로 음원에 따른 파형을 그릴 수 있을까?
+# 개발 과정
 
-1. 파형을 그릴 수 있는 데이터 취득하기
+## 1. 오디오 시각화 <br>
 
-- fetch API를 이용해서 사용자가 업로드한 파일을 가져온 후, AudioContext의 `decodeAudioData` 메서드를 이용하여 가져온 파일을 오디오 버퍼로 변환했습니다.
-- decodeAudioData는 Web Audio API의 일부로, 인코딩된 오디오 파일 데이터를 AudioBuffer로 디코딩합니다. 이 AudioBuffer는 음원을 다루기 위해 필요한 여러 가지 작업을 수행하는데 사용했습니다.
-- 이 오디오 버퍼는 오디오 데이터의 전체 시간 동안 각 채널에 대한 PCM(Pulse Code Modulation) 데이터 샘플을 제공합니다.
+### _음원 파일을 디지털 데이터로 변환하기_ <br><br>
 
-```js
-src / Waveform / Waveform.js;
+### decodeAudioData() <br>
 
-const loadAudioFile = async () => {
-  try {
-    const response = await fetch(file);
-    const audioData = await response.arrayBuffer();
-    const newAudioBuffer = await audioContext.decodeAudioData(audioData);
-    dispatch(setAudioBuffer({ audioPlayedId, audioBuffer: newAudioBuffer }));
-  } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(error);
-    }
-  }
-};
-```
+음원의 정보를 획득해 이에 따른 시각화 작업을 진행하기 위해서는 파일을 데이터로 변환하는 작업이 필요했습니다. WEB Audio API가 제공하는 `decodeAudioData()`를 사용해 오디오 디코딩을 진행했습니다. `decodeAudioData()`의 파라미터가 `arrayBuffer`였기 때문에 `fetch API`의 `arrayBuffer`매서드를 사용해서 음원 파일을 변환했습니다.
 
-- "샘플"이라는 용어는 디지털 오디오 처리에 널리 사용되며, 이는 아날로그 신호를 디지털 형태로 변환할 때 특정 시간 간격으로 측정한 신호의 강도를 나타냅니다. 오디오 데이터는 여러 샘플들의 연속적인 시퀀스로 구성되어 있습니다. 각 샘플은 특정 시간에 음향 파동의 강도를 나타냅니다.
+⬇️ 파일을 디코딩한 오디오 버퍼 데이터
 
-audio buffer 객체 ![image](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/962983fc-6191-4c61-b367-37f40236639e)
+<img width="216" alt="image" src="https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/92c8c02c-5f64-46f0-8092-db9e6bb763b5">
 
-2. Waveform 그리기
+### 시각화를 위한 데이터 찾기<br>
 
-- 추출된 오디오 버퍼를 가지고 나서 웨이브폼을 그리는 작업을 수행하였습니다. 이를 위해 Canvas API를 사용하였습니다. 오디오 버퍼의 각 샘플 데이터를 순회하면서 해당 샘플의 최대 및 최소 값을 찾고, 그 값을 캔버스에 선으로 그려 웨이브폼을 생성하였습니다.
+음원이 담고있는 정보는 예상했던 것보다 훨씬 다양했습니다. 음원의 채널 수, 샘플레이트, 음원의 길이 등등. 그러나 일반적으로 생각했을때 음원의 상태를 가장 다이나믹하게 시각화 할 수 있는 음정, 진폭, 볼륨 데이터를 찾을 수 없었습니다.
+분명 MDN 문서에서 **"Audio Buffer는 오디오 에셋을 나타낸다."** 라고 명시되어있기 때문에 여기에 제가 찾는 데이터가 있다고 생각하고 각각의 속성들 더 나아가 메서드들을 조사해 보았고 그 결과 getChnnelData()를 찾아냈습니다.
 
-```js
-const data = audioBuffer.getChannelData(0);
-const step = Math.ceil(data.length / width);
-const amplitude = height / 2;
-```
+### getChnnelData() <br>
 
-- `audioBuffer.getChannelData(0)`를 사용하여 첫 번째 오디오 채널의 PCM 데이터를 가져왔습니다. 이 데이터는 배열 형태로 제공되며, 각 요소는 -1과 1 사이의 값입니다.
-
-<img width="280" alt="image" src="https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/681f7776-8b7e-4a64-be47-0f40fac367e1">
-
-- `step` 변수에는 화면 너비에 따라 샘플링 빈도를 할당했습니다.
-- `amplitude`는 캔버스 높이의 반으로 설정되며, 웨이브폼이 캔버스 중간에서 상하로 그려지도록 하여 상하 대칭구조를 이룰 수 있도록 그림을 그렸습니다.
-
-  ```js
-  let maxAmplitude = 0;
-  for (let i = 0; i < data.length; i += 1) {
-    maxAmplitude = Math.max(maxAmplitude, Math.abs(data[i]));
-  }
-  const scaleFactor = maxAmplitude > 1 ? 1 / maxAmplitude : 1;
-  ```
-
-  - 코드는 `data` 배열의 모든 요소를 순회하면서 가장 큰 절댓값을 찾습니다. 이 최대값(maxAmplitude)은 나중에 웨이브폼을 정규화하는 데 사용됩니다.
-  - `scaleFactor`는 웨이브폼이 캔버스 내에서 너무 크지 않게 조정하는 스케일 팩터입니다.
-
-`scaleFactor` 적용 전
-
-![image](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/ef7fa619-c5d2-4011-9361-96c2934ee8fa)
-
-`scaleFactor` 적용 후
-
-![image](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/5beb8fb7-7d8e-4dc4-8d6f-b3045ce902a5)
-
-```js
-ctx.clearRect(0, 0, width, height);
-ctx.beginPath();
-ctx.moveTo(0, amplitude);
-```
-
-- clearRect를 사용하여 이전에 그려진 모든 내용을 지웁니다.
-- 그런 다음 새로운 경로를 시작하고, 그리기 시작할 지점을 캔버스의 중간으로 설정합니다.
-
-```js
-    for (let i = 0; i < width; i += 1) {
-      const min = Math.min.apply(null, data.slice(i * step, (i + 1) * step));
-      const max = Math.max.apply(null, data.slice(i * step, (i + 1) * step));
-      const x = i / width;
-```
-
-- 캔버스의 각 픽셀에 대해, step만큼 샘플링한 데이터에서 최소값과 최대값을 찾습니다. 이 값들은 웨이브폼을 그릴 때 해당 픽셀의 상하한을 결정합니다. x는 현재 위치를 캔버스의 너비로 정규화한 값입니다.
-
-  ***
-
-  ## 2. 오디오 자르기/붙이기
-
-  ### 음원의 어떤 속성을 자르고 붙여야 음원이 손상되지 않게 할 수 있을까?
-
-  #### 1. 오디오 자르기
-
-  오디오를 자르는 작업은 **새로운 오디오 버퍼를 생성하고**, 원래의 오디오 버퍼에서 **선택한 부분의 샘플들을 새로운 오디오 버퍼에 복사하는 것으로 진행**됩니다. 선택한 부분의 시작과 끝 위치는 샘플의 인덱스로 결정됩니다. 그런 다음 **새로운 오디오 버퍼가 원래의 오디오를 대체**합니다.
-
-  ```js
-  const newBuffer = audioContext.context.createBuffer(
-    audioBuffer.numberOfChannels,
-    Math.floor((selectedEnd - selectedStart) * audioBuffer.length),
-    audioBuffer.sampleRate
-  );
-  ```
-
-  #### 2. 오디오 붙이기
-
-  오디오를 붙이는 작업도 비슷한 과정을 거쳤습니다. 두 개 이상의 오디오 버퍼를 합치려면, **새로운 오디오 버퍼를 생성하고 각 오디오 버퍼의 샘플들을 순서대로 새로운 버퍼에 복사**합니다.
-
-  1. 첫 번째 버퍼에서 필요한 정보인 채널 수와 샘플 속도를 추출합니다. 이는 모든 AudioBuffer가 동일한 속성을 가지고 있다는 가정하에 사용했습니다. 이에 대한 이유는 아래 [샘플링 빈도와 채널 수 일치](#샘플링-빈도와-채널-수-일치)에서 설명합니다.
-
-  ```js
-  const { numberOfChannels, sampleRate } = buffers[0];
-  ```
-
-  2. 입력으로 주어진 모든 버퍼의 길이를 더해 총 길이를 계산합니다.
-
-  ```js
-  const totalLength = buffers.reduce((acc, buffer) => acc + buffer.length, 0);
-  ```
-
-  3. 버퍼의 총 길이, 채널 수, 샘플 속도를 사용하여 새로운 AudioBuffer를 생성합니다.
-
-  ```js
-  const outputBuffer = new AudioBuffer({
-    length: totalLength,
-    numberOfChannels,
-    sampleRate,
-  });
-  ```
-
-  4. 이제 각 입력 버퍼에 대해 반복하여 작업을 수행합니다. 각 버퍼에서 채널 데이터를 가져와 생성한 AudioBuffer에 복사합니다. 이 때, 각 채널 데이터를 복사할 위치는 이전 버퍼 데이터가 복사된 이후 위치입니다. 마지막으로, 생성된 AudioBuffer를 반환합니다.
-
-**초기 발생 문제**
-
-음원의 결합은 문제없이 되는 반면, MediaRecorder를 이용한 녹음 데이터와 일반 음원 데이터를 결합하려고 할 때 결합이 제대로 되지 않는 문제 발생.
-
-**문제 원인**
-
-### 샘플링 빈도와 채널 수 일치
-
-처음에는 사용자의 녹음 데이터와 업로드한 음원 데이터를 결합 하려고 할 때, 기존 음원 데이터간의 결합 기능을 그대로 사용하려고 했습니다. 하지만 결합이 제대로 이루어지지 않는 문제가 발생했습니다.
-이를 조사해본 결과 오디오를 결합하기 위해서는 각각 오디오의 샘플레이트 속성이 일치해야 한다는 것을 알게 되었습니다.
-이에 따라 어떤 요소들이 일치하지 않는 것인지 알아보기 위해 `MediaRecorder`로 녹음한 음원의 샘플레이트를 분석해 보려고 했으나
-정말 아쉽게도 `MediaRecorder`로 얻을 수 있는 `arrayBuffer` 에서는 해당 데이터를 제공하지 않는것을 알게 되었습니다. 그래서 일치해야 하는 요소둘(샘플레이트, 채널의 수)을 하나하나 맞춰 보는 식으로 개발을 진행했습니다.
-
-**해결 방안**
-
-### 어떻게 서로 다른 음원간 샘플레이트와 채널을 일치 시켜줄 수 있을까?
-
-1. 음원을 임의로 Resampling 하는 방법
-
-   ```js
-   function resampleAudioBuffer(audioBuffer, targetSampleRate) {
-     const numberOfChannels = audioBuffer.numberOfChannels;
-     const oldSampleRate = audioBuffer.sampleRate;
-     const newSampleRate = targetSampleRate;
-     const oldLength = audioBuffer.length;
-     const newLength = (oldLength * newSampleRate) / oldSampleRate;
-     const result = new OfflineAudioContext(
-       numberOfChannels,
-       newLength,
-       newSampleRate
-     );
-
-     const bufferSource = result.createBufferSource();
-     bufferSource.buffer = audioBuffer;
-
-     bufferSource.connect(result.destination);
-     bufferSource.start();
-
-     return result.startRendering().then(resampledBuffer => {
-       return resampledBuffer;
-     });
-   }
-   ```
-
-   이러한 함수를 이용한 단순한 리샘플링은 음원의 품질저하를 야기한다는 것을 발견했습니다. 그래서 다른 방법을 찾게 되었습니다.
-
-#### Audio Context의 샘플레이트는 왜 업로드한 음원의 샘플레이트와 다를까?
-
-#### Audio Context의 decodedAudioData 매서드
-
-샘플레이트 문제를 해결하던 도중 Audio Context와 Audio Buffer의 속성을 조사해보니 무언가 이상하다고 생각되는 부분이 있었습니다. 음원 파일은 대부분 샘플레이트가 표준값으로 지정되어 있지만,
-음원의 종류마다 표준값은 각각 달랐습니다. 하지만 다양한 종류의 음원원들에 대한 audio buffer객체의 샘플레이트 값을 출력해봐도 48000이라는 고정값이 출력됐습니다.
-문제이자 해결방법은 바로 Audio Context의 decodedAudioData매서드에 있었습니다.
-더 깊게 해본 결과 Audio Context는 음원을 재생할 때 음원 재생의 조건에 따른(샘플레이트가 다른 경우 등) 고급 리샘플링 알고리즘을 적절하게 처리하며 이는 음원의 품질저하를 최소화 한다는 것을 알게 되었고,
-이러한 특성 때문에 48000이라는 고정값이 출력되었던 것입니다. 이에 따라 저는 Audio Context가 제공하는 샘플레이트를 차용해 서로 다른 음원 간 결합 기능을 구현했습니다.
-
-1. 재생 버퍼 생성 (uploadedBuffer와 recordedBuffer 중 더 긴 길이로 생성)
-
-```js
-const combinedBuffer = new AudioBuffer({
-  length: Math.max(
-    uploadedBuffer.current.length,
-    recordedBuffer.current.length
-  ),
-  numberOfChannels: 2,
-  sampleRate: audioContext.current.sampleRate,
-});
-```
-
-2. 각각의 AudioBuffer 데이터를 재생 버퍼에 복사
-
-```js
-combinedBuffer.copyToChannel(uploadedBuffer.current.getChannelData(0), 0);
-combinedBuffer.copyToChannel(recordedBuffer.current.getChannelData(0), 1);
-```
-
-3.  생성된 재생 버퍼로 오디오 재생 시작
-
-```js
-const bufferSource = audioContext.current.createBufferSource();
-bufferSource.buffer = combinedBuffer;
-bufferSource.connect(audioContext.current.destination);
-bufferSource.start();
-```
+`getChnnelData(0)` 는 음원의 0번 째 채널의 Float32Array가 반환됩니다. 이 배열의 각 요소는 이 배열의 각 요소는 시간에 따른 **소리의 진폭을 -1.0 부터 1.0 사이의 값**으로 나타내고 있습니다. 이를 통해 시각화 하기 적합한 음원 데이터를 획득할 수 있었습니다.
 
 ---
 
-## 3. `Progress Bar`
+### _시각화 도구 선택하기_ <br>
 
-### 음원의 진행상황에 따른 Progress Bar 애니메이션 구현하기.
+### Canvas API VS SVG <br>
+
+시각화를 위한 도구는 크게 Canvas API, SVG 2가지 였습니다. 프로젝트에 많은 영향을 줄것 같은 요소들을 비교해보니 아래와 같은 표가 나왔고,
+
+<br>
+
+| 기능 / 특징      | Canvas API                                     | SVG                                           |
+| ---------------- | ---------------------------------------------- | --------------------------------------------- |
+| 렌더링 방식      | 비트맵 그래픽                                  | 벡터 그래픽                                   |
+| 그래픽 변경      | 전체 캔버스를 다시 그림                        | 개별 요소의 속성변경 가능                     |
+| 해상도           | 고정                                           | 확장 가능                                     |
+| 대량 데이터 처리 | 효율적 (픽셀 수준의 접근으로 빠른 렌더링 가능) | 비효율적 (DOM 요소가 많아지면 성능 저하 가능) |
+
+<br>
+
+이러한 특징을 바탕으로 제 프로젝트에 적용해 보니 아래와 같은 결과가 나왔습니다.
+
+<br>
+
+| 기능 / 특징        | Canvas API                                                           | SVG                                                                                                                        |
+| ------------------ | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 오디오 데이터 표현 | 픽셀 단위의 그래픽으로 빠르게 오디오 데이터를 표현할 수 있음         | 복잡한 그래픽 구조를 통해 오디오 데이터를 표현 가능하지만 대규모 데이터에 대한 처리는 느릴 수 있음                         |
+| 이벤트             | 라이브러리나 추가 코드를 이용하여 캔버스 위에서의 위치를 계산해야 함 | 개별 요소에 직접 이벤트 핸들러를 붙일 수 있어 좀 더 세밀한 제어 가능                                                       |
+| 렌더링 성능        | 대규모 데이터 또는 복잡한 애니메이션에 더 우수한 성능을 보임         | 복잡한 형태의 그래픽이나 텍스트를 화면 크기에 따라 깨끗하게 확장시키는 데 우수하지만, 대량의 데이터 처리에는 적합하지 않음 |
+
+<br>
+
+이렇게 각 기술의 장단점을 비교해본 결과 Canvas API 사용이라는 결론이 나왔습니다. <br>
+
+1. 오디오 데이터의 시각화와 대량 데이터 처리에 관한 우수한 성능 때문입니다. **오디오 데이터는 일반적으로 매우 대량이며, 이러한 대량의 데이터를 효과적으로 렌더링하고 변형하는 데 Canvas API가 더 적합**합니다.
+
+2. **Canvas API는 비트맵 그래픽을 사용하여 픽셀 수준에서 그래픽을 제어할 수 있습니다. 이는 오디오 파형이나 스펙트럼과 같이 대량의 데이터를 빠르게 렌더링하고 업데이트하는 데 매우 유용**합니다.
+
+3. 또한, 오디오 데이터의 **빠른 시각화**가 필요한 프로젝트에서는 성능이 중요한 요소라고 생각했습니다. Canvas는 이러한 대량의 데이터를 신속하게 처리하고 렌더링하는 데 SVG보다 더 뛰어납니다.
+
+반면에, SVG는 벡터 기반의 그래픽을 제공하므로, 복잡한 형태의 그래픽을 그리거나 확장하는 데 더 적합하지만, 대량의 데이터를 처리하는 데는 비효율적일 수 있습니다. 또한, SVG는 개별 요소에 직접 이벤트 핸들러를 추가할 수 있어서 세밀한 제어가 가능하지만, 이 프로젝트의 경우에는 그렇게 세밀한 제어가 필요하지 않았습니다.
+
+따라서, **프로젝트의 주요 요구 사항과 가장 잘 맞는 기술이 Canvas API**였고 이를 사용해 구현하게 되었습니다.
+
+---
+
+### _실제 렌더링 속도 비교_ <br>
+
+SVG
+
+![Jul-04-2023 20-44-18](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/95885456-2669-468a-b7ad-8538389d0d70)
+
+Canvas
+
+![Jul-04-2023 20-41-59](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/132e3e3e-d323-40b9-aef2-0898a93ab4d6)
+
+---
+
+### _Canvas와 Float32Array를 조합해 오디오 파형 시각화하기_
+
+Float32Array의 요소는 특정 시간에 대한 오디오 샘플 값을 나타내며, 이 값은 -1.0에서 1.0 사이의 범위에 있습니다. 이 값은 Waveform에 그릴 특정 포인트의 진폭(amplitude)을 나타냅니다.
+
+⬇️ Float32Array
+
+<img width="280" alt="image" src="https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/681f7776-8b7e-4a64-be47-0f40fac367e1">
+<img width="256" alt="image" src="https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/302a3e6b-2b12-4350-a510-1cc575a5568a">
+
+<br><br>
+
+첫번째로 useRef를 이용해서 캔버스의 크기를 측정하고, 캔버스의 x좌표를 음원의 진행시간 y좌표를 소리의 진폭으로 표현하는 방향으로 개발을 진행했습니다.
+
+<br>
+
+```js
+const canvas = waveformCanvasRef.current;
+const ctx = canvas.getContext("2d");
+const { width, height } = canvas;
+
+// 계산된 진폭에 따라 그래프를 그립니다.
+for (let i = 0; i < width; i += 1) {
+  const min = Math.min.apply(null, data.slice(i * step, (i + 1) * step));
+  const max = Math.max.apply(null, data.slice(i * step, (i + 1) * step));
+  ctx.lineTo(i, (1 + min) * amplitude);
+  ctx.lineTo(i, (1 + max) * amplitude);
+}
+```
+
+<br>
+
+이 과정을 거쳐 시각화를 하니 이런 결과가 출력됐습니다.
+
+<br>
+
+![image](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/ef7fa619-c5d2-4011-9361-96c2934ee8fa)
+
+물론 x좌표는 음원의 길이를, y좌표는 소리의 절댓값을 잘 표현했지만, 각 샘플의 절댓값이 캔버스의 height보다 클 경우 그래픽이 잘려 보이는 상황이 발생했습니다.
+여기서 각 샘플의 절댓값은 해당 샘플의 진폭을 나타내며, 이는 소리의 크기를 나타냅니다. 그러므로 이 값이 캔버스의 높이를 초과하면 그래픽이 잘리게 됩니다.
+따라서 캔버스의 높이에 따라 y좌표의 데이터를 조정해야 했습니다.
+
+---
+
+### _어떻게해야 진폭이 캔버스의 높이를 넘지 않을까?_
+
+가장 먼저 떠올랐던 아이디어는 그리려는 데이터의 범위를 캔버스의 높이로 나누는 것이었습니다. 이렇게 하면 그리려는 데이터의 최대값이 캔버스의 높이를 넘지 않게 될 것입니다.
+하지만, 여기서 한 가지 문제점이 있습니다. 그리려는 데이터의 최대값이 항상 1이라는 보장이 없었습니다.
+
+그래서 그리려는 데이터에서 최대값을 찾아 그 값으로 나누는 방법을 생각해 내었습니다.
+이렇게 하면 그리려는 데이터의 최대값이 1이 되고, 다른 모든 값들은 0과 1 사이의 값이 됩니다. 그리고 이 값을 다시 캔버스의 높이로 곱하면,그리려는 데이터의 범위가 캔버스의 높이를 넘지 않게 됩니다.
+
+```js
+// scaleFactor 적용
+const scaleFactor = maxAmplitude > 1 ? 1 / maxAmplitude : 1;
+
+for (let i = 0; i < width; i += 1) {
+  const min = Math.min.apply(null, data.slice(i * step, (i + 1) * step));
+  const max = Math.max.apply(null, data.slice(i * step, (i + 1) * step));
+  ctx.lineTo(i, (1 + min * scaleFactor) * amplitude);
+  ctx.lineTo(i, (1 + max * scaleFactor) * amplitude);
+}
+```
+
+값을 적용하니 이렇게 원하는 결과를 얻을 수 있었습니다. <br>
+
+![image](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/5beb8fb7-7d8e-4dc4-8d6f-b3045ce902a5)
+
+<br><br>
+
+## 2. 음원의 구간 선택하기
+
+![구간선택](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/b06f1d58-f9b2-493e-b614-9c5689a7840b)
+
+### _마우스 드래그 이벤트 구현하기_ <br><br>
+
+마우스 드래그 이벤트를 구현하는 것은 이번 개인적으로는 도전적인 일이었습니다. <br>
+평소에는 마우스 이벤트라고 하면 클릭과 호버 이벤트를 주로 사용했었기 때문에, 드래그 이벤트가 어떻게 작동하는지 조사하는 것이 필요했습니다.
+
+### onMouse VS onDrag <br><br>
+
+조작 UX 개선을 위해 드래그 이벤트 구현을 위항 이벤트 선택지는 `onMouse`이벤트와 `onDrag` 두가지가 있었습니다. <br>이 둘의 장단점을 비교해 보면 아래와 같은 표가 나옵니다
+
+<br>
+
+| 기능               | onMouse                      | onDrag                                              |
+| ------------------ | ---------------------------- | --------------------------------------------------- |
+| 이벤트 발생 조건   | 마우스 클릭 / 이동/ 클릭해제 | 클릭 후 마우스 이동                                 |
+| 기본 동작          | 없음                         | 드래그 "그림자 " 생성 및 이동                       |
+| 이벤트 조절 가능성 | 상세한 조절 가능             | 시작과 종료 지점에만 조절 가능 (그림자는 조절 불가) |
+| 사용 가능 요소     | 모든 요소에 가능             | 일부 요소에만 가능 (img, a...)                      |
+
+<br>이 표를 바탕으로 제가 프로젝트에 원하는 방향을 접목하니 최종적으로 아래와 같은 표가 나왔습니다
+
+<br>
+
+|             | onMouse                                              | onDrag                                    |
+| ----------- | ---------------------------------------------------- | ----------------------------------------- |
+| 위치 추적   | 사용자의 마우스 위치를 정확하게 추적 가능            | 드래그 중인 요소의 위치만 업데이트        |
+| 실시간 갱신 | 사용자가 마우스를 움직일 때마다 실시간으로 반응 가능 | 사용자가 드래그를 시작하고 끝낼 때만 반응 |
+| 제어        | 선택 영역을 상세하게 제어 가능                       | 드래그 시작/끝 위치에 기반한 제어만 가능  |
+| 사용 용이성 | 핸들 조작이 단순하고 사용하기 쉬움                   | 드래그 가능한 요소에 제한적 동작          |
+
+<br>위치 추적의 정확도가 높다고 표현되는 위의 표를 바탕으로 `onMouse` 이벤트를 선택하게 되었습니다.
+
+<br>
+
+### `onMouseDown`이벤트와 `onMouseMove`이벤트 조합하기 <br><br>
+
+마우스 이벤트에는 드래그라는 직접적인 속성이 없기 때문에, `onMouseDown`과 `onMouseMove` 이벤트의 조합을 통해 드래그 기능을 구현하였습니다.
+
+구현 과정을 생각보다 수월하게 만들어준것은 '상태(State)' 였습니다. 저는 "Start" 및 "End"라는 두 개의 핸들을 구현하였고, 각 핸들에 대해 별도의 상태를 설정하였습니다. 예를 들어, 사용자가 "Start" 핸들을 클릭하면, `dragging` 상태가 "start"로 변경되어서 Start 핸들의 움직임만을 감지하도록 구현하였습니다. <br>
+
+![start](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/7e04dea8-efe5-45d1-94ee-a156d175cb9e)
+
+또한, `onMouseMove` 이벤트 핸들러에서는 `dragging` 상태가 `true`일 때만 이벤트가 실행되도록 조건을 설정하였습니다. 이런 방식으로 두 개의 이벤트를 연동하여, 사용자의 마우스 움직임에 따른 드래그 기능을 구현하였습니다.
+
+이렇게 하나의 상태를 활용해 두가지의 기능을 구현한 것은 재밌는 경험이었고, 코드를 읽을때 피로도가 감소된다고 느꼈습니다. 물론 그때 그때 프로젝트의 구성에 따라 이런 구현 방식은 독이 될수도 있겠지만, 앞으로 적절한 때에 이 방식을 적용하면 괜찮겠다는 생각을 하고 있습니다.<br><br>
+
+### 이벤트 정확성 높이기 <br><br>
+
+마우스 이벤트는 브라우저 화면 전체에 대한 상대값을 나타내기 때문에 이 정보를 그대로 사용하게 되면, 실제 canvas의 위치와 차이가 발생했습니다. 이 때문에 부정확한 마우스 이벤트가 발생했습니다.
+
+이를 해결하기 위해서는 우선 브라우저 내의 오디오 파형 캔버스 위치를 정확하게 잡아내는것이 우선이라고 생각했습니다.
+
+정확하게 엘리먼트를 잡아내기위해 html의 `getBoundingClientRect`메서드를 활용했습니다. 이 메서드는 요소의 위치와 크기에 대한 정보를 제공했습니다. <br>
+
+<img width="500" alt="image" src="https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/8704b037-84fb-4104-b408-8964835cf9f6">
+
+이를 이용하여 마우스 이벤트가 발생한 실제 위치를 측정할 수 있었습니다. <br>
+
+<img width="502" alt="image" src="https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/16846db0-b6a5-412c-a9cb-78ab710e1f8d">
+
+getBoundingClientRect()는 선택한 요소의 위치(top, bottom, left, right) 및 크기(width, height) 정보를 담은 `DOMRect` 객체를 반환합니다.
+
+그리고 이 `DOMRect` 객체의 `left` 프로퍼티는 요소의 왼쪽 경계의 위치를 반환합니다.
+
+따라서 **이벤트가 발생한 클라이언트 x 좌표에서 요소의 왼쪽 경계 위치만큼 차감함으로써**, 마우스 이벤트가 요소 내에서 어디에서 발생했는지를 정확히 계산 했습니다.<br><br>
+
+## 3. 음원 트리밍 & 결합 기능 구현하기
+
+### _적절한 데이터 찾기_ <br><br>
+
+시각화 때와 마찬가지로 이번에도 음원의 편집기능에 대한 적절한 데이터를 찾아야 했습니다. 답은 생각보다 훨씬 간단했습니다. <br>
+
+_**"Audio Buffer는 오디오 에셋을 나타낸다."**_ <br>
+
+당연하게도 음원을 편집할 때 잘라내는 구간 부분을 제외하고는 손실이 없어야 하기 때문에 오디오 버퍼의 모든요소 가 필요했습니다. 이렇게 오디오 편집에 대한 데이터는 어렵지 않게 찾을 수 있었습니다. <br>
+
+---
+
+### _음원 트리밍_ <br><br>
+
+<br>음원을 자르기 위한 첫 계획은 아래와 같이 세웠습니다. <br>
+
+1. 기존 오디오 버퍼의 `length` 값을 선택한 구간의 `length`값으로 대체한다.
+2. 이와 같이 `duration`값을 대체한다.
+3. `getChnnelData()`를 사용해 `Float32Array`를 시작과 끝을 순회하며 기존 값을 새로운 값으로 대체한다.
+   <br>
+
+결과적으로 이러한 계획은 1번 부터 무너졌습니다.
+
+<br>
+오디오 버퍼는 실제로 직접 변경할 수 있지만 이것은 오디오 프로세싱 컨텍스트에서 진행중인 재생이나 다른 작업에 문제를 일으킬 수 있습니다.<br>
+따라서 보통은 오디오 버퍼의 내용을 바꾸는 것을 피하고, 필요한 경우 새로운 오디오 버퍼를 만드는 것을 권장하는 내용을 읽게 되었습니다. <br>
+해당 기능을 구현 당시에는 당장 다른 작업에서 문제가 발생할 만한 이유가 없었지만, 향후 애플리케이션의 확장에 걸림돌아 될 수 있는 이슈를 방지하기 위해 다른 방법을 찾기로 했습니다.
+
+따라서 Web Audio API에서 제공하고 있는 `createBuffer`메서드를 사용해 새로운 버퍼를 생성하는 방향으로 진행하게 되었습니다. <br><br>
+
+### `audioContext.context.createBuffer()` <br><br>
+
+`createBuffer` 메서드를 처음 사용하면서, `duration`이라는 오디오 파일의 길이를 초 단위로 나타내는 파라미터가 빠져있어 조금 당황스러웠습니다. 그러나 결과적으로는 이러한 사항이 오히려 개발 과정을 더욱 수월하게 만들었습니다.
+
+왜냐하면 createBuffer 메서드는 샘플의 개수에만 의존하여 동작하므로, `duration`을 제외한 속성들만을 입력하면 메서드가 자동으로 `duration`을 계산하여 설정해주었기 때문입니다. 이런 점 덕분에 별도로 `duration`을 계산하는 코드를 작성하지 않아도 되었고, 샘플의 개수를 더 유연하게 다루면서 정밀한 구현을 가능하게 했습니다.
+<br>
+
+```js
+const newBuffer = audioContext.context.createBuffer(
+  audioBuffer.numberOfChannels,
+  // 빠져있는 duration 속성
+  Math.floor((selectedEnd - selectedStart) * audioBuffer.length),
+  audioBuffer.sampleRate
+);
+```
+
+<br>
+
+이는 사소해 보일 수 있는 일이지만, **프로그래밍에서는 무의미하게 발생하는 일이 없다는 것을 다시 한 번 깨달은 순간이었습니다.**
+
+이후로는, 선택한 영역의 샘플을 비율로 계산해 `length` 값에 입력하고, 이에 따라 새로운 버퍼에 기존 버퍼의 선택 영역의 `Float32Array`를 순회하며 값을 복사하는 과정을 거쳐 음원 자르기 기능을 완성했습니다.
+
+그리고 이전에 참고했던 웹사이트에서는 오디오 트리밍 후 직관적으로 바로 반영되지 않아서 작업 완료 여부를 판단하기 어려웠던 점을 고려하여, 편집 상태를 체크하는 상태 값을 설정하고 오디오 파형을 그리는 함수에 조건을 추가했습니다. 이를 통해 오디오가 편집된 경우에는 바로 오디오 파형이 다시 그려지게 만들어 사용자에게 시각적인 피드백을 제공함으로써 직관성을 높였습니다. <br><br>
+
+⬇️ 참고 사이트의 편집기능 <br>
+
+![Jul-05-2023 18-49-00](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/da63e35c-847f-4111-8620-938cd03c3cd2) <br>
+
+⬇️ 시각적 피드백 제공 <br>
+
+![Jul-05-2023 18-50-57](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/a209c023-2d32-48ff-9165-b2b543e28ca3) <br>
+
+<br><br>
+
+---
+
+### _음원 결합_ <br><br>
+
+### 오디오 버퍼와 음원 결합 조건 <br><br>
+
+사전조사를 했을 때 각각 오디오 버퍼간 결합을 위해서는 조건이 2개 있었습니다.
+
+1. `samplerate` 일치 <br>
+
+샘플레이트는 각각 음원의 용도마다 표준이 정해져있어서 음원을 결합하려면 샘플레이트를 맞춰주는 작업이 필요했습니다. <br><br>
+이것은 프로젝트를 진행하기 전부터 알고있던 사실입니다. 하지만 개발을 하며 이상한 점이 있었는데 어떤 음원파일을 업로드 하더라도, 심지어 직접 녹음한 데이터를 오디오 버퍼로 변환할 때도 항상 같은 `samplerate`값이 나오는 것이었습니다. <br><br>
+
+### 왜 모든 음원이 같은 샘플레이트를 가지고 있을까? <br><br>
+
+조사해본 결과 이유는 `decodedAudioData()` 메서드 때문이었습니다. 이 메서드는 음원 파일이나 녹음 데이터를 오디오 버퍼로 변환 하기 위해 꼭 거쳐야하는 관문같은 것인데, 이 관문을 거치면 어떤 샘플레이트라도 고정값으로 변환됐습니다. <br><br>
+심지어 보통 리샘플링 작업은 음원의 품질을 낮추는게 일반적인데 `decodedAudioData()`는 고급 리샘플링 알고리즘을 사용하여 품질을 최대한 유지합니다. 이 덕분에 생각보다 수월하게 작업을 진행할 수 있었습니다.
+
+2. 채널 수 일치 <br>
+
+채널 수 일치는
+
+⬇️ 각각 다른 음원들의 같은 샘플레이트 와 채널 <br>
+
+<img width="644" alt="image" src="https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/67c52cf2-db83-41f2-8018-0d55e0cd3828">
+
+---
+
+<br><br>
+**음원 결합은 크게 두 가지 방법으로 구분됩니다.**
+<br><br>
+
+1. **오디오 믹싱** (결합된 음원을 동시에 재생) - 음원에 따른 녹음기능 구현 <br><br>
+2. **트랙 레이어링** (결합된 음원을 순차적으로 재생) - 음원 트랙 결합기능 구현 <br><br>
+
+이번 프로젝트에서는 사용자와 일반 음원의 결합과 음원들 간의 순차적 결합 이 두가지 결합 기능을 모두 구현하게 되었습니다.
+
+### 오디오 믹싱 <br>
+
+#### 녹음 데이터 변환하기 <br>
+
+사용자가 업로드한 음원에 맞추어 녹음을 진행하기 위해 "오디오 믹싱" 기능을 구현하게 되었습니다. 오디오 믹싱은 트랙 레이어링에 비해 상대적으로 간단했습니다. 이는 여러 음원을 동시에 재생하기 때문에, 오직 채널을 합성하는 과정만 필요하기 때문입니다.
+
+그러나 `MediaRecorder`와 오디오 버퍼는 서로 직접적으로 상호 작용할 수 없기 때문에, `MediaRecorder`를 이용하여 얻은 녹음 데이터를 오디오 버퍼로 변환하는 과정이 필요했습니다.
+
+음원 파일을 `decodedAudioData`를 이용하여 오디오 버퍼로 변환하는 과정에서 `ArrayBuffer`로의 변환 작업이 필요하다는 사실을 알고 있었으므르, 녹음 데이터를 `ArrayBuffer`로 변환하는 방법을 찾아보게 되었습니다.
+
+1. `MediaRecorder`로부터 녹음 데이터 얻기 <br>
+   `dataavailable` 이벤트를 통해 녹음 데이터를 얻을 수 있습니다. 이 이벤트가 발생하면, 이벤트 객체의 `data` 속성을 통해 녹음 데이터에 접근할 수 있습니다. 여기서 얻은 데이터는 `Blob` 형식입니다.
+
+2. FileReader 객체 사용하기 <br>
+   `Blob` 데이터를 `ArrayBuffer`로 변환하기 위해, `FileReader`의 `readAsArrayBuffer` 메서드를 사용합니다.
+
+3. 마지막으로, `ArrayBuffer` 데이터를 `decodedAudioData`에 전달하여 `AudioBuffer`로 변환합니다.<br>
+
+⬇️ 데이터 변환 과정 <br>
+
+```js
+const recordedBlob = new Blob(recordedChunks, { type: "audio/webm" });
+const recordedURL = URL.createObjectURL(recordedBlob);
+setRecordedAudioURL(recordedURL);
+const reader = new FileReader();
+reader.onload = async e => {
+  const arrayBuffer = e.target.result;
+  const audioBuffer = await audioContext.current.decodeAudioData(arrayBuffer);
+  recordedBuffer.current = audioBuffer;
+};
+```
+
+<br>
+
+#### 오디오 결합하기 <br>
+
+1. 새로운 오디오 버퍼 생성<br>
+2. 두 버퍼 중 긴 길이를 새로운 오디오 버퍼의 `length`로 설정<br>
+3. 채널과 샘플레이트 값을 할당<br>
+
+이러한 과정을 통해 오디오 믹싱 기능을 성공적으로 구현하였습니다.<br>
+
+### 트랙 레이어링 <br>
+
+각각에 트랙에 있는 음원을 순차적으로 결합하기 위해서는 샘플을 이진 데이터로 나타내는 `Float32Array` 에 직접 접근하여 순서대로 연결해주는 작업이 필요헀습니다. <br><br>
+
+```js
+let currentPosition = 0;
+
+buffers.forEach(buffer => {
+  for (let i = 0; i < numberOfChannels; i += 1) {
+    const outputData = outputBuffer.getChannelData(i);
+    const inputData = buffer.getChannelData(i);
+    outputData.set(inputData, currentPosition);
+  }
+  currentPosition += buffer.length;
+});
+```
+
+<br>
+
+처음에는 앞선 로직들과 같이 새로운 버퍼를 생성 했습니다. 이후 로직은 각 음원을 순차적으로 결합하는 것이기 때문에, 각 음원의 길이를 추적하기 위해 currentPosition이라는 변수를 선언했습니다.
+이 변수는 각각의 버퍼 길이를 누적하여 저장하게 됩니다. 그리고 buffers.forEach() 메서드를 통해 각 버퍼를 순회합니다.
+
+각 버퍼에 대해, `outputData.set(inputData, currentPosition)`를 호출하여 outputData의 현재 위치(currentPosition)부터 inputData를 순차적으로 복사를 했습니다. 이렇게 함으로써, 여러 음원이 단일 버퍼 내에서 이어지는 형태로 합쳐지게 되어 순차적인 결합 기능을 구현했습니다. <br><br>
+
+---
+
+### _음원 결합 기능을 구현하며 만난 이슈_ <br><br>
+
+1. 멀티 트랙 구현으로 인한 문제점 <br>
+   음원의 결합 기능을 구현하기 이전에는 단일 트랙 위주로 개발을 진행했습니다. 컴포넌트 간 prop 드릴링을 피하고, 상태 관리를 더 유연하게 하기 위해 리덕스를 사용했습니다. 그러나 멀티 트랙을 구현한 후, 상태가 글로벌로 관리되면서 모든 트랙이 동일한 상태를 공유하게 되는 문제가 발생했습니다.<br><br>
+
+![Jul-07-2023 15-20-11](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/7d5f283b-ae29-41aa-9cd8-e59e1c9d8b22)
+
+<br>
+
+2. 각 필드에 id 부여<br>
+   상태 공유 문제를 해결하기 위해 각 필드에 고유한 id를 부여하여 각각의 상태가 공유되지 않도록 했습니다.<br><br>
+3. 음원 결합에 대한 추가적인 문제<br>
+   각 필드에 id를 부여해 트랙의 상태 공유 문제를 해결하였으나, 음원을 결합하려면 모든 트랙을 관리하는 상위 컴포넌트에서 결합 기능을 구현해야 했습니다. 그러나 id는 개별 컴포넌트에서 무작위로 생성된 값이었기 때문에, 상위 컴포넌트에서는 각 id 값을 알 수 없었습니다.<br><br>
+
+지금 돌이켜보면, 당시의 문제점은 다음과 같습니다 <br>
+
+1. id가 무작위 값일 필요는 없었지만, id는 반드시 고유해야 한다고 생각하여 무작위 값으로 생성하여 부여했습니다. 컴포넌트의 key값과 혼동하고 있었습니다. <br>
+2. 코드의 구조 설계가 충분히 고려되지 않았습니다. <br>
+3. 당시에는 이 문제에 대한 해결 방법이 떠오르지 않아 고민을 많이 했습니다. <br>
+
+이 문제를 해결하기 위해 동료에게 자세한 상황 설명 후 도움을 요청했고, 그 조언을 바탕으로 상위 컴포넌트에서 필드에 직접 id 값을 명시하고 각각의 상태를 관리하는 방식으로 개발을 진행하였습니다. <br><br>
+
+---
+
+### 문제를 해결하며 느끼게된 점 <br><br>
+
+지금 돌이켜보면 간단한 문제였지만 당시에는 해결하지 못할것같은 문제처럼 느껴졌습니다. 이러한 경험을 토대로 풀리지 않을것 같은 문제도 현재의 상황, 심리상태, 그리고 잘못된 배경 지식으로 인하여 알고보면 간단한 문제일 수 있다는 것을 알게 되었습니다. <br> <br>
+**상황에서 한 발짝 물러서 상황을 볼 수 있는 동료라는 존재는 큰 힘이 될 수 있다는 것을 다시 한 번 깨닫는 경험이었습니다.** <br><br>
+
+## 4. 정확한 `Progress Bar` 기능 구현
+
+### _음원의 진행상황에 따른 Progress Bar 애니메이션 구현하기_ <br><br>
 
 ![Progress Bar](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/f3606e85-f038-412d-8e13-3c0e0a5e4481)
 
-### 1. `setInterval` vs `requestAnimationFrame`
+<br><br>
 
-- 처음에는 `setInterval` 함수를 사용하여 `Progress Bar`의 위치를 지속적으로 업데이트하려고 했습니다.
+**음원의 진행상황에 따른 프로그레스바를 정확하게 구현하기 위한 전략을 2가지로 나눴습니다.**
 
-```js
-useEffect(() => {
-  if (isPlaying) {
-    const interval = setInterval(() => {
-      updateProgress();
-    }, 10);
+---
 
-    return () => {
-      clearInterval(interval);
-    };
-  }
+### _ProgressBar의 위치를 계산하고 업데이트 하기_ <br><br>
 
-  return updateProgress();
-}, [isPlaying]);
-```
+첫 번째 단계에서는 음원의 현재 재생 위치를 해야 했습니다. AudioContext의 `currentTime`을 사용해 현재 재생위치를 추적하는 용도로 사용했습니다. **정확한 재생 위치는 시작 시간과 일시 정지 시간을 차감해서 계산**하였고, 이 값은 음원의** 총 길이에 대한 퍼센트로 변환** 했습니다. <br><br>
+이렇게 계산된 퍼센트는 전체 ProgressBar의 위치를 나타내게 됩니다.<br><br>
+음원의 재생 상태가 변경될 때마다 이 updateProgress 함수를 호출하여 현재 진행률을 계산하고, 이를 상태로 저장했습니다. 이는 오디오 재생이 시작되거나 재생 위치가 변경될 때마다 발생하므로, ProgressBar는 항상 음원의 현재 재생 위치를 정확하게 반영할 수 있습니다.<br>
+`const progress = (currentTime / audioBuffer.duration) * 100;`
+<br><br>
 
-- 그러나 만약 재생시간이 매우 긴, 예를들어 1시간 이상 정도의 음원 파일을 재생시켰을 때, 재생을 진행할 수록 progress bar와 재생 시간과의 정확도가 부정확하다는 문제를 발견했습니다.
+### _애니메이션 표현하기_ <br><br>
 
-해당 문제가 일어나는 이유는
+애니메이션을 표현하기 위해서 progress bar로 표현한 캔버스를 그리고 지우는 작업을 반복했습다. 상태가 업데이트 될 때 마다 함수를 호출 하고, 이 전에 그렸던 캔버스를 지우는것을 반복해서 사용자의 눈에 애니메이션처럼 보이는 효과를 구현했습니다.
 
-#### 1. `setInterval`은 JavaScript의 웹 API 중 하나로, 지정된 시간 간격마다 주어진 함수를 실행한다. 그러나 `setInterval`이 완벽하게 정확한 타이밍을 보장하는 것은 아니다.
+초기에는 프로그레스바를 `setInterval`을 사용해 지속적으로 업데이트를 했습니다. 애니메이션이 자연스럽게 진행되고 오차도 없었기 때문에 문제가 전혀 없어 보였습니다. <br>
+하지만 재생시간이 긴 음원을 재생하게되면 시간이 지날수록 점점 재생시간과 progress bard의 위치간 오차가 생기는 이슈가 발생했습니다. 해당 문제를 해결하기 위해 `setInterval`을 다시 조사 해보게 되었고, <br>
+`setInterval`과 함께 웹페이지 애니메이션 구현시 가장 많이 사용되는 `requestAnimationFrame`도 함께 조사를 진행했습니다.
 
-JavaScript는 싱글 스레드 언어이며, `setInterval` 자체는 웹 API에서 실행 되지만, `setInterval`의 콜백 함수는 JavaScript 메인 스레드에서 실행된다. 이 때문에 복잡한 작업이나 기타 이벤트가 메인 스레드를 차지하고 있으면, setInterval 콜백이 예상한 시간에 실행되지 않을 수 있다. 이러한 지연은 작은 차이로 시작할 수 있지만, 시간이 지남에 따라 축적되어서 부정확성을 높일 수 있다.
+아래는 두 함수의 조사 결과입니다.
 
-#### 2. `setInterval`은 지정된 시간 간격을 "최소"로 보장할 뿐, 실제로 콜백이 실행되는 정확한 시간을 보장하지 않는다. 즉, 지정된 시간이 지나더라도 `setInterval` 콜백이 즉시 실행되는 것은 아니다.
+### `setInterval`
+
+#### 1. `setInterval`은 JavaScript의 웹 API 중 하나로, 지정된 시간 간격마다 주어진 함수를 실행한다. 그러나 `setInterval`이 완벽하게 정확한 타이밍을 보장하는 것은 아니다. <br><br>
+
+"JavaScript는 싱글 스레드 언어이기 때문에 `setInterval` 자체는 웹 API에서 실행 되지만, `setInterval`의 콜백 함수는 JavaScript 메인 스레드에서 실행되기 때문에 복잡한 작업이나 기타 이벤트가 메인 스레드를 차지하고 있으면, setInterval 콜백이 예상한 시간에 실행되지 않을 수 있다. 이러한 지연은 작은 차이로 시작할 수 있지만, 시간이 지남에 따라 축적되어서 부정확성을 높일 수 있다." <br>
+
+#### 2. `setInterval`은 지정된 시간 간격을 "최소"로 보장할 뿐, 실제로 콜백이 실행되는 정확한 시간을 보장하지 않는다. 즉, 지정된 시간이 지나더라도 `setInterval` 콜백이 즉시 실행되는 것은 아니다. <br> <br>
 
 이 때문에, 오래동안 `setInterva`l을 사용하여 `ProgressBar`를 업데이트하면, 실제 오디오 재생 상태와 `ProgressBar`의 상태 사이에 차이가 생길 수 있다.
 
-저는 이를 해결하기 위해 `requestAnimationFrame` 함수를 사용하여 애니메이션을 최적화하였습니다.
+오차가 발생하는 상황이 `setInterval`과 Javascript의 구조적인 문제였기 때문에,
+
+그 결과 `requestAnimationFrame` 라는 함수를 알게 되었고 이를 사용하여 애니메이션을 최적화를 시도했습니다.
+
+### `requestAnimationFrame` <br>
+
+`requestAnimationFrame`은 웹 브라우저의 화면 갱신 주기에 맞추어 애니메이션을 수행하는 JavaScript 메서드이다. 메서드는 레파인트(reflow)와 리페인트(repaint)를 최소화하며, 브라우저의 화면 갱신 주기와 동기화되어 애니메이션을 수행한다. 일반적으로 이 화면 갱신 주기는 초당 60회로, 대부분의 **웹 브라우저와 컴퓨터의 디스플레이 주사율이 일치**한다.
+
+그 결과, requestAnimationFrame을 이용하면 setInterval보다 더 정확한 타이밍을 얻을 수 있으며, 프레임 당 정확한 업데이트가 필요한 애니메이션 등의 처리에 유용하다.
+
+이 메서드를 이용하여 프로그레스 바 업데이트와 같은 애니메이션을 화면 갱신 주기와 동기화시키면, 더 부드럽고 자연스러운 애니메이션 효과를 얻을 수 있다.
+
+이렇게 비교해본 결과 해당 프로젝트에 `requestAnimationFrame` 메서드가 적합하다는 것과 오차를 줄일 수 있겠다고 생각하게 되었고 이를 활용해 `setInterval`함수를 대체하여 애니메이션 효과를 대체했습니다.
+
+ <br>
 
 ```js
 useEffect(() => {
@@ -314,112 +544,23 @@ useEffect(() => {
 }, [isPlaying]);
 ```
 
-`requestAnimationFrame` 함수는 브라우저가 다음 리페인트를 수행하기 전에 특정 함수를 호출하도록 요청합니다. 따라서 브라우저의 리페인트 주기에 맞추어 애니메이션을 업데이트할 수 있습니다.
+ <br>
 
-### 2. 음원의 진행률에 따른 `ProgressBar`를 `Waveform`위에 정확하게 그리기
+이런 방식으로 ProgressBar의 표시를 음원의 실제 재생 상태와 더욱 정확하게 일치시킬 수 있었습니다. requestAnimationFrame 함수를 사용함으로써 브라우저의 리페인트 주기에 맞추어 ProgressBar의 업데이트를 최적화하였고 이는 ProgressBar의 부드럽고 정확한 동작을 보장했습니다. 결과적으로, 이 과정을 통해 사용자에게 더욱 정교하고 실시간적인 오디오 재생 경험을 제공할 수 있게 되었습니다.
 
-- 음원의 진행 상황에 따른 ProgressBar를 Waveform 위에 정확하게 그리기 위한 구현 전략에 대해 설명하겠습니다. 이 작업은 두 가지 주요 부분으로 나눌 수 있습니다: ProgressBar의 위치를 계산하고 업데이트하는 것과 실제 ProgressBar를 그리는 것입니다.
+<br> <br>
 
-- 첫 번째 단계에서는 음원의 현재 재생 위치를 계산합니다. AudioContext의 `currentTime`을 사용해 현재 재생 위치를 파악합니다. 이 재생 위치는 `startTime`과 `pausedTime`을 빼서 계산하였고, 이 값은 음원의 총 길이에 대한 퍼센트로 변환 했습니다. 이렇게 계산된 퍼센트는 전체 ProgressBar의 위치를 나타내게 됩니다.
-- 음원의 재생 상태가 변경될 때마다 이 updateProgress 함수를 호출하여 현재 진행률을 계산하고, 이를 상태로 저장했습니다. 이는 오디오 재생이 시작되거나 재생 위치가 변경될 때마다 발생하므로, ProgressBar는 항상 음원의 현재 재생 위치를 정확하게 반영할 수 있습니다.
-
-- 두 번째 단계는 실제로 ProgressBar를 그리는 것입니다. 이 작업은 `drawProgress` 함수에서 이루어집니다. 이 함수는 현재 진행률을 기반으로 캔버스 위에 선을 그립니다. ProgressBar의 위치는 **캔버스의 너비와 현재 진행률(퍼센트)을 곱하여 계산**되며, 이 값은 선을 그리는 시작점(x 좌표)이 됩니다.
-
-  ***
-
-## 4. 구간 선택
-
-### Canvas API를 사용하여 구간선택 구현하기.
-
-![구간선택](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/b06f1d58-f9b2-493e-b614-9c5689a7840b)
-
----
-
-1. 사용자의 마우스 이벤트 정확하게 감지하기.
-
-- **초기 발생 문제**
-  사용자가 waveform 캔버스를 클릭 했을 때, startSelection의 핸들만 이동하는 문제
-
-![Selection Erorr](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/b68a904a-5517-450b-a77b-d41fcb698bba)
-
-- **문제 발생 이유**
-
-  handleMouseDown 함수에서 먼저 startDistance에 가장 가까운지 확인하는 로직이 있기 때문입니다.
-  사용자가 start 핸들과 end 핸들 사이의 위치에서 클릭을 하면 항상 startDistance가 endDistance보다 작거나 같아지므로 start 핸들이 이동하게 됩니다. 가장 먼저 실행되는 `if (startDistance <= endDistance)` 조건이 충족되어 start 핸들만 이동하게 됩니다.
-
-- **해결 방안**
-
-  #### 임계값 설정
-
-  `handleMouseDown` 함수에서 `threshold`(임계값)을 설정합니다. 임계값이 없거나 너무 크면 어느 위치에서든 항상 startDistance가 endDistance보다 작거나 같게 되어, 위의 이미지 처럼 start 핸들이
-  항상 이동하게 됩니다. 이로 인해 사용자가 end 핸들을 움직이려 해도 start 핸들이 움직이는 문제가 발생할 수 있습니다.
-  적절한 임계값을 설정하여 사용자가 핸들 주변의 특정 범위 내에서 클릭하면 핸들을 클릭한 것으로 간주되게 했습니다. 이를 통해 사용자의 손의 미세한 흔들림을 보정하고, 사용자 경험을 개선했습니다.
-
-```js
-  const handleMouseDown = event => {
-
-    ...
-
-    const threshold = 50;
-
-    const startDistance = Math.abs(x - leftHandleX);
-    const endDistance = Math.abs(x - rightHandleX);
-
-    if (startDistance <= threshold) {
-      setDragging("start");
-      setSelectionActive(true);
-    } else if (endDistance <= threshold) {
-      setDragging("end");
-      setSelectionActive(true);
-    } else {
-      setDragging(null);
-    }
-  };
-
-```
-
-2. Mouse Events Handling
-
-- **초기 발생 문제**
-
-사용자가 드래그를 시작하거나 종료할 때 발생하는 마우스 이벤트를 처리하는 것이 어려웠습니다. 특히, 사용자가 드래그를 시작하거나 종료하는 시점을 **정확히 감지하는 것**이 중요했습니다. 그러나 마우스 이벤트를 정확히 처리하지 못하면 사용자의 입력에 따라 예상한 대로 반응하지 않는 문제가 발생했습니다.
-
-- **문제 발생 이유**
-
-마우스 이벤트의 위치 정보는 브라우저 화면 전체에 대한 상대적 위치를 반환하므로, 이 정보를 그대로 사용하면 실제 요소의 위치와 차이가 발생했습니다. 즉, 클릭 이벤트의 위치 정보가 실제로 사용자가 클릭한 요소의 위치와 일치하지 않는 문제가 있었습니다.
-
-- **해결 방안**
-
-<img width="769" alt="image" src="https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/8704b037-84fb-4104-b408-8964835cf9f6">
-
-이 문제를 해결하기 위해, HTML 요소의 getBoundingClientRect() 메서드를 사용하여 이벤트 발생 위치를 정확히 파악했습니다. 이 메서드는 요소의 위치와 크기에 대한 정보를 제공하며, 이를 이용하여 마우스 이벤트가 발생한 실제 위치를 측정할 수 있었습니다.
-
-<img width="502" alt="image" src="https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/16846db0-b6a5-412c-a9cb-78ab710e1f8d">
-
-getBoundingClientRect()는 선택한 요소의 위치(top, bottom, left, right) 및 크기(width, height) 정보를 담은 DOMRect 객체를 반환합니다. 그리고 이 DOMRect 객체의 left 프로퍼티는 요소의 왼쪽 경계의 위치를 반환합니다. 따라서 이벤트가 발생한 클라이언트 x 좌표에서 요소의 왼쪽 경계 위치를 뺌으로써, 마우스 이벤트가 요소 내에서 어디에서 발생했는지를 정확히 계산할 수 있었습니다.
-
-# Feature
+# 기능
 
 - 브라우저에 있는 음원파일을 업로드하여 재생할수 있습니다.
 - 업로드한 음원의 템포, 피치를 조절 할 수 있습니다.
 - 업로드한 음원의 구간을 선택하여 자를 수 있습니다.
 - 편집한 음원들끼리 음원을 결합할 수 았습니다.
 - 업로드한 음원을 배경음으로 음성을 녹음할 수 있습니다.
+- 녹음한 음원을 바로 들을 수 있습니다.
 - 편집한 음원을 로컬 저장소 또는 본인 계정에 저장 할 수 있습니다.
 
-# Usage
-
-- Google Auth를 통해서 로그인 합니다.
-- 파일 업로드: 파일 선택 버튼을 클릭해서 로컬 저장소에 있는 음원 파일을 업로드합니다.
-- 트랙 정렬: 각 트랙의 왼쪽에 있는 화살표 버튼을 이용해서 트랙의 순서롤 조정합니다.
-- 트랙 결합: 두 개 이상의 음원이 업로드 되면 "음원 결합하기"버튼이 활성화 됩니다. 버튼을 클릭하여 음원을 결합합니다.
-- 음원 저장: 각 트랙에 있는 "SAVE"버튼을 클릭하면 각각의 트랙을 따로 저장 할 수 있고, 음원을 결합 후 하단에 있는 "SAVE"버튼을 클릭하여 편집한 음원을 로컬 저장소 또는 본인 계정의 서버에 저장 할 수 있습니다.
-- 음원 듣기: 화면 오른쪽 상단의 "내 음악"버튼을 클릭하면 내가 저장한 음원을 언제나 들을 수 있습니다.
-- 녹음하기: 파일을 업로드 후 녹음버튼을 클릭하면 업로드한 음원이 재생됩니다. 재생되는 음원에 맞춰 녹음 후 정지 버튼을 클릭하면 업로드한 음원과 녹음파일이 결합됩니다.
-- 녹음 음원 재생: 저장 하기 전 녹음된 음원을 들어 볼 수 있습니다.
-- 녹음 음원 저장: 결합된 음원을 서버에 저장 할 수 있습니다.
-
-# Tech stack
+# 사용 기술
 
 ## Frontend
 
@@ -439,6 +580,14 @@ getBoundingClientRect()는 선택한 요소의 위치(top, bottom, left, right) 
   하지만 이 말은 즉, 피치와 템포는 서로 **강력한 의존성**을 띄고 있다는 말이 됩니다. 이 문제를 해결하기 위해 조사를 해본 결과 `Phase vocoder` 라고 하는 알고리즘이 필요하다는 것을 알게 되었습니다. 해당 알고리즘을 더 조사해보니
   신호처리, 수학, 프로그래밍에 대해 전문적인 지식이 필요하다는것을 알게 되었고, 3주라는 시간 안에 이를 구현하기에는 무리가 있겠다는 생각을 하게되었습니다. 이러한 결과로 Tone.js의 힘을 빌려 피치, 템포 조절 기능을 구현했습니다.
 
+  라이브러리를 최대한 쓰지 않고 구현하는것이 목표였기 때문에 Tone.js 쓰게 되는것은 한편으로 아쉬웠습니다. 다만, 어쩔 수 없이 쓰게된 라이브러리일 지라도 향후 애플리케이션의 확장과 더 나은 사용자 경험 개선을 위해 현재 프로젝트에 적합한 라이브러리를 선택해야 했습니다. 선택한 이유는 아래와 같습니다.
+
+  1. Tone.js 는 WEB Audio API기반으로 이루어진 라이브러리이기 때문에 크로스 브라우징이슈를 방지 할 수 있습니다.
+  2. 이퀄라이저, 미디, 사운드이펙트 등 다양한 오디오 기능을 제공합니다.
+  3. 문서화가 잘 되어있어 학습곡선이 타 라이브러리에비해 낮습니다.
+
+이러한 내용들을 바탕으로 Tone.js를 사용하게 되었습니다.
+
 ## Backend
 
 - Node.js
@@ -447,7 +596,7 @@ getBoundingClientRect()는 선택한 요소의 위치(top, bottom, left, right) 
 - MongoDB Atlas / Mongoose
 - ESLint
 
-# Time Line
+# 개발 기간
 
 - 프로젝트 기간: 2023.04.03(월) ~ 2023.04.28(금)
 - 1 주차: 기획 및 설계
@@ -459,3 +608,5 @@ getBoundingClientRect()는 선택한 요소의 위치(top, bottom, left, right) 
 [Frontend](https://github.com/Harmony-HUB/HarmonyHub-Client)
 
 [Backend](https://github.com/Harmony-HUB/HarmonyHUB-Server)
+
+# 회고

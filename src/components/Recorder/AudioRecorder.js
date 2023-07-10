@@ -6,9 +6,39 @@ import {
   faUpload,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import styled from "styled-components";
 import AudioRecorderStorage from "../Storage/AudioRecorderStorage";
 import Button from "../common/Button/Button";
 import { SelectFileButton, FileInput } from "../MusicEditor/styles";
+import Waveform from "../Waveform/Waveform";
+
+const RecordButton = styled.button`
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  border-radius: 50%;
+  border: 0.5 solid black;
+  outline: 10px;
+  margin: 10px;
+  cursor: pointer;
+`;
+
+const CompleteWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+`;
+
+const FirstStageWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+`;
 
 function AudioRecorder({ userData }) {
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -26,6 +56,8 @@ function AudioRecorder({ userData }) {
   const bufferSourceRef = useRef(null);
   const uploadedBufferSourceRef = useRef(null);
 
+  const isRecord = true;
+
   const handleFileUpload = async e => {
     if (!e.target.files.length) {
       setUploadedFile(null);
@@ -33,7 +65,8 @@ function AudioRecorder({ userData }) {
     }
 
     const file = e.target.files[0];
-    setUploadedFile(file);
+    const fileURL = URL.createObjectURL(file);
+    setUploadedFile(fileURL);
 
     const arrayBuffer = await file.arrayBuffer();
     const audioBuffer = await audioContext.current.decodeAudioData(arrayBuffer);
@@ -108,35 +141,9 @@ function AudioRecorder({ userData }) {
     } else if (bufferSourceRef.current) {
       bufferSourceRef.current.stop();
       bufferSourceRef.current = null;
-    } else {
       setPlaying(false);
     }
   };
-
-  useEffect(() => {
-    return () => {
-      if (recording) {
-        stopRecording();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (uploadedBuffer.current && recordedBuffer.current) {
-      const combinedBuffer = new AudioBuffer({
-        length: Math.max(
-          uploadedBuffer.current.length,
-          recordedBuffer.current.length
-        ),
-        numberOfChannels: 2,
-        sampleRate: audioContext.current.sampleRate,
-      });
-      combinedBuffer.copyToChannel(uploadedBuffer.current.getChannelData(0), 0);
-      combinedBuffer.copyToChannel(recordedBuffer.current.getChannelData(0), 1);
-
-      setCombinedAudioBuffer(combinedBuffer);
-    }
-  }, [uploadedBuffer.current, recordedBuffer.current]);
 
   useEffect(() => {
     if (recordedChunks.length > 0) {
@@ -155,71 +162,33 @@ function AudioRecorder({ userData }) {
     }
   }, [recordedChunks]);
 
-  const buttonStyles = {
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "5rem",
-    borderRadius: "50%",
-    border: "none",
-    background: "gray",
-    outline: "black",
-    zIndex: 1,
-    position: "absolute",
-    top: 0,
-    left: 0,
-  };
-
   return (
     <div>
       {stage === 0 && (
-        <SelectFileButton>
-          <FontAwesomeIcon icon={faUpload} /> 파일 선택
-          <FileInput type="file" onChange={handleFileUpload} />
-        </SelectFileButton>
+        <FirstStageWrapper>
+          <h1>함께 녹음할 음원 파일을 선택하세요</h1>
+          <SelectFileButton>
+            <FontAwesomeIcon icon={faUpload} /> 파일 선택
+            <FileInput type="file" onChange={handleFileUpload} />
+          </SelectFileButton>
+        </FirstStageWrapper>
       )}
       {stage === 1 && (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-            height: "100%",
-            position: "relative",
-          }}
-        >
-          <button
-            type="button"
-            style={buttonStyles}
-            onClick={recording ? stopRecording : startRecording}
-          >
+        <FirstStageWrapper>
+          <Waveform
+            file={uploadedFile}
+            audioPlayedId={10}
+            recording={isRecord}
+          />
+          <h1>마이크 버튼을 누르면 음악이 재생됩니다.</h1>
+          <RecordButton onClick={recording ? stopRecording : startRecording}>
             <FontAwesomeIcon icon={recording ? faStop : faMicrophone} />
-          </button>
-        </div>
+          </RecordButton>
+        </FirstStageWrapper>
       )}
       {stage === 2 && (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-            height: "100%",
-          }}
-        >
-          <div>
-            {recordedAudioURL && (
-              <>
-                {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-                <audio src={recordedAudioURL} controls />
-              </>
-            )}
-          </div>
+        <CompleteWrapper>
+          <h1>녹음된 음원 재생하기</h1>
           <div>
             {recordedAudioURL && uploadedFile && (
               <Button onClick={togglePlayStop}>
@@ -231,7 +200,7 @@ function AudioRecorder({ userData }) {
             audioBuffer={combinedAudioBuffer}
             userData={userData}
           />
-        </div>
+        </CompleteWrapper>
       )}
     </div>
   );

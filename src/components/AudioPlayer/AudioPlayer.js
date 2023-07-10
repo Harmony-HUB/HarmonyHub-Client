@@ -23,7 +23,7 @@ import {
 } from "../../feature/audioPlayerSlice";
 import Controls from "./Controls";
 
-function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
+function AudioPlayer({ file, userData, audioPlayedId }) {
   const [isTrimmed, setIsTrimmed] = useState(false);
 
   const {
@@ -48,18 +48,6 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
   }, []);
 
   useEffect(() => {
-    if (cutWaveformBuffer) {
-      dispatch(
-        setAudioBuffer({
-          audioPlayedId,
-          audioBuffer: cutWaveformBuffer,
-        })
-      );
-      setIsTrimmed(true);
-    }
-  }, [cutWaveformBuffer]);
-
-  useEffect(() => {
     const newAudioContext = getContext();
     const gainNode = new Gain(1).toDestination();
     const pitchShift = new PitchShift(0).connect(gainNode);
@@ -75,37 +63,6 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
       })
     );
   }, [audioPlayedId]);
-
-  const updateProgress = () => {
-    if (!audioContext || !audioBuffer || !isPlaying) return;
-
-    const currentTime =
-      audioContext.context.currentTime - startTime + pausedTime;
-    const progress = (currentTime / audioBuffer.duration) * 100;
-
-    dispatch(
-      setProgressPosition({ audioPlayedId, progressPosition: progress })
-    );
-  };
-
-  useEffect(() => {
-    let animationFrameId;
-
-    const loop = () => {
-      updateProgress();
-      animationFrameId = requestAnimationFrame(loop);
-    };
-
-    if (isPlaying) {
-      loop();
-    } else {
-      updateProgress();
-    }
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [isPlaying]);
 
   const playSound = async () => {
     if (!audioContext || !audioContext.context || !audioBuffer || audioSource)
@@ -267,7 +224,7 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
     <AudioPlayerContainer data-testid="audio-player-container">
       <Waveform
         file={file}
-        waveformColor="#b3ecec"
+        waveformColor
         onWaveformClick={onWaveformClick}
         isTrimmed={isTrimmed}
         audioPlayedId={audioPlayedId}
