@@ -9,7 +9,7 @@ import MP3Modal from "./components/common/Modal/MP3Modal";
 import SongsList from "./components/MusicList";
 import Button from "./components/common/Button/Button";
 import AudioRecorder from "./components/Recorder/AudioRecorder";
-import Sidebar from "./components/Sidebar/Sidebar";
+import Sidebar from "./components/Sidebar/Sidebar.tsx";
 
 const Container = styled.div`
   display: flex;

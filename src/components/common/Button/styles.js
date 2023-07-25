@@ -9,7 +9,9 @@ const StyledButton = styled.button`
   font-size: ${props => props.fontSize};
   cursor: pointer;
   margin: ${({ margin }) => margin};
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
   border: ${({ border }) => border};
   ${({ style }) => style}
   &:hover {
