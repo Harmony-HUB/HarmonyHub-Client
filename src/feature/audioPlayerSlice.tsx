@@ -1,6 +1,22 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import AudioContextWithGain from "../components/AudioPlayer/types";
 
-const createAudioInstance = () => ({
+interface AudioInstance {
+  audioContext: AudioContextWithGain | null;
+  audioBuffer: AudioBuffer | null;
+  audioSource: AudioBufferSourceNode | null;
+  startTime: number;
+  pausedTime: number;
+  progressPosition: number;
+  isPlaying: boolean;
+  volume: number;
+  pitch: number;
+  tempo: number;
+  selectedStart: number;
+  selectedEnd: number;
+}
+
+const createAudioInstance = (): AudioInstance => ({
   audioContext: null,
   audioBuffer: null,
   audioSource: null,
@@ -15,7 +31,12 @@ const createAudioInstance = () => ({
   selectedEnd: 1,
 });
 
-const initialState = {
+interface AudioState {
+  instances: Record<number, AudioInstance>;
+  audioPlayedId: number | null;
+}
+
+const initialState: AudioState = {
   instances: {},
   audioPlayedId: null,
 };
@@ -24,7 +45,13 @@ const audioPlayerSlice = createSlice({
   name: "audioSlice",
   initialState,
   reducers: {
-    setAudioContext: (state, action) => {
+    setAudioContext: (
+      state,
+      action: PayloadAction<{
+        audioPlayedId: number;
+        audioContext: AudioContextWithGain;
+      }>
+    ) => {
       const { audioPlayedId, audioContext } = action.payload;
       if (!state.instances[audioPlayedId]) {
         state.instances[audioPlayedId] = createAudioInstance();

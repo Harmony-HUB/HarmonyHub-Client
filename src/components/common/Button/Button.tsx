@@ -1,5 +1,17 @@
+import { ReactNode, MouseEvent } from "react";
 import PropTypes from "prop-types";
 import StyledButton from "./styles";
+
+interface ButtonProps {
+  children?: ReactNode;
+  onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+  backgroundColor?: string;
+  color?: string;
+  fontSize?: string;
+  hoverBackgroundColor?: string;
+  margin?: string;
+  border?: string;
+}
 
 function Button({
   children,
@@ -10,8 +22,7 @@ function Button({
   hoverBackgroundColor,
   margin,
   border,
-  "data-testid": dataTestId,
-}) {
+}: ButtonProps) {
   return (
     <StyledButton
       onClick={onClick}
@@ -21,7 +32,6 @@ function Button({
       hoverBackgroundColor={hoverBackgroundColor}
       margin={margin}
       border={border}
-      data-testid={dataTestId}
     >
       {children}
     </StyledButton>

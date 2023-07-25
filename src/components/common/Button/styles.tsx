@@ -1,6 +1,15 @@
 import styled from "styled-components";
 
-const StyledButton = styled.button`
+interface StyledButtonProps {
+  backgroundColor?: string;
+  margin?: string;
+  border?: string;
+  style?: string;
+  fontSize?: string;
+  hoverBackgroundColor?: string;
+}
+
+const StyledButton = styled.button<StyledButtonProps>`
   background-color: ${({ backgroundColor }) => backgroundColor};
   color: ${({ color }) => color};
   border: balck;

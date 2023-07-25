@@ -6,7 +6,7 @@ import { faScissors } from "@fortawesome/free-solid-svg-icons";
 import Waveform from "../Waveform/Waveform";
 import AudioStorage from "../Storage/AudioStorage";
 import { AudioPlayerContainer, ButtonContainer } from "./styles";
-import Button from "../common/Button/Button";
+import Button from "../common/Button/Button.tsx";
 import {
   setAudioContext,
   setAudioBuffer,
@@ -15,13 +15,13 @@ import {
   setPausedTime,
   setProgressPosition,
   setIsPlaying,
-  setVolume,
   setPitch,
   setTempo,
   setSelectedStart,
   setSelectedEnd,
-} from "../../feature/audioPlayerSlice";
-import Controls from "./Controls";
+} from "../../feature/audioPlayerSlice.tsx";
+import Controls from "./Controls.tsx";
+import Volume from "../Volume/Volume.tsx";
 
 function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
   const [isTrimmed, setIsTrimmed] = useState(false);
@@ -146,15 +146,6 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
     );
   };
 
-  const handleVolumeChange = event => {
-    const newVolume = event.target.value;
-    dispatch(setVolume({ audioPlayedId, volume: newVolume }));
-
-    if (audioContext && audioContext.gainNode) {
-      audioContext.gainNode.gain.value = newVolume;
-    }
-  };
-
   const handlePitchChange = delta => {
     const newPitch = parseFloat(pitch + delta);
 
@@ -248,8 +239,8 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
         stopSound={stopSound}
         handlePitchChange={handlePitchChange}
         handleTempoChange={handleTempoChange}
-        handleVolumeChange={handleVolumeChange}
       />
+      <Volume audioPlayedId={audioPlayedId} />
       <ButtonContainer>
         <Button data-testid="trim-button" onClick={trimAudioBuffer}>
           <FontAwesomeIcon icon={faScissors} />

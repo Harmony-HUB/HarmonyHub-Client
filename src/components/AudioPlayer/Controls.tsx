@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlay,
@@ -8,10 +7,16 @@ import {
   faHashtag,
   faBackwardFast,
   faForwardFast,
-  faVolumeUp,
 } from "@fortawesome/free-solid-svg-icons";
 import Button from "../common/Button/Button";
-import { StyledVolumeSlider } from "./styles";
+
+interface ControlsProps {
+  playSound: () => void;
+  pauseSound: () => void;
+  stopSound: () => void;
+  handlePitchChange: (x: number) => void;
+  handleTempoChange: (x: number) => void;
+}
 
 function Controls({
   playSound,
@@ -19,10 +24,7 @@ function Controls({
   stopSound,
   handlePitchChange,
   handleTempoChange,
-  handleVolumeChange,
-}) {
-  const [showSlider, setShowSlider] = useState(false);
-
+}: ControlsProps) {
   const horizontalButtonsConfig = [
     {
       id: "play-button",
@@ -68,19 +70,10 @@ function Controls({
     },
   ];
 
-  const handleMouseEnter = () => {
-    setShowSlider(true);
-  };
-
-  const handleMouseLeave = () => {
-    setShowSlider(false);
-  };
-
   return (
     <div>
       {horizontalButtonsConfig.map(config => (
         <Button
-          id={config.id}
           data-testid={config.id}
           margin={config.margin}
           key={config.id}
@@ -89,21 +82,6 @@ function Controls({
           <FontAwesomeIcon icon={config.icon} />
         </Button>
       ))}
-      <div
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        style={{ display: "inline-block" }}
-      >
-        <FontAwesomeIcon icon={faVolumeUp} />
-        <StyledVolumeSlider
-          onChange={handleVolumeChange}
-          defaultValue="1"
-          style={{
-            visibility: showSlider ? "visible" : "hidden",
-          }}
-          data-testid="volume-slider"
-        />
-      </div>
     </div>
   );
 }
