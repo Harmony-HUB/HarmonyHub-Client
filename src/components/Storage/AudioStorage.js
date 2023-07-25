@@ -24,13 +24,16 @@ const StyledFormContainer = styled.div`
 `;
 
 async function applyAdjustments(buffer, pitch, tempo) {
-  return Tone.Offline(async () => {
-    const pitchShift = new Tone.PitchShift(pitch);
-    const source = new Tone.BufferSource(buffer).connect(pitchShift);
-    source.playbackRate = tempo;
-    pitchShift.toDestination();
-    source.start(0);
-  }, buffer.duration * (1 / tempo));
+  return Tone.Offline(
+    async () => {
+      const pitchShift = new Tone.PitchShift(pitch);
+      const source = new Tone.BufferSource(buffer).connect(pitchShift);
+      source.playbackRate = tempo;
+      pitchShift.toDestination();
+      source.start(0);
+    },
+    buffer.duration * (1 / tempo)
+  );
 }
 
 export function bufferToWav(buffer) {

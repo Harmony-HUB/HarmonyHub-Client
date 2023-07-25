@@ -7,7 +7,9 @@ export const AudioPlayerContainer = styled.div`
   background-color: #ffffff;
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
 
   @media (max-width: 768px) {
     padding: 10px;
@@ -32,7 +34,9 @@ export const StyledVolumeSlider = styled.input.attrs({
   opacity: 1;
   width: 100px;
   vertical-align: middle;
-  transition: opacity 0.3s, margin-left 0.1s;
+  transition:
+    opacity 0.3s,
+    margin-left 0.1s;
 
   &:hover {
     opacity: 1;
