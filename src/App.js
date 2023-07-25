@@ -6,7 +6,7 @@ import { useMediaQuery } from "react-responsive";
 import MusicEditor from "./components/MusicEditor/MusicEditor";
 import Login from "./components/Auth/Login";
 import MP3Modal from "./components/common/Modal/MP3Modal";
-import SongsList from "./components/MusicList";
+import MusicList from "./components/MusicList/MusicList.tsx";
 import Button from "./components/common/Button/Button";
 import AudioRecorder from "./components/Recorder/AudioRecorder";
 import Sidebar from "./components/Sidebar/Sidebar.tsx";
@@ -135,7 +135,7 @@ function App() {
           onClose={closeSongsListModal}
           contentLabel="Songs List Modal"
         >
-          <SongsList closeModal={closeSongsListModal} />
+          <MusicList closeModal={closeSongsListModal} />
         </MP3Modal>
       </div>
     </Router>

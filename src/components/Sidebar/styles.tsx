@@ -97,14 +97,8 @@ export const NavLink = styled.a`
 `;
 
 export const SidebarButton = styled.button`
-  margin-top: 20px;
-  padding: 8px 16px 8px 16px;
-  text-decoration: none;
-  font-size: 18px;
+  all: initial;
   color: #818181;
-  display: block;
-  transition: 0.3s;
-
   &:hover {
     color: #f1f1f1;
     background-color: #4b4b4b;

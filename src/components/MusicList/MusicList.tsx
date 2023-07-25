@@ -1,59 +1,31 @@
-/* eslint-disable consistent-return */
-/* eslint-disable jsx-a11y/media-has-caption */
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import styled from "styled-components";
-import refreshAccessToken from "./Auth/refreshAccessToken";
+import { useState, useEffect, useRef } from "react";
+import axios, { AxiosError } from "axios";
+import refreshAccessToken from "../Auth/refreshAccessToken";
+import {
+  SongList,
+  SongButton,
+  SongInfo,
+  SongTitle,
+  SongCreationTime,
+} from "./styles";
 
-const SongList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  width: 200px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow-y: scroll;
-`;
-
-const SongButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1em;
-  border: 1 solid black;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-  background-color: ${({ isSelected }) =>
-    isSelected ? "rgba(355, 355, 355, 0.3)" : ""};
-`;
-
-const SongTitle = styled.h3`
-  margin: 0;
-  font-size: 1em;
-`;
-
-const SongCreationTime = styled.p`
-  margin: 0;
-  font-size: 0.8em;
-  color: #aaa;
-`;
-
-const SongInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+interface Song {
+  url: string;
+  key: string;
+  title: string;
+  creationTime: string;
+}
 
 function MusicList() {
-  const [songs, setSongs] = useState([]);
+  const [songs, setSongs] = useState<Song[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const audioRef = useRef(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     async function fetchSongs() {
       let newToken;
+
       try {
         const token = localStorage.getItem("access_token");
         const response = await axios.get(
@@ -66,7 +38,8 @@ function MusicList() {
         );
         setSongs(response.data);
       } catch (error) {
-        if (error.response && error.response.status === 403) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response && axiosError.response.status === 403) {
           newToken = await refreshAccessToken();
 
           if (!newToken) {
@@ -102,12 +75,14 @@ function MusicList() {
     fetchSongs();
   }, []);
 
-  const handleSongSelection = (index, song) => {
+  const handleSongSelection = (index: number, song: Song) => {
     setSelectedIndex(index);
+
     if (audioRef.current) {
       if (audioRef.current.src !== song.url) {
         audioRef.current.src = song.url;
       }
+
       if (playing && selectedIndex === index) {
         audioRef.current.pause();
         setPlaying(false);
@@ -119,7 +94,7 @@ function MusicList() {
   };
 
   return (
-    <div>
+    <>
       <SongList onClick={e => e.stopPropagation()}>
         {Array.isArray(songs) &&
           songs.map((song, index) => (
@@ -145,9 +120,10 @@ function MusicList() {
             </SongButton>
           ))}
       </SongList>
-      {/* </SongsListContent> */}
-      <audio ref={audioRef} />
-    </div>
+      <audio ref={audioRef}>
+        <track kind="captions" />
+      </audio>
+    </>
   );
 }
 
