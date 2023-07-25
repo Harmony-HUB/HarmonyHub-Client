@@ -1,6 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faPlay,
   faPause,
   faStop,
   faMinus,
@@ -11,7 +10,6 @@ import {
 import Button from "../common/Button/Button";
 
 interface ControlsProps {
-  playSound: () => void;
   pauseSound: () => void;
   stopSound: () => void;
   handlePitchChange: (x: number) => void;
@@ -19,19 +17,12 @@ interface ControlsProps {
 }
 
 function Controls({
-  playSound,
   pauseSound,
   stopSound,
   handlePitchChange,
   handleTempoChange,
 }: ControlsProps) {
   const horizontalButtonsConfig = [
-    {
-      id: "play-button",
-      icon: faPlay,
-      margin: "",
-      onClick: playSound,
-    },
     {
       id: "pause-button",
       icon: faPause,

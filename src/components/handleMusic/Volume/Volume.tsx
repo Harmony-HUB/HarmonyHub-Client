@@ -2,15 +2,12 @@ import { useDispatch, useSelector } from "react-redux";
 import React, { ChangeEvent, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faVolumeUp } from "@fortawesome/free-solid-svg-icons";
-import { RootState } from "../../store";
-import { setVolume } from "../../feature/audioPlayerSlice";
+import { RootState } from "../../../store";
+import { setVolume } from "../../../feature/audioPlayerSlice";
 import StyledVolumeSlider from "./styles";
+import PropsId from "../types";
 
-interface VolumeProps {
-  audioPlayedId: number;
-}
-
-function Volume({ audioPlayedId }: VolumeProps): React.ReactElement {
+function Volume({ audioPlayedId }: PropsId): React.ReactElement {
   const [showSlider, setShowSlider] = useState(false);
   const dispatch = useDispatch();
 

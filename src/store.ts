@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import audioPlayerReducer from "./feature/audioPlayerSlice";
+import audioStatusReducer from "./feature/audioStatusSlice";
 
 export const store = configureStore({
   reducer: {
     audioPlayer: audioPlayerReducer,
+    audioStatus: audioStatusReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

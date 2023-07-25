@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getContext, Gain, PitchShift, GrainPlayer } from "tone";
+import { getContext, Gain, PitchShift } from "tone";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faScissors } from "@fortawesome/free-solid-svg-icons";
@@ -11,7 +11,6 @@ import {
   setAudioContext,
   setAudioBuffer,
   setAudioSource,
-  setStartTime,
   setPausedTime,
   setProgressPosition,
   setIsPlaying,
@@ -21,7 +20,8 @@ import {
   setSelectedEnd,
 } from "../../feature/audioPlayerSlice.tsx";
 import Controls from "./Controls.tsx";
-import Volume from "../Volume/Volume.tsx";
+import Volume from "../handleMusic/Volume/Volume.tsx";
+import Play from "../handleMusic/Play/Play.tsx";
 
 function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
   const [isTrimmed, setIsTrimmed] = useState(false);
@@ -75,44 +75,6 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
       })
     );
   }, [audioPlayedId]);
-
-  const playSound = async () => {
-    if (!audioContext || !audioContext.context || !audioBuffer || audioSource)
-      return;
-
-    if (audioContext.context.state === "suspended") {
-      await audioContext.context.resume();
-    }
-
-    dispatch(setIsPlaying({ audioPlayedId, isPlaying: true }));
-
-    const newAudioSource = new GrainPlayer(audioBuffer, () => {
-      dispatch(setIsPlaying({ audioPlayedId, isPlaying: false }));
-    });
-
-    newAudioSource.connect(audioContext.pitchShift);
-    audioContext.gainNode.connect(audioContext.context.destination);
-    newAudioSource.playbackRate = tempo;
-    newAudioSource.loop = false;
-
-    const playbackOffset = isTrimmed
-      ? Math.max(0, pausedTime)
-      : Math.max(selectedStart * audioBuffer.duration, pausedTime);
-
-    const duration = isTrimmed
-      ? audioBuffer.duration - playbackOffset
-      : (selectedEnd - selectedStart) * audioBuffer.duration - pausedTime;
-
-    newAudioSource.start(0, playbackOffset, duration);
-
-    dispatch(setAudioSource({ audioPlayedId, audioSource: newAudioSource }));
-    dispatch(
-      setStartTime({
-        audioPlayedId,
-        startTime: audioContext.context.currentTime,
-      })
-    );
-  };
 
   const pauseSound = () => {
     if (!audioSource) return;
@@ -234,12 +196,12 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
         volume={volume}
       />
       <Controls
-        playSound={playSound}
         pauseSound={pauseSound}
         stopSound={stopSound}
         handlePitchChange={handlePitchChange}
         handleTempoChange={handleTempoChange}
       />
+      <Play audioPlayedId={audioPlayedId} />
       <Volume audioPlayedId={audioPlayedId} />
       <ButtonContainer>
         <Button data-testid="trim-button" onClick={trimAudioBuffer}>
