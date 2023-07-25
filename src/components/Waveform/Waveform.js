@@ -6,7 +6,7 @@ import WaveSelection from "../AudioPlayer/Selection";
 import {
   setProgressPosition,
   setAudioBuffer,
-} from "../../feature/audioPlayerSlice";
+} from "../../feature/audioPlayerSlice.tsx";
 
 function Waveform({
   file,

@@ -10,35 +10,21 @@ import Button from "../common/Button/Button.tsx";
 import {
   setAudioContext,
   setAudioBuffer,
-  setAudioSource,
-  setPausedTime,
-  setProgressPosition,
-  setIsPlaying,
-  setPitch,
-  setTempo,
   setSelectedStart,
   setSelectedEnd,
 } from "../../feature/audioPlayerSlice.tsx";
-import Controls from "./Controls.tsx";
-import Volume from "../handleMusic/Volume/Volume.tsx";
-import Play from "../handleMusic/Play/Play.tsx";
+import Volume from "../audioControllers/Volume/Volume.tsx";
+import Play from "../audioControllers/Play.tsx";
+import Stop from "../audioControllers/Stop.tsx";
+import Pause from "../audioControllers/Pause.tsx";
+import Pitch from "../audioControllers/Pitch.tsx";
+import Tempo from "../audioControllers/Tempo.tsx";
 
 function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
   const [isTrimmed, setIsTrimmed] = useState(false);
 
-  const {
-    audioSource,
-    audioBuffer,
-    audioContext,
-    volume,
-    startTime,
-    pausedTime,
-    isPlaying,
-    pitch,
-    tempo,
-    selectedStart,
-    selectedEnd,
-  } = useSelector(state => state.audioPlayer.instances[audioPlayedId] || {});
+  const { audioBuffer, audioContext, volume, selectedEnd, selectedStart } =
+    useSelector(state => state.audioPlayer.instances[audioPlayedId] || {});
 
   const dispatch = useDispatch();
 
@@ -75,59 +61,6 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
       })
     );
   }, [audioPlayedId]);
-
-  const pauseSound = () => {
-    if (!audioSource) return;
-
-    dispatch(setIsPlaying({ audioPlayedId, isPlaying: false }));
-
-    audioSource.stop();
-    const elapsedTime = audioContext.context.currentTime - startTime;
-    const newPausedTime = elapsedTime + pausedTime;
-
-    dispatch(setPausedTime({ audioPlayedId, pausedTime: newPausedTime }));
-    dispatch(setAudioSource({ audioPlayedId, audioSource: null }));
-  };
-
-  const stopSound = () => {
-    if (!audioSource) return;
-
-    dispatch(setIsPlaying({ audioPlayedId, isPlaying: false }));
-
-    audioSource.stop();
-    dispatch(setAudioSource({ audioPlayedId, audioSource: null }));
-
-    const newPausedTime = selectedStart * audioBuffer.duration;
-    dispatch(setPausedTime({ audioPlayedId, pausedTime: newPausedTime }));
-
-    dispatch(
-      setProgressPosition({
-        audioPlayedId,
-        progressPosition: selectedStart * 100,
-      })
-    );
-  };
-
-  const handlePitchChange = delta => {
-    const newPitch = parseFloat(pitch + delta);
-
-    if (newPitch < 0.5 || newPitch > 2) return;
-    dispatch(setPitch({ audioPlayedId, pitch: newPitch }));
-
-    if (audioContext && audioContext.pitchShift) {
-      audioContext.pitchShift.pitch = newPitch - 1;
-    }
-  };
-
-  const handleTempoChange = delta => {
-    const newTempo = parseFloat(tempo + delta);
-    if (newTempo < 0.5 || newTempo > 2) return;
-    dispatch(setTempo({ audioPlayedId, tempo: newTempo }));
-
-    if (audioSource) {
-      audioSource.playbackRate = newTempo;
-    }
-  };
 
   const copyAudioChannelData = (
     oldBuffer,
@@ -176,33 +109,21 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
     setIsTrimmed(true);
   };
 
-  const onWaveformClick = progressPercentage => {
-    if (isPlaying) {
-      pauseSound();
-    }
-
-    const newPausedTime = (progressPercentage / 100) * audioBuffer.duration;
-    dispatch(setPausedTime({ audioPlayedId, pausedTime: newPausedTime }));
-  };
-
   return (
     <AudioPlayerContainer data-testid="audio-player-container">
       <Waveform
         file={file}
         waveformColor="#b3ecec"
-        onWaveformClick={onWaveformClick}
         isTrimmed={isTrimmed}
         audioPlayedId={audioPlayedId}
         volume={volume}
       />
-      <Controls
-        pauseSound={pauseSound}
-        stopSound={stopSound}
-        handlePitchChange={handlePitchChange}
-        handleTempoChange={handleTempoChange}
-      />
       <Play audioPlayedId={audioPlayedId} />
+      <Stop audioPlayedId={audioPlayedId} />
       <Volume audioPlayedId={audioPlayedId} />
+      <Pause audioPlayedId={audioPlayedId} />
+      <Pitch audioPlayedId={audioPlayedId} />
+      <Tempo audioPlayedId={audioPlayedId} />
       <ButtonContainer>
         <Button data-testid="trim-button" onClick={trimAudioBuffer}>
           <FontAwesomeIcon icon={faScissors} />

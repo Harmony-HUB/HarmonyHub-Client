@@ -59,7 +59,11 @@ const audioPlayerSlice = createSlice({
       state.instances[audioPlayedId].audioContext = audioContext;
       state.audioPlayedId = audioPlayedId;
     },
-    setAudioBuffer: (state, action) => {
+
+    setAudioBuffer: (
+      state,
+      action: PayloadAction<{ audioPlayedId: number; audioBuffer: AudioBuffer }>
+    ) => {
       const { audioPlayedId, audioBuffer } = action.payload;
       if (!state.instances[audioPlayedId]) {
         state.instances[audioPlayedId] = createAudioInstance();

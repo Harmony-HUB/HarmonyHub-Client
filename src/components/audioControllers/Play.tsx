@@ -2,14 +2,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { GrainPlayer } from "tone";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
-import PropsId from "../types";
-import { RootState } from "../../../store";
+import PropsId from "./types";
+import { RootState } from "../../store";
 import {
   setAudioSource,
   setStartTime,
   setIsPlaying,
-} from "../../../feature/audioPlayerSlice";
-import Button from "../../common/Button/Button";
+} from "../../feature/audioPlayerSlice";
+import Button from "../common/Button/Button";
 
 function Play({ audioPlayedId }: PropsId): React.ReactElement {
   const dispatch = useDispatch();
