@@ -8,7 +8,6 @@ interface AudioInstance {
   startTime: number;
   pausedTime: number;
   progressPosition: number;
-  isPlaying: boolean;
   volume: number;
   pitch: number;
   tempo: number;
@@ -23,7 +22,6 @@ const createAudioInstance = (): AudioInstance => ({
   startTime: 0,
   pausedTime: 0,
   progressPosition: 0,
-  isPlaying: false,
   volume: 1,
   pitch: 1,
   tempo: 1,
@@ -100,14 +98,6 @@ const audioPlayerSlice = createSlice({
       state.instances[audioPlayedId].progressPosition = progressPosition;
       state.audioPlayedId = audioPlayedId;
     },
-    setIsPlaying: (state, action) => {
-      const { audioPlayedId, isPlaying } = action.payload;
-      if (!state.instances[audioPlayedId]) {
-        state.instances[audioPlayedId] = createAudioInstance();
-      }
-      state.instances[audioPlayedId].isPlaying = isPlaying;
-      state.audioPlayedId = audioPlayedId;
-    },
     setVolume: (state, action) => {
       const { audioPlayedId, volume } = action.payload;
       if (!state.instances[audioPlayedId]) {
@@ -158,7 +148,6 @@ export const {
   setStartTime,
   setPausedTime,
   setProgressPosition,
-  setIsPlaying,
   setVolume,
   setPitch,
   setTempo,

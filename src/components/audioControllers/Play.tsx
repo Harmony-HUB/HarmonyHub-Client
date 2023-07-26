@@ -4,11 +4,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import PropsId from "./types";
 import { RootState } from "../../store";
-import {
-  setAudioSource,
-  setStartTime,
-  setIsPlaying,
-} from "../../feature/audioPlayerSlice";
+import { setAudioSource, setStartTime } from "../../feature/audioPlayerSlice";
+import { setIsPlaying } from "../../feature/audioStatusSlice";
 import Button from "../common/Button/Button";
 
 function Play({ audioPlayedId }: PropsId): React.ReactElement {

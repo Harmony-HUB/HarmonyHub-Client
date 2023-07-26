@@ -1,76 +1,78 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ProgressBar from "../AudioPlayer/Progressbar";
 import WaveSelection from "../AudioPlayer/Selection";
 import {
   setProgressPosition,
-  setAudioBuffer,
-} from "../../feature/audioPlayerSlice.tsx";
+  setPausedTime,
+  setAudioSource,
+} from "../../feature/audioPlayerSlice";
+import WaveformContainer from "./styles";
+import { RootState } from "../../store";
+import { setIsPlaying } from "../../feature/audioStatusSlice";
+
+interface WaveformProps {
+  audioPlayedId: number;
+  recording: boolean;
+}
 
 function Waveform({
-  file,
-  onWaveformClick,
-  isTrimmed,
   audioPlayedId,
   recording,
-}) {
-  const waveformColor = "#b3ecec";
-  const waveformCanvasRef = useRef(null);
-
-  const [audioContext] = useState(
-    new (window.AudioContext || window.webkitAudioContext)()
-  );
+}: WaveformProps): React.ReactElement {
+  const WAVE_COLOR = "#b3ecec";
+  const waveformCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const dispatch = useDispatch();
 
-  const { audioBuffer, selectedStart, selectedEnd } = useSelector(
-    state => state.audioPlayer.instances[audioPlayedId] || {}
+  const { audioSource, audioBuffer, selectedStart, selectedEnd } = useSelector(
+    (state: RootState) => state.audioPlayer.instances[audioPlayedId] || {}
   );
 
-  const handleWaveformClick = event => {
-    if (!onWaveformClick) return;
+  const { isTrimmed, isPlaying } = useSelector(
+    (state: RootState) => state.audioStatus.instances[audioPlayedId] || {}
+  );
 
+  const handleWaveformClick = (event: React.MouseEvent) => {
     const canvas = waveformCanvasRef.current;
-    const { width } = canvas;
-    const clickX = event.nativeEvent.offsetX;
-    const progressPercentage = (clickX / width) * 100;
-    onWaveformClick(progressPercentage);
 
-    dispatch(
-      setProgressPosition({
-        audioPlayedId,
-        progressPosition: progressPercentage,
-      })
-    );
-  };
+    if (canvas) {
+      const { width } = canvas;
+      const clickX = event.nativeEvent.offsetX;
+      const progressPercentage = (clickX / width) * 100;
 
-  useEffect(() => {
-    if (!file) return;
+      if (isPlaying) {
+        if (!audioSource) return;
 
-    const loadAudioFile = async () => {
-      try {
-        const response = await fetch(file);
-        const audioData = await response.arrayBuffer();
-        const newAudioBuffer = await audioContext.decodeAudioData(audioData);
-        dispatch(
-          setAudioBuffer({ audioPlayedId, audioBuffer: newAudioBuffer })
-        );
-      } catch (error) {
-        if (process.env.NODE_ENV !== "production") {
-          console.error(error);
-        }
+        dispatch(setIsPlaying({ audioPlayedId, isPlaying: false }));
+
+        audioSource.stop();
+
+        if (!audioBuffer) return;
+
+        const newPausedTime = (progressPercentage / 100) * audioBuffer.duration;
+
+        dispatch(setPausedTime({ audioPlayedId, pausedTime: newPausedTime }));
+        dispatch(setAudioSource({ audioPlayedId, audioSource: null }));
       }
-    };
 
-    loadAudioFile();
-  }, [file]);
+      dispatch(
+        setProgressPosition({
+          audioPlayedId,
+          progressPosition: progressPercentage,
+        })
+      );
+    }
+  };
 
   const drawWaveform = () => {
     if (!audioBuffer) return;
 
     const canvas = waveformCanvasRef.current;
-    const ctx = canvas.getContext("2d");
+
+    if (!canvas) return;
+
+    const ctx = (canvas as HTMLCanvasElement).getContext("2d");
     const { width, height } = canvas;
 
     const data = audioBuffer.getChannelData(0);
@@ -85,13 +87,16 @@ function Waveform({
 
     const scaleFactor = maxAmplitude > 1 ? 1 / maxAmplitude : 1;
 
+    if (!ctx) return;
+
     ctx.clearRect(0, 0, width, height);
     ctx.beginPath();
     ctx.moveTo(0, amplitude);
-    ctx.strokeStyle = waveformColor;
+    ctx.strokeStyle = WAVE_COLOR;
 
     for (let i = 0; i < width; i += 1) {
       const sliceData = data.slice(i * step, (i + 1) * step);
+
       if (sliceData.length > 0) {
         const min = sliceData.reduce((a, b) => Math.min(a, b));
         const max = sliceData.reduce((a, b) => Math.max(a, b));
@@ -118,11 +123,9 @@ function Waveform({
   }, [audioBuffer]);
 
   return (
-    <div
+    <WaveformContainer
       data-testid="waveform"
-      style={{ position: "relative" }}
-      onClick={handleWaveformClick}
-      onKeyDown={handleWaveformClick}
+      onClick={e => handleWaveformClick(e)}
     >
       <canvas
         ref={waveformCanvasRef}
@@ -132,7 +135,7 @@ function Waveform({
       />
       {recording ? null : <ProgressBar audioPlayedId={audioPlayedId} />}
       {recording ? null : <WaveSelection audioPlayedId={audioPlayedId} />}
-    </div>
+    </WaveformContainer>
   );
 }
 

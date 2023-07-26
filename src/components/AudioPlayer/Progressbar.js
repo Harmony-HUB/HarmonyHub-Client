@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
-import { setProgressPosition } from "../../feature/audioPlayerSlice";
+import { setProgressPosition } from "../../feature/audioPlayerSlice.tsx";
 
 const ProgressBarContainer = styled.div`
   position: absolute;
@@ -25,14 +25,12 @@ function ProgressBar({ audioPlayedId }) {
   const progressCanvasRef = useRef(null);
   const dispatch = useDispatch();
 
-  const {
-    audioContext,
-    audioBuffer,
-    progressPosition,
-    isPlaying,
-    startTime,
-    pausedTime,
-  } = useSelector(state => state.audioPlayer.instances[audioPlayedId] || {});
+  const { audioContext, audioBuffer, progressPosition, startTime, pausedTime } =
+    useSelector(state => state.audioPlayer.instances[audioPlayedId] || {});
+
+  const { isPlaying } = useSelector(
+    state => state.audioStatus.instances[audioPlayedId] || {}
+  );
 
   const updateProgress = () => {
     if (!audioContext || !audioBuffer || !isPlaying) return;

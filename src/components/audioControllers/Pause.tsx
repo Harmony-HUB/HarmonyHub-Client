@@ -3,11 +3,8 @@ import { faPause } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropsId from "./types";
 import { RootState } from "../../store";
-import {
-  setIsPlaying,
-  setPausedTime,
-  setAudioSource,
-} from "../../feature/audioPlayerSlice";
+import { setPausedTime, setAudioSource } from "../../feature/audioPlayerSlice";
+import { setIsPlaying } from "../../feature/audioStatusSlice";
 import Button from "../common/Button/Button";
 
 function Pause({ audioPlayedId }: PropsId): React.ReactElement {

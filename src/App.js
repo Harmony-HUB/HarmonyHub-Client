@@ -7,7 +7,7 @@ import MusicEditor from "./components/MusicEditor/MusicEditor";
 import Login from "./components/Auth/Login";
 import MP3Modal from "./components/common/Modal/MP3Modal";
 import MusicList from "./components/MusicList/MusicList.tsx";
-import Button from "./components/common/Button/Button";
+import Button from "./components/common/Button/Button.tsx";
 import AudioRecorder from "./components/Recorder/AudioRecorder";
 import Sidebar from "./components/Sidebar/Sidebar.tsx";
 

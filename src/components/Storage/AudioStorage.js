@@ -4,7 +4,7 @@ import * as Tone from "tone";
 import { useSelector } from "react-redux";
 import toWav from "audiobuffer-to-wav";
 import styled from "styled-components";
-import Button from "../common/Button/Button";
+import Button from "../common/Button/Button.tsx";
 import Modal from "../common/Modal/Modal";
 import Spinner from "../common/Spinner";
 import refreshAccessToken from "../Auth/refreshAccessToken";

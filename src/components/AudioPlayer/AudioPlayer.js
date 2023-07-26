@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { getContext, Gain, PitchShift } from "tone";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faScissors } from "@fortawesome/free-solid-svg-icons";
-import Waveform from "../Waveform/Waveform";
+import Waveform from "../Waveform/Waveform.tsx";
 import AudioStorage from "../Storage/AudioStorage";
 import { AudioPlayerContainer, ButtonContainer } from "./styles";
+import { setIsTrimmed } from "../../feature/audioStatusSlice.ts";
 import Button from "../common/Button/Button.tsx";
 import {
   setAudioContext,
@@ -21,12 +22,34 @@ import Pitch from "../audioControllers/Pitch.tsx";
 import Tempo from "../audioControllers/Tempo.tsx";
 
 function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
-  const [isTrimmed, setIsTrimmed] = useState(false);
-
-  const { audioBuffer, audioContext, volume, selectedEnd, selectedStart } =
-    useSelector(state => state.audioPlayer.instances[audioPlayedId] || {});
+  const { audioBuffer, selectedEnd, selectedStart } = useSelector(
+    state => state.audioPlayer.instances[audioPlayedId] || {}
+  );
 
   const dispatch = useDispatch();
+
+  const audioContext = new AudioContext();
+
+  useEffect(() => {
+    if (!file) return;
+
+    const loadAudioFile = async () => {
+      try {
+        const response = await fetch(file);
+        const audioData = await response.arrayBuffer();
+        const newAudioBuffer = await audioContext.decodeAudioData(audioData);
+        dispatch(
+          setAudioBuffer({ audioPlayedId, audioBuffer: newAudioBuffer })
+        );
+      } catch (error) {
+        if (process.env.NODE_ENV !== "production") {
+          console.error(error);
+        }
+      }
+    };
+
+    loadAudioFile();
+  }, [file]);
 
   useEffect(() => {
     dispatch(setSelectedStart({ audioPlayedId, selectedStart: 0 }));
@@ -83,7 +106,7 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
   const trimAudioBuffer = () => {
     if (!audioBuffer || audioBuffer.duration <= 1) return;
 
-    const newBuffer = audioContext.context.createBuffer(
+    const newBuffer = audioContext.createBuffer(
       audioBuffer.numberOfChannels,
       Math.floor((selectedEnd - selectedStart) * audioBuffer.length),
       audioBuffer.sampleRate
@@ -106,18 +129,12 @@ function AudioPlayer({ file, cutWaveformBuffer, userData, audioPlayedId }) {
     dispatch(setAudioBuffer({ audioPlayedId, audioBuffer: newBuffer }));
     dispatch(setSelectedStart({ audioPlayedId, selectedStart: 0 }));
     dispatch(setSelectedEnd({ audioPlayedId, selectedEnd: 1 }));
-    setIsTrimmed(true);
+    dispatch(setIsTrimmed({ audioPlayedId, isTrimmed: true }));
   };
 
   return (
     <AudioPlayerContainer data-testid="audio-player-container">
-      <Waveform
-        file={file}
-        waveformColor="#b3ecec"
-        isTrimmed={isTrimmed}
-        audioPlayedId={audioPlayedId}
-        volume={volume}
-      />
+      <Waveform file={file} audioPlayedId={audioPlayedId} />
       <Play audioPlayedId={audioPlayedId} />
       <Stop audioPlayedId={audioPlayedId} />
       <Volume audioPlayedId={audioPlayedId} />

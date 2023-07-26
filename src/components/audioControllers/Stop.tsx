@@ -3,11 +3,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStop } from "@fortawesome/free-solid-svg-icons";
 import PropsId from "./types";
 import {
-  setIsPlaying,
   setAudioSource,
   setPausedTime,
   setProgressPosition,
 } from "../../feature/audioPlayerSlice";
+import { setIsPlaying } from "../../feature/audioStatusSlice";
 import { RootState } from "../../store";
 import Button from "../common/Button/Button";
 
