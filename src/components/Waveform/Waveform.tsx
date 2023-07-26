@@ -13,13 +13,9 @@ import { setIsPlaying } from "../../feature/audioStatusSlice";
 
 interface WaveformProps {
   audioPlayedId: number;
-  recording: boolean;
 }
 
-function Waveform({
-  audioPlayedId,
-  recording,
-}: WaveformProps): React.ReactElement {
+function Waveform({ audioPlayedId }: WaveformProps): React.ReactElement {
   const WAVE_COLOR = "#b3ecec";
   const waveformCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -132,8 +128,8 @@ function Waveform({
         height="90"
         className="waveform-canvas"
       />
-      {recording ? null : <ProgressBar audioPlayedId={audioPlayedId} />}
-      {recording ? null : <WaveSelection audioPlayedId={audioPlayedId} />}
+      <ProgressBar audioPlayedId={audioPlayedId} />
+      <WaveSelection audioPlayedId={audioPlayedId} />
     </WaveformContainer>
   );
 }

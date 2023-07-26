@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import { getContext, Gain, PitchShift } from "tone";
+import { Gain, PitchShift } from "tone";
 import { useSelector, useDispatch } from "react-redux";
-import Waveform from "../Waveform/Waveform.tsx";
+import Waveform from "../Waveform/Waveform";
 import AudioStorage from "../Storage/AudioStorage";
 import { AudioPlayerContainer, ButtonContainer } from "./styles";
 import {
@@ -9,20 +9,31 @@ import {
   setAudioBuffer,
   setSelectedStart,
   setSelectedEnd,
-} from "../../feature/audioPlayerSlice.tsx";
-import Volume from "../audioControllers/Volume/Volume.tsx";
-import Play from "../audioControllers/Play.tsx";
-import Stop from "../audioControllers/Stop.tsx";
-import Pause from "../audioControllers/Pause.tsx";
-import Pitch from "../audioControllers/Pitch.tsx";
-import Tempo from "../audioControllers/Tempo.tsx";
-import TrimAudio from "../audioControllers/Trim.tsx";
+} from "../../feature/audioPlayerSlice";
+import Volume from "../audioControllers/Volume/Volume";
+import Play from "../audioControllers/Play";
+import Stop from "../audioControllers/Stop";
+import Pause from "../audioControllers/Pause";
+import Pitch from "../audioControllers/Pitch";
+import Tempo from "../audioControllers/Tempo";
+import TrimAudio from "../audioControllers/Trim";
+import { RootState } from "../../store";
 
-function AudioPlayer({ file, userData, audioPlayedId }) {
+interface AudioPlayerProps {
+  file: string;
+  userData: string;
+  audioPlayedId: number;
+}
+
+function AudioPlayer({
+  file,
+  userData,
+  audioPlayedId,
+}: AudioPlayerProps): React.ReactElement {
   const dispatch = useDispatch();
 
   const { audioBuffer } = useSelector(
-    state => state.audioPlayer.instances[audioPlayedId] || {}
+    (state: RootState) => state.audioPlayer.instances[audioPlayedId] || {}
   );
 
   const audioContext = new AudioContext();
@@ -54,7 +65,6 @@ function AudioPlayer({ file, userData, audioPlayedId }) {
   }, []);
 
   useEffect(() => {
-    const newAudioContext = getContext();
     const gainNode = new Gain(1).toDestination();
     const pitchShift = new PitchShift(0).connect(gainNode);
 
@@ -62,7 +72,7 @@ function AudioPlayer({ file, userData, audioPlayedId }) {
       setAudioContext({
         audioPlayedId,
         audioContext: {
-          context: newAudioContext,
+          context: audioContext,
           gainNode,
           pitchShift,
         },
@@ -72,7 +82,7 @@ function AudioPlayer({ file, userData, audioPlayedId }) {
 
   return (
     <AudioPlayerContainer data-testid="audio-player-container">
-      <Waveform file={file} audioPlayedId={audioPlayedId} />
+      <Waveform audioPlayedId={audioPlayedId} />
       <Play audioPlayedId={audioPlayedId} />
       <Stop audioPlayedId={audioPlayedId} />
       <Volume audioPlayedId={audioPlayedId} />

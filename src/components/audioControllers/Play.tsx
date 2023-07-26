@@ -30,7 +30,6 @@ function Play({ audioPlayedId }: PropsId): React.ReactElement {
   const playSound = async () => {
     if (!audioContext || !audioContext.context || !audioBuffer || audioSource)
       return;
-
     if (audioContext.context.state === "suspended") {
       await audioContext.context.resume();
     }
@@ -42,7 +41,7 @@ function Play({ audioPlayedId }: PropsId): React.ReactElement {
     });
 
     newAudioSource.connect(audioContext.pitchShift);
-    audioContext.gainNode.connect(audioContext.context.destination);
+
     newAudioSource.playbackRate = tempo;
     newAudioSource.loop = false;
 

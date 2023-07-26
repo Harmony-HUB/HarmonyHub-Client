@@ -1,50 +1,33 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
 import {
   setSelectedStart,
   setSelectedEnd,
 } from "../../feature/audioPlayerSlice";
+import { SelectionHandleLeft, SelectionHandleRight } from "./styles";
+import PropsId from "../audioControllers/types";
+import { RootState } from "../../store";
 
-const SelectionHandle = styled.div`
-  position: absolute;
-  top: -10px;
-  width: 10px;
-  height: 120px;
-  cursor: col-resize;
-  z-index: 1px;
-  background-color: #6bb9f0;
-  border: 1px solid white;
-  box-sizing: border-box;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-`;
-
-const SelectionHandleLeft = styled(SelectionHandle)`
-  left: -5px;
-`;
-
-const SelectionHandleRight = styled(SelectionHandle)`
-  right: -5px;
-`;
-
-function WaveSelection({ audioPlayedId }) {
-  const selectionCanvasRef = useRef(null);
-  const [dragging, setDragging] = useState(null);
+function WaveSelection({ audioPlayedId }: PropsId): React.ReactElement {
+  const selectionCanvasRef = useRef<HTMLCanvasElement>(null);
+  const [dragging, setDragging] = useState<"start" | "end" | null>(null);
   const dispatch = useDispatch();
 
   const { selectedStart, selectedEnd } = useSelector(
-    state => state.audioPlayer.instances[audioPlayedId] || {}
+    (state: RootState) => state.audioPlayer.instances[audioPlayedId] || {}
   );
 
   const drawSelection = () => {
     const canvas = selectionCanvasRef.current;
-    const ctx = canvas.getContext("2d");
+    if (!canvas) return;
+    const ctx = (canvas as HTMLCanvasElement).getContext("2d");
     const { width, height } = canvas;
 
     const handleWidth = 6;
     const leftHandleX = selectedStart * width - handleWidth / 2;
     const rightHandleX = selectedEnd * width - handleWidth / 2;
+
+    if (!ctx) return;
 
     ctx.clearRect(0, 0, width, height);
 
@@ -70,17 +53,21 @@ function WaveSelection({ audioPlayedId }) {
     ctx.stroke();
   };
 
-  const handleMouseDown = event => {
+  const handleMouseDown = (event: React.MouseEvent) => {
     const canvas = selectionCanvasRef.current;
-    const rect = canvas.getBoundingClientRect();
+
+    if (!canvas) return;
+
+    const canvasEl = canvas as HTMLCanvasElement;
+    const rect = canvasEl.getBoundingClientRect();
 
     const x = event.clientX - rect.left;
 
     const handleWidth = 4;
-    const leftHandleX = selectedStart * canvas.width - handleWidth / 2;
-    const rightHandleX = selectedEnd * canvas.width - handleWidth / 2;
+    const leftHandleX = selectedStart * canvasEl.width - handleWidth / 2;
+    const rightHandleX = selectedEnd * canvasEl.width - handleWidth / 2;
 
-    const threshold = 50;
+    const threshold = 30;
 
     const startDistance = Math.abs(x - leftHandleX);
     const endDistance = Math.abs(x - rightHandleX);
@@ -94,13 +81,17 @@ function WaveSelection({ audioPlayedId }) {
     }
   };
 
-  const handleMouseMove = event => {
+  const handleMouseMove = (event: React.MouseEvent) => {
     if (!dragging) return;
 
     const canvas = selectionCanvasRef.current;
-    const rect = canvas.getBoundingClientRect();
+
+    if (!canvas) return;
+
+    const canvasEl = canvas as HTMLCanvasElement;
+    const rect = canvasEl.getBoundingClientRect();
     const x = event.clientX - rect.left;
-    const position = x / canvas.width;
+    const position = x / canvasEl.width;
 
     if (dragging === "start") {
       dispatch(
@@ -141,8 +132,8 @@ function WaveSelection({ audioPlayedId }) {
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       />
-      <SelectionHandleLeft onMouseDown={e => handleMouseDown(e, "left")} />
-      <SelectionHandleRight onMouseDown={e => handleMouseDown(e, "right")} />
+      <SelectionHandleLeft onMouseDown={handleMouseDown} />
+      <SelectionHandleRight onMouseDown={handleMouseDown} />
     </>
   );
 }

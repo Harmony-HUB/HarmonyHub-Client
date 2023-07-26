@@ -1,35 +1,21 @@
 import { useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import styled from "styled-components";
-import { setProgressPosition } from "../../feature/audioPlayerSlice.tsx";
+import { setProgressPosition } from "../../feature/audioPlayerSlice";
+import { ProgressBarContainer, ProgressTime } from "./styles";
+import PropsId from "../audioControllers/types";
+import { RootState } from "../../store";
 
-const ProgressBarContainer = styled.div`
-  position: absolute;
-  top: 0px;
-`;
-
-const ProgressTime = styled.div`
-  position: absolute;
-  bottom: 100;
-  left: ${props => props.progressPosition}%;
-  transform: translateX(-50%);
-  color: white;
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 2px 4px;
-  border-radius: 2px;
-  font-size: 12px;
-  white-space: nowrap;
-`;
-
-function ProgressBar({ audioPlayedId }) {
-  const progressCanvasRef = useRef(null);
+function ProgressBar({ audioPlayedId }: PropsId): React.ReactElement {
+  const progressCanvasRef = useRef<HTMLCanvasElement>(null);
   const dispatch = useDispatch();
 
   const { audioContext, audioBuffer, progressPosition, startTime, pausedTime } =
-    useSelector(state => state.audioPlayer.instances[audioPlayedId] || {});
+    useSelector(
+      (state: RootState) => state.audioPlayer.instances[audioPlayedId] || {}
+    );
 
   const { isPlaying } = useSelector(
-    state => state.audioStatus.instances[audioPlayedId] || {}
+    (state: RootState) => state.audioStatus.instances[audioPlayedId] || {}
   );
 
   const updateProgress = () => {
@@ -45,7 +31,7 @@ function ProgressBar({ audioPlayedId }) {
   };
 
   useEffect(() => {
-    let animationFrameId;
+    let animationFrameId: number;
 
     const loop = () => {
       updateProgress();
@@ -62,14 +48,20 @@ function ProgressBar({ audioPlayedId }) {
       cancelAnimationFrame(animationFrameId);
     };
   }, [isPlaying]);
+
   const duration = audioBuffer ? audioBuffer.duration : 0;
   const currentTime = (duration * progressPosition) / 100;
 
   const drawProgress = () => {
     const canvas = progressCanvasRef.current;
-    const ctx = canvas.getContext("2d");
+
+    if (!canvas) return;
+
+    const ctx = (canvas as HTMLCanvasElement).getContext("2d");
     const { width, height } = canvas;
     const x = (progressPosition * width) / 100;
+
+    if (!ctx) return;
 
     ctx.clearRect(0, 0, width, height);
     ctx.beginPath();
