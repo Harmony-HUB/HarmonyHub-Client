@@ -8,7 +8,7 @@ import {
 import { useSelector } from "react-redux";
 import { Editor, SelectFileButton, FileInput, BottomBar } from "./styles";
 import AudioPlayer from "../AudioPlayer/AudioPlayer";
-import Button from "../common/Button/Button";
+import Button from "../common/Button/Button.tsx";
 import AudioStorage, { bufferToWav } from "../Storage/AudioStorage";
 import DownloadAudio from "../Storage/DownloadAudio";
 import Modal from "../common/Modal/Modal";
@@ -27,8 +27,6 @@ function MusicEditor({ userData }) {
   const closeModal = () => {
     setShowModal(false);
   };
-
-  const selectedAudioPlayerIndex = null;
 
   const audioBuffers = useSelector(state => {
     const { instances } = state.audioPlayer;
@@ -158,8 +156,6 @@ function MusicEditor({ userData }) {
                 <div style={{ flex: 1 }}>
                   <AudioPlayer
                     file={audioFiles[index].file}
-                    cutWaveformBuffer={audioFiles[index].audioBuffer}
-                    isSelected={selectedAudioPlayerIndex === index}
                     userData={userData}
                     audioPlayedId={index}
                   />

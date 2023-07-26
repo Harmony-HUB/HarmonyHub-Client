@@ -47,15 +47,14 @@ function Waveform({
         dispatch(setIsPlaying({ audioPlayedId, isPlaying: false }));
 
         audioSource.stop();
-
-        if (!audioBuffer) return;
-
-        const newPausedTime = (progressPercentage / 100) * audioBuffer.duration;
-
-        dispatch(setPausedTime({ audioPlayedId, pausedTime: newPausedTime }));
-        dispatch(setAudioSource({ audioPlayedId, audioSource: null }));
       }
 
+      if (!audioBuffer) return;
+
+      const newPausedTime = (progressPercentage / 100) * audioBuffer.duration;
+
+      dispatch(setPausedTime({ audioPlayedId, pausedTime: newPausedTime }));
+      dispatch(setAudioSource({ audioPlayedId, audioSource: null }));
       dispatch(
         setProgressPosition({
           audioPlayedId,
