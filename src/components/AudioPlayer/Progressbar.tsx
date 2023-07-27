@@ -9,10 +9,13 @@ function ProgressBar({ audioPlayedId }: PropsId): React.ReactElement {
   const progressCanvasRef = useRef<HTMLCanvasElement>(null);
   const dispatch = useDispatch();
 
-  const { audioContext, audioBuffer, progressPosition, startTime, pausedTime } =
-    useSelector(
-      (state: RootState) => state.audioPlayer.instances[audioPlayedId] || {}
-    );
+  const { audioBuffer, progressPosition, startTime, pausedTime } = useSelector(
+    (state: RootState) => state.audioPlayer.instances[audioPlayedId] || {}
+  );
+
+  const audioContext = useSelector(
+    (state: RootState) => state.audioContext.audioContext
+  );
 
   const { isPlaying } = useSelector(
     (state: RootState) => state.audioStatus.instances[audioPlayedId] || {}

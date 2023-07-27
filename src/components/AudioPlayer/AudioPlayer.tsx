@@ -1,14 +1,12 @@
 import { useEffect } from "react";
-import { Gain, PitchShift } from "tone";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import Waveform from "../Waveform/Waveform";
 import AudioStorage from "../Storage/AudioStorage";
 import { AudioPlayerContainer, ButtonContainer } from "./styles";
 import {
-  setAudioContext,
-  setAudioBuffer,
   setSelectedStart,
   setSelectedEnd,
+  setAudioBuffer,
 } from "../../feature/audioPlayerSlice";
 import Volume from "../audioControllers/Volume/Volume";
 import Play from "../audioControllers/Play";
@@ -17,68 +15,27 @@ import Pause from "../audioControllers/Pause";
 import Pitch from "../audioControllers/Pitch";
 import Tempo from "../audioControllers/Tempo";
 import TrimAudio from "../audioControllers/Trim";
-import { RootState } from "../../store";
+import UserData from "../../types";
 
 interface AudioPlayerProps {
-  file: string;
-  userData: string;
+  userData: UserData;
   audioPlayedId: number;
+  audioBuffer: AudioBuffer;
 }
 
 function AudioPlayer({
-  file,
   userData,
   audioPlayedId,
+  audioBuffer,
 }: AudioPlayerProps): React.ReactElement {
   const dispatch = useDispatch();
 
-  const { audioBuffer } = useSelector(
-    (state: RootState) => state.audioPlayer.instances[audioPlayedId] || {}
-  );
-
-  const audioContext = new AudioContext();
-
-  useEffect(() => {
-    if (!file) return;
-
-    const loadAudioFile = async () => {
-      try {
-        const response = await fetch(file);
-        const audioData = await response.arrayBuffer();
-        const newAudioBuffer = await audioContext.decodeAudioData(audioData);
-        dispatch(
-          setAudioBuffer({ audioPlayedId, audioBuffer: newAudioBuffer })
-        );
-      } catch (error) {
-        if (process.env.NODE_ENV !== "production") {
-          console.error(error);
-        }
-      }
-    };
-
-    loadAudioFile();
-  }, [file]);
+  dispatch(setAudioBuffer({ audioPlayedId, audioBuffer }));
 
   useEffect(() => {
     dispatch(setSelectedStart({ audioPlayedId, selectedStart: 0 }));
     dispatch(setSelectedEnd({ audioPlayedId, selectedEnd: 1 }));
   }, []);
-
-  useEffect(() => {
-    const gainNode = new Gain(1).toDestination();
-    const pitchShift = new PitchShift(0).connect(gainNode);
-
-    dispatch(
-      setAudioContext({
-        audioPlayedId,
-        audioContext: {
-          context: audioContext,
-          gainNode,
-          pitchShift,
-        },
-      })
-    );
-  }, [audioPlayedId]);
 
   return (
     <AudioPlayerContainer data-testid="audio-player-container">
@@ -91,11 +48,7 @@ function AudioPlayer({
       <Tempo audioPlayedId={audioPlayedId} />
       <TrimAudio audioPlayedId={audioPlayedId} />
       <ButtonContainer>
-        <AudioStorage
-          audioPlayedId={audioPlayedId}
-          userData={userData}
-          audioBuffer={audioBuffer}
-        />
+        <AudioStorage userData={userData} audioBuffer={audioBuffer} />
       </ButtonContainer>
     </AudioPlayerContainer>
   );

@@ -14,8 +14,11 @@ import { RootState } from "../../store";
 function TrimAudio({ audioPlayedId }: PropsId): React.ReactElement {
   const dispatch = useDispatch();
 
-  const { audioBuffer, audioContext, selectedStart, selectedEnd } = useSelector(
+  const { audioBuffer, selectedStart, selectedEnd } = useSelector(
     (state: RootState) => state.audioPlayer.instances[audioPlayedId] || {}
+  );
+  const audioContext = useSelector(
+    (state: RootState) => state.audioContext.audioContext
   );
 
   const copyAudioChannelData = (

@@ -1,5 +1,9 @@
 import styled from "styled-components";
 
+interface FieldWrapperProps {
+  isSelected: boolean;
+}
+
 export const Editor = styled.div`
   display: flex;
   flex-direction: column;
@@ -48,7 +52,7 @@ export const FileUploadContainer = styled.div`
   left: 10px;
 `;
 
-export const FieldWrapper = styled.div`
+export const FieldWrapper = styled.div<FieldWrapperProps>`
   position: relative;
   border: ${props => (props.isSelected ? "2px solid #00aaff" : "none")};
   box-shadow: ${props =>

@@ -25,7 +25,7 @@ export const SongButton = styled.button<SongButtonProps>`
   text-align: left;
   cursor: pointer;
   background-color: ${({ isSelected }) =>
-    isSelected ? "rgba(355, 355, 355, 0.3)" : ""};
+    isSelected ? "rgba(355, 355, 355, 0.3)" : null};
 `;
 
 export const SongTitle = styled.h3`

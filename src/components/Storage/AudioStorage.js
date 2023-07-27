@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
 import * as Tone from "tone";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 import toWav from "audiobuffer-to-wav";
 import styled from "styled-components";
 import Button from "../common/Button/Button.tsx";
 import Modal from "../common/Modal/Modal";
-import Spinner from "../common/Spinner";
+import Spinner from "../common/Spinner/Spinner.tsx";
 import refreshAccessToken from "../Auth/refreshAccessToken";
 
 const StyledFormContainer = styled.div`
@@ -42,7 +42,7 @@ export function bufferToWav(buffer) {
   return wavBlob;
 }
 
-function AudioStorage({ audioBuffer, userData, audioPlayedId }) {
+function AudioStorage({ audioBuffer, userData }) {
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -52,22 +52,22 @@ function AudioStorage({ audioBuffer, userData, audioPlayedId }) {
     setShowModal(true);
   };
 
-  const { pitch, tempo } = useSelector(
-    state => state.audioPlayer.instances[audioPlayedId] || {}
-  );
+  // const { pitch, tempo } = useSelector(
+  //   state => state.audioPlayer.instances[audioPlayedId] || {}
+  // );
 
   const handleSaveAudio = async () => {
     if (!audioBuffer) return;
 
     setLoading(true);
 
-    const adjustedPitch = pitch !== undefined ? pitch - 1 : 0;
-    const adjustedTempo = tempo !== undefined ? tempo : 1;
+    // const adjustedPitch = pitch !== undefined ? pitch - 1 : 0;
+    // const adjustedTempo = tempo !== undefined ? tempo : 1;
 
     const adjustedBuffer = await applyAdjustments(
-      audioBuffer,
-      adjustedPitch,
-      adjustedTempo
+      audioBuffer
+      // adjustedPitch,
+      // adjustedTempo
     );
 
     if (!adjustedBuffer) {

@@ -14,7 +14,6 @@ function Play({ audioPlayedId }: PropsId): React.ReactElement {
   const {
     audioSource,
     audioBuffer,
-    audioContext,
     pausedTime,
     tempo,
     selectedStart,
@@ -23,13 +22,19 @@ function Play({ audioPlayedId }: PropsId): React.ReactElement {
     (state: RootState) => state.audioPlayer.instances[audioPlayedId] || {}
   );
 
+  const audioContext = useSelector(
+    (state: RootState) => state.audioContext.audioContext
+  );
+
   const { isTrimmed } = useSelector(
     (state: RootState) => state.audioStatus.instances[audioPlayedId] || {}
   );
 
   const playSound = async () => {
-    if (!audioContext || !audioContext.context || !audioBuffer || audioSource)
+    if (!audioContext || !audioContext.context || !audioBuffer || audioSource) {
       return;
+    }
+
     if (audioContext.context.state === "suspended") {
       await audioContext.context.resume();
     }

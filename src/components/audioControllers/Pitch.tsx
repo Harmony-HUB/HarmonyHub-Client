@@ -9,8 +9,11 @@ import Button from "../common/Button/Button";
 function Pitch({ audioPlayedId }: PropsId): React.ReactElement {
   const dispatch = useDispatch();
 
-  const { pitch, audioContext } = useSelector(
+  const { pitch } = useSelector(
     (state: RootState) => state.audioPlayer.instances[audioPlayedId] || {}
+  );
+  const audioContext = useSelector(
+    (state: RootState) => state.audioContext.audioContext
   );
 
   const handlePitchChange = (delta: number) => {

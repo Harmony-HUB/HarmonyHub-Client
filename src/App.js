@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
-import MusicEditor from "./components/MusicEditor/MusicEditor";
+import MusicEditor from "./components/MusicEditor/MusicEditor.tsx";
 import Login from "./components/Auth/Login";
 import MP3Modal from "./components/common/Modal/MP3Modal";
 import MusicList from "./components/MusicList/MusicList.tsx";

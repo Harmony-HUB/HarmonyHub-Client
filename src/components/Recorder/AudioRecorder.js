@@ -8,9 +8,9 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled from "styled-components";
 import AudioRecorderStorage from "../Storage/AudioRecorderStorage";
-import Button from "../common/Button/Button";
-import { SelectFileButton, FileInput } from "../MusicEditor/styles";
-import Waveform from "../Waveform/Waveform";
+import Button from "../common/Button/Button.tsx";
+import { SelectFileButton, FileInput } from "../MusicEditor/styles.tsx";
+import Waveform from "../Waveform/Waveform.tsx";
 
 const RecordButton = styled.button`
   width: 100px;

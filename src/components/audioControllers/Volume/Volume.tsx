@@ -11,8 +11,8 @@ function Volume({ audioPlayedId }: PropsId): React.ReactElement {
   const [showSlider, setShowSlider] = useState(false);
   const dispatch = useDispatch();
 
-  const { audioContext } = useSelector(
-    (state: RootState) => state.audioPlayer?.instances[audioPlayedId] || {}
+  const audioContext = useSelector(
+    (state: RootState) => state.audioContext.audioContext
   );
 
   const handleVolumeChange = (event: ChangeEvent<HTMLInputElement>) => {

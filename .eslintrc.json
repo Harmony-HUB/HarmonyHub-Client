@@ -14,7 +14,9 @@
       ],
       "rules": {
         "@typescript-eslint/quotes": "off",
-        "@typescript-eslint/comma-dangle": "off"
+        "@typescript-eslint/comma-dangle": "off",
+        "@typescript-eslint/indent": "off",
+        " no-await-in-loop": "off"
       }
     }
   ],
