@@ -5,7 +5,7 @@ import {
   setSelectedEnd,
 } from "../../feature/audioPlayerSlice";
 import { SelectionHandleLeft, SelectionHandleRight } from "./styles";
-import PropsId from "../audioControllers/types";
+import { PropsId } from "../../types";
 import { RootState } from "../../store";
 
 function WaveSelection({ audioPlayedId }: PropsId): React.ReactElement {

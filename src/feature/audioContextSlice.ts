@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import AudioContextWithGain from "../components/AudioPlayer/types";
+import { AudioContextWithGain } from "../types";
 
 interface AudioContext {
   audioContext: AudioContextWithGain | null;

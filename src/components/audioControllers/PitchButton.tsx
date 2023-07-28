@@ -2,11 +2,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { faHashtag, faMinus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { setPitch } from "../../feature/audioPlayerSlice";
-import PropsId from "./types";
+import { PropsId } from "../../types";
 import { RootState } from "../../store";
 import Button from "../common/Button/Button";
 
-function Pitch({ audioPlayedId }: PropsId): React.ReactElement {
+function PitchButton({ audioPlayedId }: PropsId): React.ReactElement {
   const dispatch = useDispatch();
 
   const { pitch } = useSelector(
@@ -39,4 +39,4 @@ function Pitch({ audioPlayedId }: PropsId): React.ReactElement {
   );
 }
 
-export default Pitch;
+export default PitchButton;

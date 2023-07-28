@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStop } from "@fortawesome/free-solid-svg-icons";
-import PropsId from "./types";
+import { PropsId } from "../../types";
 import {
   setAudioSource,
   setPausedTime,
@@ -11,7 +11,7 @@ import { setIsPlaying } from "../../feature/audioStatusSlice";
 import { RootState } from "../../store";
 import Button from "../common/Button/Button";
 
-function Stop({ audioPlayedId }: PropsId): React.ReactElement {
+function StopButton({ audioPlayedId }: PropsId): React.ReactElement {
   const dispatch = useDispatch();
 
   const { audioSource, selectedStart, audioBuffer } = useSelector(
@@ -47,4 +47,4 @@ function Stop({ audioPlayedId }: PropsId): React.ReactElement {
   );
 }
 
-export default Stop;
+export default StopButton;

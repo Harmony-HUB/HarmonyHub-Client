@@ -1,13 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
 import { faPause } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import PropsId from "./types";
+import { PropsId } from "../../types";
 import { RootState } from "../../store";
 import { setPausedTime, setAudioSource } from "../../feature/audioPlayerSlice";
 import { setIsPlaying } from "../../feature/audioStatusSlice";
 import Button from "../common/Button/Button";
 
-function Pause({ audioPlayedId }: PropsId): React.ReactElement {
+function PauseButton({ audioPlayedId }: PropsId): React.ReactElement {
   const dispatch = useDispatch();
 
   const { audioSource, startTime, pausedTime } = useSelector(
@@ -42,4 +42,4 @@ function Pause({ audioPlayedId }: PropsId): React.ReactElement {
   );
 }
 
-export default Pause;
+export default PauseButton;

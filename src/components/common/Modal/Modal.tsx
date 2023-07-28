@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { ReactNode } from "react";
 import ReactDOM from "react-dom";
 import styled from "styled-components";
 
@@ -23,14 +24,23 @@ const Content = styled.button`
   max-width: 80%;
 `;
 
-function Modal({ isOpen, children, onClose }) {
+interface ModalProps {
+  isOpen: boolean;
+  children: ReactNode;
+  onClose: () => void;
+}
+
+function Modal({ isOpen, children, onClose }: ModalProps) {
   if (!isOpen) return null;
+
+  const modalRoot = document.getElementById("modal-root");
+  if (!modalRoot) return null;
 
   return ReactDOM.createPortal(
     <Overlay onClick={onClose}>
       <Content onClick={e => e.stopPropagation()}>{children}</Content>
     </Overlay>,
-    document.getElementById("modal-root")
+    modalRoot
   );
 }
 

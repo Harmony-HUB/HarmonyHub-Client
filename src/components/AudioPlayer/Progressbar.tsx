@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setProgressPosition } from "../../feature/audioPlayerSlice";
 import { ProgressBarContainer, ProgressTime } from "./styles";
-import PropsId from "../audioControllers/types";
+import { PropsId } from "../../types";
 import { RootState } from "../../store";
 
 function ProgressBar({ audioPlayedId }: PropsId): React.ReactElement {

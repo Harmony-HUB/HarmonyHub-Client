@@ -1,6 +1,10 @@
 import axios from "axios";
 
-async function refreshAccessToken() {
+interface RefreshResponse {
+  access_token: string;
+}
+
+async function refreshAccessToken(): Promise<string | null> {
   try {
     const refreshToken = localStorage.getItem("refresh_token");
 
@@ -11,7 +15,7 @@ async function refreshAccessToken() {
       return null;
     }
 
-    const response = await axios.post(
+    const response = await axios.post<RefreshResponse>(
       `${process.env.REACT_APP_API_URL}/auth/refresh`,
       {
         refreshToken,

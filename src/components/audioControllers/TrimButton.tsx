@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { faScissors } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import PropsId from "./types";
+import { PropsId } from "../../types";
 import Button from "../common/Button/Button";
 import {
   setSelectedEnd,

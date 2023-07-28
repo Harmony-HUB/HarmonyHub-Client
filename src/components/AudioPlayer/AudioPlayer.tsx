@@ -8,14 +8,14 @@ import {
   setSelectedEnd,
   setAudioBuffer,
 } from "../../feature/audioPlayerSlice";
-import Volume from "../audioControllers/Volume/Volume";
-import Play from "../audioControllers/Play";
-import Stop from "../audioControllers/Stop";
-import Pause from "../audioControllers/Pause";
-import Pitch from "../audioControllers/Pitch";
-import Tempo from "../audioControllers/Tempo";
-import TrimAudio from "../audioControllers/Trim";
-import UserData from "../../types";
+import Volume from "../audioControllers/Volume/VolumeSlider";
+import Play from "../audioControllers/PlayButton";
+import Stop from "../audioControllers/StopButton";
+import Pause from "../audioControllers/PauseButton";
+import Pitch from "../audioControllers/PitchButton";
+import Tempo from "../audioControllers/TempoButton";
+import TrimAudio from "../audioControllers/TrimButton";
+import { UserData } from "../../types";
 
 interface AudioPlayerProps {
   userData: UserData;

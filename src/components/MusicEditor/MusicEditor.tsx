@@ -12,7 +12,7 @@ import MergeAudio from "./MergeAudio";
 import SelectFile from "./SelectFile";
 import MoveAudioPlayer from "./MoveAudioPlayer";
 import { setAudioContext } from "../../feature/audioContextSlice";
-import UserData from "../../types";
+import { UserData } from "../../types";
 import { RootState } from "../../store";
 
 interface MusicEditorProps {

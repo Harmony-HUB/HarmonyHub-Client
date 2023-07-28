@@ -5,11 +5,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { setTempo } from "../../feature/audioPlayerSlice";
-import PropsId from "./types";
+import { PropsId } from "../../types";
 import { RootState } from "../../store";
 import Button from "../common/Button/Button";
 
-function Tempo({ audioPlayedId }: PropsId): React.ReactElement {
+function TempoButton({ audioPlayedId }: PropsId): React.ReactElement {
   const dispatch = useDispatch();
 
   const { tempo, audioSource } = useSelector(
@@ -38,4 +38,4 @@ function Tempo({ audioPlayedId }: PropsId): React.ReactElement {
   );
 }
 
-export default Tempo;
+export default TempoButton;

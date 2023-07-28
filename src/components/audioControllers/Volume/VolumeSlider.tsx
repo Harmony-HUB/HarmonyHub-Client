@@ -5,9 +5,9 @@ import { faVolumeUp } from "@fortawesome/free-solid-svg-icons";
 import { RootState } from "../../../store";
 import { setVolume } from "../../../feature/audioPlayerSlice";
 import StyledVolumeSlider from "./styles";
-import PropsId from "../types";
+import { PropsId } from "../../../types";
 
-function Volume({ audioPlayedId }: PropsId): React.ReactElement {
+function VolumeSlider({ audioPlayedId }: PropsId): React.ReactElement {
   const [showSlider, setShowSlider] = useState(false);
   const dispatch = useDispatch();
 
@@ -43,4 +43,4 @@ function Volume({ audioPlayedId }: PropsId): React.ReactElement {
   );
 }
 
-export default Volume;
+export default VolumeSlider;
