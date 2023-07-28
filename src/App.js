@@ -3,13 +3,13 @@ import styled from "styled-components";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
-import MusicEditor from "./components/MusicEditor/MusicEditor.tsx";
+import MusicEditor from "./pages/MusicEditor/MusicEditor.tsx";
 import Login from "./components/Auth/Login.tsx";
 import MP3Modal from "./components/common/Modal/MP3Modal/MP3Modal.tsx";
-import MusicList from "./components/MusicList/MusicList.tsx";
+import MusicList from "./pages/MusicList/MusicList.tsx";
 import Button from "./components/common/Button/Button.tsx";
-import AudioRecorder from "./components/Recorder/AudioRecorder";
-import Sidebar from "./components/Sidebar/Sidebar.tsx";
+import AudioRecorder from "./pages/AudioRecorder/Recorder/AudioRecorder";
+import Sidebar from "./components/common/Sidebar/Sidebar.tsx";
 
 const Container = styled.div`
   display: flex;

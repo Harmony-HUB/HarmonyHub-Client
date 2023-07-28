@@ -1,13 +1,18 @@
-import React, { useState } from "react";
-import axios from "axios";
-import * as Tone from "tone";
-// import { useSelector } from "react-redux";
-import toWav from "audiobuffer-to-wav";
+import { useState } from "react";
+import axios, { AxiosError } from "axios";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
-import Button from "../common/Button/Button.tsx";
-import Modal from "../common/Modal/Modal";
-import Spinner from "../common/Spinner/Spinner.tsx";
-import refreshAccessToken from "../Auth/refreshAccessToken";
+import Button from "../../components/common/Button/Button";
+import Modal from "../../components/common/Modal/Modal";
+import Spinner from "../../components/common/Spinner/Spinner";
+import refreshAccessToken from "../../components/Auth/refreshAccessToken";
+import { RootState } from "../../store";
+import { AudioStorageProps } from "./types";
+import {
+  applyAdjustments,
+  bufferToWav,
+  toneAudioBufferToAudioBuffer,
+} from "./utils";
 
 const StyledFormContainer = styled.div`
   display: flex;
@@ -23,26 +28,11 @@ const StyledFormContainer = styled.div`
   }
 `;
 
-async function applyAdjustments(buffer, pitch, tempo) {
-  return Tone.Offline(
-    async () => {
-      const pitchShift = new Tone.PitchShift(pitch);
-      const source = new Tone.BufferSource(buffer).connect(pitchShift);
-      source.playbackRate = tempo;
-      pitchShift.toDestination();
-      source.start(0);
-    },
-    buffer.duration * (1 / tempo)
-  );
-}
-
-export function bufferToWav(buffer) {
-  const wavArrayBuffer = toWav(buffer);
-  const wavBlob = new Blob([wavArrayBuffer], { type: "audio/wav" });
-  return wavBlob;
-}
-
-function AudioStorage({ audioBuffer, userData }) {
+function AudioStorage({
+  audioBuffer,
+  userData,
+  audioPlayedId,
+}: AudioStorageProps) {
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -52,22 +42,22 @@ function AudioStorage({ audioBuffer, userData }) {
     setShowModal(true);
   };
 
-  // const { pitch, tempo } = useSelector(
-  //   state => state.audioPlayer.instances[audioPlayedId] || {}
-  // );
+  const { pitch, tempo } = useSelector(
+    (state: RootState) => state.audioPlayer.instances[audioPlayedId] || {}
+  );
 
   const handleSaveAudio = async () => {
     if (!audioBuffer) return;
 
     setLoading(true);
 
-    // const adjustedPitch = pitch !== undefined ? pitch - 1 : 0;
-    // const adjustedTempo = tempo !== undefined ? tempo : 1;
+    const adjustedPitch = pitch !== undefined ? pitch - 1 : 0;
+    const adjustedTempo = tempo !== undefined ? tempo : 1;
 
     const adjustedBuffer = await applyAdjustments(
-      audioBuffer
-      // adjustedPitch,
-      // adjustedTempo
+      audioBuffer,
+      adjustedPitch,
+      adjustedTempo
     );
 
     if (!adjustedBuffer) {
@@ -77,7 +67,8 @@ function AudioStorage({ audioBuffer, userData }) {
       return;
     }
 
-    const audioBlob = bufferToWav(adjustedBuffer);
+    const buffer = toneAudioBufferToAudioBuffer(adjustedBuffer);
+    const audioBlob = bufferToWav(buffer);
     const formData = new FormData();
     formData.append("audio", audioBlob, `${title}.wav`);
     formData.append("title", title);
@@ -103,7 +94,8 @@ function AudioStorage({ audioBuffer, userData }) {
         setShowModal(false);
       }
     } catch (error) {
-      if (error.response && error.response.status === 401) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response && axiosError.response.status === 401) {
         newToken = await refreshAccessToken();
 
         if (!newToken) {

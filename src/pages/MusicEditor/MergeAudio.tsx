@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
-import Button from "../common/Button/Button";
-import Spinner from "../common/Spinner/Spinner";
+import Button from "../../components/common/Button/Button";
+import Spinner from "../../components/common/Spinner/Spinner";
 import { setCombinedAudioBuffer } from "../../feature/musicEditorSlice";
 
 function MergeAudio(): React.ReactElement {

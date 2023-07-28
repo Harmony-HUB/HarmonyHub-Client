@@ -1,15 +1,15 @@
 import { useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ProgressBar from "../AudioPlayer/Progressbar";
-import WaveSelection from "../AudioPlayer/Selection";
+import ProgressBar from "../Progressbar";
+import WaveSelection from "../Selection";
 import {
   setProgressPosition,
   setPausedTime,
   setAudioSource,
-} from "../../feature/audioPlayerSlice";
+} from "../../../../feature/audioPlayerSlice";
 import WaveformContainer from "./styles";
-import { RootState } from "../../store";
-import { setIsPlaying } from "../../feature/audioStatusSlice";
+import { RootState } from "../../../../store";
+import { setIsPlaying } from "../../../../feature/audioStatusSlice";
 
 interface WaveformProps {
   audioPlayedId: number;

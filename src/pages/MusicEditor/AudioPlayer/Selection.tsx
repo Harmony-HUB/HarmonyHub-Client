@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   setSelectedStart,
   setSelectedEnd,
-} from "../../feature/audioPlayerSlice";
+} from "../../../feature/audioPlayerSlice";
 import { SelectionHandleLeft, SelectionHandleRight } from "./styles";
-import { PropsId } from "../../types";
-import { RootState } from "../../store";
+import { PropsId } from "../../../types";
+import { RootState } from "../../../store";
 
 function WaveSelection({ audioPlayedId }: PropsId): React.ReactElement {
   const selectionCanvasRef = useRef<HTMLCanvasElement>(null);

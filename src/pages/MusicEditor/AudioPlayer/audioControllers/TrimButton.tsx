@@ -1,15 +1,15 @@
 import { useDispatch, useSelector } from "react-redux";
 import { faScissors } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { PropsId } from "../../types";
-import Button from "../common/Button/Button";
+import { PropsId } from "../../../../types";
+import Button from "../../../../components/common/Button/Button";
 import {
   setSelectedEnd,
   setSelectedStart,
   setAudioBuffer,
-} from "../../feature/audioPlayerSlice";
-import { setIsTrimmed } from "../../feature/audioStatusSlice";
-import { RootState } from "../../store";
+} from "../../../../feature/audioPlayerSlice";
+import { setIsTrimmed } from "../../../../feature/audioStatusSlice";
+import { RootState } from "../../../../store";
 
 function TrimAudio({ audioPlayedId }: PropsId): React.ReactElement {
   const dispatch = useDispatch();

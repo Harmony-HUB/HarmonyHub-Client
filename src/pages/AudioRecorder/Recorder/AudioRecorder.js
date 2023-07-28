@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   faStop,
   faMicrophone,
@@ -7,10 +7,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled from "styled-components";
-import AudioRecorderStorage from "../Storage/AudioRecorderStorage";
-import Button from "../common/Button/Button.tsx";
-import { SelectFileButton, FileInput } from "../MusicEditor/styles.tsx";
-import Waveform from "../Waveform/Waveform.tsx";
+import Button from "../../../components/common/Button/Button.tsx";
+import AudioRecorderStorage from "../../Storage/AudioRecorderStorage.tsx";
+import { SelectFileButton, FileInput } from "../../MusicEditor/styles.tsx";
+import Waveform from "../../MusicEditor/AudioPlayer/Waveform/Waveform.tsx";
 
 const RecordButton = styled.button`
   width: 100px;

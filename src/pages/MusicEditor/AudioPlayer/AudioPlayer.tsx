@@ -1,21 +1,21 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import Waveform from "../Waveform/Waveform";
-import AudioStorage from "../Storage/AudioStorage";
+import Waveform from "./Waveform/Waveform";
+import AudioStorage from "../../Storage/AudioStorage";
 import { AudioPlayerContainer, ButtonContainer } from "./styles";
 import {
   setSelectedStart,
   setSelectedEnd,
   setAudioBuffer,
-} from "../../feature/audioPlayerSlice";
-import Volume from "../audioControllers/Volume/VolumeSlider";
-import Play from "../audioControllers/PlayButton";
-import Stop from "../audioControllers/StopButton";
-import Pause from "../audioControllers/PauseButton";
-import Pitch from "../audioControllers/PitchButton";
-import Tempo from "../audioControllers/TempoButton";
-import TrimAudio from "../audioControllers/TrimButton";
-import { UserData } from "../../types";
+} from "../../../feature/audioPlayerSlice";
+import Volume from "./audioControllers/Volume/VolumeSlider";
+import Play from "./audioControllers/PlayButton";
+import Stop from "./audioControllers/StopButton";
+import Pause from "./audioControllers/PauseButton";
+import Pitch from "./audioControllers/PitchButton";
+import Tempo from "./audioControllers/TempoButton";
+import TrimAudio from "./audioControllers/TrimButton";
+import { UserData } from "../../../types";
 
 interface AudioPlayerProps {
   userData: UserData;
@@ -48,7 +48,11 @@ function AudioPlayer({
       <Tempo audioPlayedId={audioPlayedId} />
       <TrimAudio audioPlayedId={audioPlayedId} />
       <ButtonContainer>
-        <AudioStorage userData={userData} audioBuffer={audioBuffer} />
+        <AudioStorage
+          userData={userData}
+          audioBuffer={audioBuffer}
+          audioPlayedId={audioPlayedId}
+        />
       </ButtonContainer>
     </AudioPlayerContainer>
   );

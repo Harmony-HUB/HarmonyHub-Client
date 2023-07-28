@@ -1,15 +1,15 @@
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStop } from "@fortawesome/free-solid-svg-icons";
-import { PropsId } from "../../types";
+import { PropsId } from "../../../../types";
 import {
   setAudioSource,
   setPausedTime,
   setProgressPosition,
-} from "../../feature/audioPlayerSlice";
-import { setIsPlaying } from "../../feature/audioStatusSlice";
-import { RootState } from "../../store";
-import Button from "../common/Button/Button";
+} from "../../../../feature/audioPlayerSlice";
+import { setIsPlaying } from "../../../../feature/audioStatusSlice";
+import { RootState } from "../../../../store";
+import Button from "../../../../components/common/Button/Button";
 
 function StopButton({ audioPlayedId }: PropsId): React.ReactElement {
   const dispatch = useDispatch();

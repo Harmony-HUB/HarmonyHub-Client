@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RootState } from "../../store";
-import Button from "../common/Button/Button";
+import Button from "../../components/common/Button/Button";
 
 function MoveAudioPlayer(): React.ReactElement {
   const audioBuffers = useSelector((state: RootState) => {

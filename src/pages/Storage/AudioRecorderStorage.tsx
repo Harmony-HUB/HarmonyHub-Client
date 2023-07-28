@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-import toWav from "audiobuffer-to-wav";
 import styled from "styled-components";
-import Button from "../common/Button/Button.tsx";
-import Modal from "../common/Modal/Modal";
-import Spinner from "../common/Spinner/Spinner.tsx";
+import { bufferToWav } from "./utils";
+import Button from "../../components/common/Button/Button";
+import Modal from "../../components/common/Modal/Modal";
+import Spinner from "../../components/common/Spinner/Spinner";
+import { AudioRecorderStorageProps } from "./types";
 
 const StyledFormContainer = styled.div`
   display: flex;
@@ -20,13 +21,10 @@ const StyledFormContainer = styled.div`
   }
 `;
 
-function bufferToWav(buffer) {
-  const wavArrayBuffer = toWav(buffer);
-  const wavBlob = new Blob([wavArrayBuffer], { type: "audio/wav" });
-  return wavBlob;
-}
-
-function AudioRecorderStorage({ audioBuffer, userData }) {
+function AudioRecorderStorage({
+  audioBuffer,
+  userData,
+}: AudioRecorderStorageProps) {
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");

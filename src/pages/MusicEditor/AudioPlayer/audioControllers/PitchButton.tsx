@@ -1,10 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
 import { faHashtag, faMinus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { setPitch } from "../../feature/audioPlayerSlice";
-import { PropsId } from "../../types";
-import { RootState } from "../../store";
-import Button from "../common/Button/Button";
+import { setPitch } from "../../../../feature/audioPlayerSlice";
+import { PropsId } from "../../../../types";
+import { RootState } from "../../../../store";
+import Button from "../../../../components/common/Button/Button";
 
 function PitchButton({ audioPlayedId }: PropsId): React.ReactElement {
   const dispatch = useDispatch();

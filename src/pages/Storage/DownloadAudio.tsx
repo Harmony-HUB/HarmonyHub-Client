@@ -1,9 +1,9 @@
-import React from "react";
 import wav from "audiobuffer-to-wav";
-import Button from "../common/Button/Button.tsx";
+import Button from "../../components/common/Button/Button";
+import { DownloadAudioProps } from "./types";
 
-function DownloadAudio({ audioBuffer }) {
-  const bufferToWavBlob = buffer => {
+function DownloadAudio({ audioBuffer }: DownloadAudioProps) {
+  const bufferToWavBlob = (buffer: AudioBuffer) => {
     const wavData = wav(buffer);
     const blob = new Blob([new Uint8Array(wavData)], { type: "audio/wav" });
     return blob;

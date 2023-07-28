@@ -4,10 +4,10 @@ import {
   faForwardFast,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { setTempo } from "../../feature/audioPlayerSlice";
-import { PropsId } from "../../types";
-import { RootState } from "../../store";
-import Button from "../common/Button/Button";
+import { setTempo } from "../../../../feature/audioPlayerSlice";
+import { PropsId } from "../../../../types";
+import { RootState } from "../../../../store";
+import Button from "../../../../components/common/Button/Button";
 
 function TempoButton({ audioPlayedId }: PropsId): React.ReactElement {
   const dispatch = useDispatch();

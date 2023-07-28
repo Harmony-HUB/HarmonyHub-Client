@@ -3,11 +3,10 @@ import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Gain, PitchShift } from "tone";
 import { Editor, BottomBar } from "./styles";
-import AudioPlayer from "../AudioPlayer/AudioPlayer";
-import Button from "../common/Button/Button";
-import AudioStorage from "../Storage/AudioStorage";
+import AudioPlayer from "./AudioPlayer/AudioPlayer";
+import Button from "../../components/common/Button/Button";
 import DownloadAudio from "../Storage/DownloadAudio";
-import Modal from "../common/Modal/Modal";
+import Modal from "../../components/common/Modal/Modal";
 import MergeAudio from "./MergeAudio";
 import SelectFile from "./SelectFile";
 import MoveAudioPlayer from "./MoveAudioPlayer";
@@ -123,10 +122,6 @@ function MusicEditor({ userData }: MusicEditorProps): React.ReactElement {
         <Button onClick={openModal}>Save</Button>
         {showModal && (
           <Modal isOpen={showModal} onClose={closeModal}>
-            <AudioStorage
-              userData={userData}
-              audioBuffer={combinedAudioBuffer}
-            />
             <DownloadAudio audioBuffer={combinedAudioBuffer} />
           </Modal>
         )}

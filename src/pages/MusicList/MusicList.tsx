@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import axios, { AxiosError } from "axios";
-import refreshAccessToken from "../Auth/refreshAccessToken";
+import refreshAccessToken from "../../components/Auth/refreshAccessToken";
 import {
   SongList,
   SongButton,

@@ -6,6 +6,7 @@ interface ButtonProps {
   children?: ReactNode;
   onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   backgroundColor?: string;
+  disabled?: boolean;
   color?: string;
   fontSize?: string;
   hoverBackgroundColor?: string;
@@ -22,6 +23,7 @@ function Button({
   hoverBackgroundColor,
   margin,
   border,
+  disabled,
 }: ButtonProps) {
   return (
     <StyledButton
@@ -32,6 +34,7 @@ function Button({
       hoverBackgroundColor={hoverBackgroundColor}
       margin={margin}
       border={border}
+      disabled={disabled}
     >
       {children}
     </StyledButton>
@@ -58,6 +61,7 @@ Button.defaultProps = {
   hoverBackgroundColor: "#2bc5b4",
   margin: "0.5rem 0",
   border: "#3bd6c6",
+  disabled: false,
 };
 
 export default Button;
