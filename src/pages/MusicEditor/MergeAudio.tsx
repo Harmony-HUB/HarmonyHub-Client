@@ -6,7 +6,7 @@ import Spinner from "../../components/common/Spinner/Spinner";
 import { setCombinedAudioBuffer } from "../../feature/musicEditorSlice";
 
 function MergeAudio(): React.ReactElement {
-  const [isLoading, setIsLoading] = useState<true | false>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const dispatch = useDispatch();
 

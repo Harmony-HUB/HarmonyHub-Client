@@ -27,7 +27,6 @@ export function bufferToWav(buffer: AudioBuffer): Blob {
 export function toneAudioBufferToAudioBuffer(
   toneBuffer: Tone.ToneAudioBuffer
 ): AudioBuffer {
-  console.log(toneBuffer);
   const offlineContext = new OfflineAudioContext(
     toneBuffer.numberOfChannels,
     toneBuffer.length,

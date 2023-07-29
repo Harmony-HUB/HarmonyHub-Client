@@ -29,7 +29,7 @@ interface AudioBufferWithKey {
 }
 
 function MusicEditor({ userData }: MusicEditorProps): React.ReactElement {
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
   const [audioBuffers, setAudioBuffers] = useState<AudioBufferWithKey[]>([]);
 
   const dispatch = useDispatch();

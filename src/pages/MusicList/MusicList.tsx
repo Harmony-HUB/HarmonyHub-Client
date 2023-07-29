@@ -18,8 +18,8 @@ interface Song {
 
 function MusicList() {
   const [songs, setSongs] = useState<Song[]>([]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [playing, setPlaying] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [playing, setPlaying] = useState<boolean>(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {

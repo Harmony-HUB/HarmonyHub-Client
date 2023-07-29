@@ -33,10 +33,10 @@ function AudioStorage({
   userData,
   audioPlayedId,
 }: AudioStorageProps) {
-  const [showModal, setShowModal] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const isModalOpen = () => {
     setShowModal(true);

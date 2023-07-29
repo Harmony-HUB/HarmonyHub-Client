@@ -8,7 +8,7 @@ import StyledVolumeSlider from "./styles";
 import { PropsId } from "../../../../../types";
 
 function VolumeSlider({ audioPlayedId }: PropsId): React.ReactElement {
-  const [showSlider, setShowSlider] = useState(false);
+  const [showSlider, setShowSlider] = useState<boolean>(false);
   const dispatch = useDispatch();
 
   const audioContext = useSelector(
