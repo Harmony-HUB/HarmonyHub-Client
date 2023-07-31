@@ -1,48 +1,20 @@
 import { useState, useEffect } from "react";
-import styled from "styled-components";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
-import MusicEditor from "./pages/MusicEditor/MusicEditor.tsx";
-import Login from "./components/Auth/Login.tsx";
-import MP3Modal from "./components/common/Modal/MP3Modal/MP3Modal.tsx";
-import MusicList from "./pages/MusicList/MusicList.tsx";
-import Button from "./components/common/Button/Button.tsx";
-import AudioRecorder from "./pages/AudioRecorder/AudioRecorder.tsx";
-import Sidebar from "./components/common/Sidebar/Sidebar.tsx";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: #f0f0f0;
-`;
-
-const Title = styled.h1`
-  font-size: 2.5rem;
-  color: #3bd6c6;
-  margin-bottom: 1rem;
-`;
-
-const MyMusicButton = styled.div`
-  position: absolute;
-  bottom: 0;
-  top: 80px;
-  right: 5%;
-`;
-
-const GuideDesktop = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-`;
+import MusicEditor from "./pages/MusicEditor/MusicEditor";
+import Login from "./components/Auth/Login";
+import MP3Modal from "./components/common/Modal/MP3Modal/MP3Modal";
+import MusicList from "./pages/MusicList/MusicList";
+import Button from "./components/common/Button/Button";
+import AudioRecorder from "./pages/AudioRecorder/AudioRecorder";
+import Sidebar from "./components/common/Sidebar/Sidebar";
+import { GuideDesktop, Title, MyMusicButton, Container } from "./styles";
+import { UserData } from "./types";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userData, setUserdata] = useState({});
+  const [userData, setUserdata] = useState<UserData | null>(null);
   const [isSongsListModalOpen, setIsSongsListModalOpen] = useState(false);
 
   const isDesktopOrLaptop = useMediaQuery({
@@ -69,7 +41,7 @@ function App() {
     const auth = getAuth();
 
     const unSubscribe = onAuthStateChanged(auth, user => {
-      if (user) {
+      if (user && user.email && user.displayName) {
         setUserdata({
           uid: user.uid,
           email: user.email,
@@ -105,11 +77,15 @@ function App() {
           </MyMusicButton>
 
           <Routes>
-            <Route path="/" element={<MusicEditor userData={userData} />} />
-            <Route
-              path="/audiorecorder"
-              element={<AudioRecorder userData={userData} />}
-            />
+            {userData && (
+              <Route path="/" element={<MusicEditor userData={userData} />} />
+            )}
+            {userData && (
+              <Route
+                path="/audiorecorder"
+                element={<AudioRecorder userData={userData} />}
+              />
+            )}
           </Routes>
         </>
       );
@@ -130,12 +106,8 @@ function App() {
     <Router>
       <div>
         <Container>{renderContent()}</Container>
-        <MP3Modal
-          isOpen={isSongsListModalOpen}
-          onClose={closeSongsListModal}
-          contentLabel="Songs List Modal"
-        >
-          <MusicList closeModal={closeSongsListModal} />
+        <MP3Modal isOpen={isSongsListModalOpen} onClose={closeSongsListModal}>
+          <MusicList />
         </MP3Modal>
       </div>
     </Router>

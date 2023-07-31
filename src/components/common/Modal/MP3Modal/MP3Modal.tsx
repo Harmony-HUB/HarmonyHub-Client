@@ -7,17 +7,15 @@ import {
   ContentArea,
   PlayButtonWrapper,
   PlayButtonInner,
-  PlayButton,
 } from "./styles";
 
 interface MP3ModalProps {
   isOpen: boolean;
   children: ReactNode;
   onClose: () => void;
-  onPlay: () => void;
 }
 
-function MP3Modal({ isOpen, children, onClose, onPlay }: MP3ModalProps) {
+function MP3Modal({ isOpen, children, onClose }: MP3ModalProps) {
   if (!isOpen) return null;
 
   const handleBackgroundClick = (e: React.MouseEvent) => {
@@ -46,9 +44,7 @@ function MP3Modal({ isOpen, children, onClose, onPlay }: MP3ModalProps) {
       >
         <ContentArea>{children}</ContentArea>
         <PlayButtonWrapper>
-          <PlayButton onClick={onPlay}>
-            <PlayButtonInner />
-          </PlayButton>
+          <PlayButtonInner />
         </PlayButtonWrapper>
       </ModalContent>
     </ModalBackground>,
@@ -60,7 +56,6 @@ MP3Modal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   children: PropTypes.node,
   onClose: PropTypes.func.isRequired,
-  onPlay: PropTypes.func.isRequired,
 };
 
 MP3Modal.defaultProps = {

@@ -53,18 +53,6 @@ export const PlayButtonWrapper = styled.div`
   position: relative;
 `;
 
-export const PlayButton = styled.button`
-  border-radius: 50%;
-  background-color: transparent;
-  border: none;
-  width: 80%;
-  height: 80%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-`;
-
 export const PlayButtonInner = styled.div`
   border-radius: 50%;
   width: 50%;

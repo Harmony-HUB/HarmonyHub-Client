@@ -1,25 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
-import styled from "styled-components";
 import { bufferToWav } from "./utils";
 import Button from "../../components/common/Button/Button";
 import Modal from "../../components/common/Modal/Modal";
 import Spinner from "../../components/common/Spinner/Spinner";
 import { AudioRecorderStorageProps } from "./types";
-
-const StyledFormContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  h3 {
-    margin-bottom: 8px;
-  }
-
-  input,
-  textarea {
-    margin-bottom: 16px;
-  }
-`;
+import StyledFormContainer from "./styles";
 
 function AudioRecorderStorage({
   audioBuffer,

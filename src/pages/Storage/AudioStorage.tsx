@@ -1,7 +1,6 @@
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useSelector } from "react-redux";
-import styled from "styled-components";
 import Button from "../../components/common/Button/Button";
 import Modal from "../../components/common/Modal/Modal";
 import Spinner from "../../components/common/Spinner/Spinner";
@@ -13,20 +12,7 @@ import {
   bufferToWav,
   toneAudioBufferToAudioBuffer,
 } from "./utils";
-
-const StyledFormContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  h3 {
-    margin-bottom: 8px;
-  }
-
-  input,
-  textarea {
-    margin-bottom: 16px;
-  }
-`;
+import StyledFormContainer from "./styles";
 
 function AudioStorage({
   audioBuffer,

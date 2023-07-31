@@ -1,9 +1,9 @@
 import { Gain, PitchShift } from "tone";
 
 export interface UserData {
-  id: number;
-  name: string;
+  uid: string;
   email: string;
+  displayName: string;
 }
 
 export interface PropsId {
