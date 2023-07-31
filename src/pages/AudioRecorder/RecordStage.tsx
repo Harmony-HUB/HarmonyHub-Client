@@ -21,6 +21,7 @@ function RecordStage() {
     useSelector((state: RootState) => state.audioRecorder);
 
   const startRecording = async () => {
+    console.log(audioContext);
     if (audioContext) {
       const bufferSource = audioContext.createBufferSource();
       bufferSource.buffer = audioBuffer;

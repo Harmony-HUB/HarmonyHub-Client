@@ -1,7 +1,7 @@
 import { UserData } from "../../types";
 
 export interface AudioRecorderStorageProps {
-  audioBuffer: AudioBuffer;
+  audioBuffer: AudioBuffer | null;
   userData: UserData;
 }
 

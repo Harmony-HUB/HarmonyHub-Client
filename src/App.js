@@ -8,7 +8,7 @@ import Login from "./components/Auth/Login.tsx";
 import MP3Modal from "./components/common/Modal/MP3Modal/MP3Modal.tsx";
 import MusicList from "./pages/MusicList/MusicList.tsx";
 import Button from "./components/common/Button/Button.tsx";
-import AudioRecorder from "./pages/AudioRecorder/AudioRecorder";
+import AudioRecorder from "./pages/AudioRecorder/AudioRecorder.tsx";
 import Sidebar from "./components/common/Sidebar/Sidebar.tsx";
 
 const Container = styled.div`

@@ -8,6 +8,7 @@ interface RecorderState {
   recordedChunks: Blob[] | null;
   isRecored: boolean;
   stage: number;
+  combinedAudioBuffer: AudioBuffer | null;
 }
 
 const initialState: RecorderState = {
@@ -18,6 +19,7 @@ const initialState: RecorderState = {
   recordedChunks: null,
   isRecored: false,
   stage: 1,
+  combinedAudioBuffer: null,
 };
 
 const audioRecorderSlice = createSlice({
@@ -48,6 +50,12 @@ const audioRecorderSlice = createSlice({
     setStage: (state, action: PayloadAction<number>) => {
       state.stage = action.payload;
     },
+    setCombinedAudioBuffer: (
+      state,
+      action: PayloadAction<AudioBuffer | null>
+    ) => {
+      state.combinedAudioBuffer = action.payload;
+    },
   },
 });
 
@@ -59,6 +67,7 @@ export const {
   setRecordedChunks,
   setIsRecord,
   setStage,
+  setCombinedAudioBuffer,
 } = audioRecorderSlice.actions;
 
 export default audioRecorderSlice.reducer;
