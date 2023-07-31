@@ -75,3 +75,16 @@ export const BottomBar = styled.div`
     padding: 5px;
   }
 `;
+
+export const AudioContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 15px;
+`;
+
+export const MoveButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;

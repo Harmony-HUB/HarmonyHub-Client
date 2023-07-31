@@ -26,33 +26,45 @@ const audioRecorderSlice = createSlice({
   name: "recorder",
   initialState,
   reducers: {
-    setAudioContext: (state, action: PayloadAction<AudioContext | null>) => {
+    setAudioContext: (
+      state,
+      action: PayloadAction<RecorderState["audioContext"]>
+    ) => {
       state.audioContext = action.payload;
     },
-    setAudioBuffer: (state, action: PayloadAction<AudioBuffer | null>) => {
+    setAudioBuffer: (
+      state,
+      action: PayloadAction<RecorderState["audioBuffer"]>
+    ) => {
       state.audioBuffer = action.payload;
     },
     setAudioSource: (
       state,
-      action: PayloadAction<AudioBufferSourceNode | null>
+      action: PayloadAction<RecorderState["audioSource"]>
     ) => {
       state.audioSource = action.payload;
     },
-    setUploadedFile: (state, action: PayloadAction<string | null>) => {
+    setUploadedFile: (
+      state,
+      action: PayloadAction<RecorderState["uploadedFile"]>
+    ) => {
       state.uploadedFile = action.payload;
     },
-    setRecordedChunks: (state, action: PayloadAction<Blob[] | null>) => {
+    setRecordedChunks: (
+      state,
+      action: PayloadAction<RecorderState["recordedChunks"]>
+    ) => {
       state.recordedChunks = action.payload;
     },
-    setIsRecord: (state, action: PayloadAction<boolean>) => {
+    setIsRecord: (state, action: PayloadAction<RecorderState["isRecored"]>) => {
       state.isRecored = action.payload;
     },
-    setStage: (state, action: PayloadAction<number>) => {
+    setStage: (state, action: PayloadAction<RecorderState["stage"]>) => {
       state.stage = action.payload;
     },
     setCombinedAudioBuffer: (
       state,
-      action: PayloadAction<AudioBuffer | null>
+      action: PayloadAction<RecorderState["combinedAudioBuffer"]>
     ) => {
       state.combinedAudioBuffer = action.payload;
     },

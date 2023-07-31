@@ -51,11 +51,13 @@ const audioPlayerSlice = createSlice({
       state.instances[audioPlayedId].audioBuffer = audioBuffer;
       state.audioPlayedId = audioPlayedId;
     },
+
     setAudioSource: (state, action) => {
       const { audioPlayedId, audioSource } = action.payload;
       state.instances[audioPlayedId].audioSource = audioSource;
       state.audioPlayedId = audioPlayedId;
     },
+
     setStartTime: (state, action) => {
       const { audioPlayedId, startTime } = action.payload;
       if (!state.instances[audioPlayedId]) {
@@ -64,6 +66,7 @@ const audioPlayerSlice = createSlice({
       state.instances[audioPlayedId].startTime = startTime;
       state.audioPlayedId = audioPlayedId;
     },
+
     setPausedTime: (state, action) => {
       const { audioPlayedId, pausedTime } = action.payload;
       if (!state.instances[audioPlayedId]) {
@@ -72,6 +75,7 @@ const audioPlayerSlice = createSlice({
       state.instances[audioPlayedId].pausedTime = pausedTime;
       state.audioPlayedId = audioPlayedId;
     },
+
     setProgressPosition: (state, action) => {
       const { audioPlayedId, progressPosition } = action.payload;
       if (!state.instances[audioPlayedId]) {
@@ -80,6 +84,7 @@ const audioPlayerSlice = createSlice({
       state.instances[audioPlayedId].progressPosition = progressPosition;
       state.audioPlayedId = audioPlayedId;
     },
+
     setVolume: (state, action) => {
       const { audioPlayedId, volume } = action.payload;
       if (!state.instances[audioPlayedId]) {
@@ -88,6 +93,7 @@ const audioPlayerSlice = createSlice({
       state.instances[audioPlayedId].volume = volume;
       state.audioPlayedId = audioPlayedId;
     },
+
     setPitch: (state, action) => {
       const { audioPlayedId, pitch } = action.payload;
       if (!state.instances[audioPlayedId]) {
@@ -96,6 +102,7 @@ const audioPlayerSlice = createSlice({
       state.instances[audioPlayedId].pitch = pitch;
       state.audioPlayedId = audioPlayedId;
     },
+
     setTempo: (state, action) => {
       const { audioPlayedId, tempo } = action.payload;
       if (!state.instances[audioPlayedId]) {
@@ -104,6 +111,7 @@ const audioPlayerSlice = createSlice({
       state.instances[audioPlayedId].tempo = tempo;
       state.audioPlayedId = audioPlayedId;
     },
+
     setSelectedStart: (state, action) => {
       const { audioPlayedId, selectedStart } = action.payload;
       if (!state.instances[audioPlayedId]) {
@@ -112,6 +120,7 @@ const audioPlayerSlice = createSlice({
       state.instances[audioPlayedId].selectedStart = selectedStart;
       state.audioPlayedId = audioPlayedId;
     },
+
     setSelectedEnd: (state, action) => {
       const { audioPlayedId, selectedEnd } = action.payload;
       if (!state.instances[audioPlayedId]) {

@@ -67,3 +67,10 @@ export const SelectionHandleLeft = styled(SelectionHandle)`
 export const SelectionHandleRight = styled(SelectionHandle)`
   right: -5px;
 `;
+
+export const AudioControlsContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+`;

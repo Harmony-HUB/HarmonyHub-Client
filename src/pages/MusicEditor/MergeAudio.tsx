@@ -1,3 +1,4 @@
+/* eslint-disable no-promise-executor-return */
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
@@ -14,8 +15,6 @@ function MergeAudio(): React.ReactElement {
     const { instances } = state.audioPlayer;
     return [0, 1, 2, 3, 4].map(index => instances[index]?.audioBuffer || null);
   });
-
-  const { audioFiles } = useSelector((state: RootState) => state.musicEditor);
 
   function concatenateAudioBuffers(buffers: Array<AudioBuffer>) {
     if (buffers.length === 0 || buffers.some(buffer => buffer === null)) {
@@ -56,25 +55,26 @@ function MergeAudio(): React.ReactElement {
     return outputBuffer;
   }
 
-  const handleMergeAudioClick = () => {
+  const handleMergeAudioClick = async () => {
     const nonNullBuffers = audioBuffers.filter(
       (buffer): buffer is AudioBuffer => buffer !== null
     );
 
     if (nonNullBuffers.length >= 2) {
       setIsLoading(true);
-      setTimeout(() => {
-        const newCombinedBuffer = concatenateAudioBuffers(nonNullBuffers);
-        dispatch(setCombinedAudioBuffer(newCombinedBuffer));
 
-        setIsLoading(false);
-      }, 2000);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      const newCombinedBuffer = concatenateAudioBuffers(nonNullBuffers);
+      dispatch(setCombinedAudioBuffer(newCombinedBuffer));
+
+      setIsLoading(false);
     }
   };
 
   return (
     <div>
-      {audioFiles.length >= 2 && (
+      {audioBuffers.length >= 2 && (
         <Button onClick={handleMergeAudioClick}>
           {isLoading ? <Spinner /> : "오디오 결합"}
         </Button>

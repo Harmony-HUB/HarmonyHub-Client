@@ -1,39 +1,36 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface MusicEditor {
-  audioFiles: {
-    file: string;
-    isUploaded: boolean;
-  }[];
   combinedAudioBuffer: AudioBuffer | null;
+  audioBuffers: Array<AudioBuffer | null>;
 }
 
 const initialState: MusicEditor = {
-  audioFiles: [],
   combinedAudioBuffer: null,
+  audioBuffers: [],
 };
 
 const musicEditorSlice = createSlice({
   name: "musicEditor",
   initialState,
   reducers: {
-    setAudioFiles: (
-      state,
-      action: PayloadAction<MusicEditor["audioFiles"]>
-    ) => {
-      state.audioFiles = action.payload;
-    },
-
     setCombinedAudioBuffer: (
       state,
       action: PayloadAction<MusicEditor["combinedAudioBuffer"]>
     ) => {
       state.combinedAudioBuffer = action.payload;
     },
+
+    setAudioBuffers: (
+      state,
+      action: PayloadAction<MusicEditor["audioBuffers"]>
+    ) => {
+      state.audioBuffers = action.payload;
+    },
   },
 });
 
-export const { setAudioFiles, setCombinedAudioBuffer } =
+export const { setCombinedAudioBuffer, setAudioBuffers } =
   musicEditorSlice.actions;
 
 export default musicEditorSlice.reducer;

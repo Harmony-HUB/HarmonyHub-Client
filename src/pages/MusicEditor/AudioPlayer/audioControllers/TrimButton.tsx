@@ -10,6 +10,7 @@ import {
 } from "../../../../feature/audioPlayerSlice";
 import { setIsTrimmed } from "../../../../feature/audioStatusSlice";
 import { RootState } from "../../../../store";
+import { setAudioBuffers } from "../../../../feature/musicEditorSlice";
 
 function TrimAudio({ audioPlayedId }: PropsId): React.ReactElement {
   const dispatch = useDispatch();
@@ -19,6 +20,9 @@ function TrimAudio({ audioPlayedId }: PropsId): React.ReactElement {
   );
   const audioContext = useSelector(
     (state: RootState) => state.audioContext.audioContext
+  );
+  const audioBuffers = useSelector(
+    (state: RootState) => state.musicEditor.audioBuffers
   );
 
   const copyAudioChannelData = (
@@ -63,6 +67,11 @@ function TrimAudio({ audioPlayedId }: PropsId): React.ReactElement {
       );
     }
 
+    const newAudioBuffers = [...audioBuffers];
+
+    newAudioBuffers[audioPlayedId] = newBuffer;
+
+    dispatch(setAudioBuffers(newAudioBuffers));
     dispatch(setAudioBuffer({ audioPlayedId, audioBuffer: newBuffer }));
     dispatch(setSelectedStart({ audioPlayedId, selectedStart: 0 }));
     dispatch(setSelectedEnd({ audioPlayedId, selectedEnd: 1 }));
