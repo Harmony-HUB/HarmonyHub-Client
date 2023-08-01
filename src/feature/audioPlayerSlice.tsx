@@ -13,6 +13,16 @@ interface AudioInstance {
   selectedEnd: number;
 }
 
+interface AudioState {
+  instances: Record<number, AudioInstance>;
+  audioPlayedId: number | null;
+}
+
+const initialState: AudioState = {
+  instances: {},
+  audioPlayedId: null,
+};
+
 const createAudioInstance = (): AudioInstance => ({
   audioBuffer: null,
   audioSource: null,
@@ -26,15 +36,16 @@ const createAudioInstance = (): AudioInstance => ({
   selectedEnd: 1,
 });
 
-interface AudioState {
-  instances: Record<number, AudioInstance>;
-  audioPlayedId: number | null;
-}
-
-const initialState: AudioState = {
-  instances: {},
-  audioPlayedId: null,
-};
+const createSetter =
+  (field: keyof AudioInstance) =>
+  (
+    state: AudioState,
+    action: PayloadAction<{ audioPlayedId: number; [key: string]: any }>
+  ) => {
+    const { audioPlayedId, [field]: value } = action.payload;
+    state.instances[audioPlayedId][field] = value;
+    state.audioPlayedId = audioPlayedId;
+  };
 
 const audioPlayerSlice = createSlice({
   name: "audioSlice",
@@ -51,84 +62,15 @@ const audioPlayerSlice = createSlice({
       state.instances[audioPlayedId].audioBuffer = audioBuffer;
       state.audioPlayedId = audioPlayedId;
     },
-
-    setAudioSource: (state, action) => {
-      const { audioPlayedId, audioSource } = action.payload;
-      state.instances[audioPlayedId].audioSource = audioSource;
-      state.audioPlayedId = audioPlayedId;
-    },
-
-    setStartTime: (state, action) => {
-      const { audioPlayedId, startTime } = action.payload;
-      if (!state.instances[audioPlayedId]) {
-        state.instances[audioPlayedId] = createAudioInstance();
-      }
-      state.instances[audioPlayedId].startTime = startTime;
-      state.audioPlayedId = audioPlayedId;
-    },
-
-    setPausedTime: (state, action) => {
-      const { audioPlayedId, pausedTime } = action.payload;
-      if (!state.instances[audioPlayedId]) {
-        state.instances[audioPlayedId] = createAudioInstance();
-      }
-      state.instances[audioPlayedId].pausedTime = pausedTime;
-      state.audioPlayedId = audioPlayedId;
-    },
-
-    setProgressPosition: (state, action) => {
-      const { audioPlayedId, progressPosition } = action.payload;
-      if (!state.instances[audioPlayedId]) {
-        state.instances[audioPlayedId] = createAudioInstance();
-      }
-      state.instances[audioPlayedId].progressPosition = progressPosition;
-      state.audioPlayedId = audioPlayedId;
-    },
-
-    setVolume: (state, action) => {
-      const { audioPlayedId, volume } = action.payload;
-      if (!state.instances[audioPlayedId]) {
-        state.instances[audioPlayedId] = createAudioInstance();
-      }
-      state.instances[audioPlayedId].volume = volume;
-      state.audioPlayedId = audioPlayedId;
-    },
-
-    setPitch: (state, action) => {
-      const { audioPlayedId, pitch } = action.payload;
-      if (!state.instances[audioPlayedId]) {
-        state.instances[audioPlayedId] = createAudioInstance();
-      }
-      state.instances[audioPlayedId].pitch = pitch;
-      state.audioPlayedId = audioPlayedId;
-    },
-
-    setTempo: (state, action) => {
-      const { audioPlayedId, tempo } = action.payload;
-      if (!state.instances[audioPlayedId]) {
-        state.instances[audioPlayedId] = createAudioInstance();
-      }
-      state.instances[audioPlayedId].tempo = tempo;
-      state.audioPlayedId = audioPlayedId;
-    },
-
-    setSelectedStart: (state, action) => {
-      const { audioPlayedId, selectedStart } = action.payload;
-      if (!state.instances[audioPlayedId]) {
-        state.instances[audioPlayedId] = createAudioInstance();
-      }
-      state.instances[audioPlayedId].selectedStart = selectedStart;
-      state.audioPlayedId = audioPlayedId;
-    },
-
-    setSelectedEnd: (state, action) => {
-      const { audioPlayedId, selectedEnd } = action.payload;
-      if (!state.instances[audioPlayedId]) {
-        state.instances[audioPlayedId] = createAudioInstance();
-      }
-      state.instances[audioPlayedId].selectedEnd = selectedEnd;
-      state.audioPlayedId = audioPlayedId;
-    },
+    setAudioSource: createSetter("audioSource"),
+    setStartTime: createSetter("startTime"),
+    setPausedTime: createSetter("pausedTime"),
+    setProgressPosition: createSetter("progressPosition"),
+    setVolume: createSetter("volume"),
+    setPitch: createSetter("pitch"),
+    setTempo: createSetter("tempo"),
+    setSelectedStart: createSetter("selectedStart"),
+    setSelectedEnd: createSetter("selectedEnd"),
   },
 });
 

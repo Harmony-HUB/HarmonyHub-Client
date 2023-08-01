@@ -19,22 +19,6 @@ const audioStatusSlice = createSlice({
   name: "audioStatusSlice",
   initialState,
   reducers: {
-    setIsTrimmed: (
-      state,
-      action: PayloadAction<{
-        audioPlayedId: number;
-        isTrimmed: boolean;
-      }>
-    ) => {
-      const { audioPlayedId, isTrimmed } = action.payload;
-
-      if (!state.instances[audioPlayedId]) {
-        state.instances[audioPlayedId] = { isTrimmed: false, isPlaying: false };
-      }
-
-      state.instances[audioPlayedId].isTrimmed = isTrimmed;
-    },
-
     setIsPlaying: (
       state,
       action: PayloadAction<{ audioPlayedId: number; isPlaying: boolean }>
@@ -46,6 +30,17 @@ const audioStatusSlice = createSlice({
       }
 
       state.instances[audioPlayedId].isPlaying = isPlaying;
+    },
+
+    setIsTrimmed: (
+      state,
+      action: PayloadAction<{
+        audioPlayedId: number;
+        isTrimmed: boolean;
+      }>
+    ) => {
+      const { audioPlayedId, isTrimmed } = action.payload;
+      state.instances[audioPlayedId].isTrimmed = isTrimmed;
     },
   },
 });

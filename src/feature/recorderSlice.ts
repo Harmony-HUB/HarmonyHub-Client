@@ -22,60 +22,32 @@ const initialState: RecorderState = {
   combinedAudioBuffer: null,
 };
 
+const createSetProperty =
+  <K extends keyof RecorderState>(property: K) =>
+  (state: RecorderState, action: PayloadAction<RecorderState[K]>) => {
+    state[property] = action.payload;
+  };
+
 const audioRecorderSlice = createSlice({
   name: "recorder",
   initialState,
   reducers: {
-    setAudioContext: (
-      state,
-      action: PayloadAction<RecorderState["audioContext"]>
-    ) => {
-      state.audioContext = action.payload;
-    },
-    setAudioBuffer: (
-      state,
-      action: PayloadAction<RecorderState["audioBuffer"]>
-    ) => {
-      state.audioBuffer = action.payload;
-    },
-    setAudioSource: (
-      state,
-      action: PayloadAction<RecorderState["audioSource"]>
-    ) => {
-      state.audioSource = action.payload;
-    },
-    setUploadedFile: (
-      state,
-      action: PayloadAction<RecorderState["uploadedFile"]>
-    ) => {
-      state.uploadedFile = action.payload;
-    },
-    setRecordedChunks: (
-      state,
-      action: PayloadAction<RecorderState["recordedChunks"]>
-    ) => {
-      state.recordedChunks = action.payload;
-    },
-    setIsRecord: (state, action: PayloadAction<RecorderState["isRecored"]>) => {
-      state.isRecored = action.payload;
-    },
-    setStage: (state, action: PayloadAction<RecorderState["stage"]>) => {
-      state.stage = action.payload;
-    },
-    setCombinedAudioBuffer: (
-      state,
-      action: PayloadAction<RecorderState["combinedAudioBuffer"]>
-    ) => {
-      state.combinedAudioBuffer = action.payload;
-    },
+    setAudioContext: createSetProperty("audioContext"),
+    setAudioBuffer: createSetProperty("audioBuffer"),
+    setAudioSource: createSetProperty("audioSource"),
+    setUploadedFile: createSetProperty("uploadedFile"),
+    setRecordedChunks: createSetProperty("recordedChunks"),
+    setIsRecord: createSetProperty("isRecored"),
+    setStage: createSetProperty("stage"),
+    setCombinedAudioBuffer: createSetProperty("combinedAudioBuffer"),
   },
 });
 
 export const {
   setAudioContext,
-  setUploadedFile,
   setAudioBuffer,
   setAudioSource,
+  setUploadedFile,
   setRecordedChunks,
   setIsRecord,
   setStage,
