@@ -19,23 +19,24 @@ function App() {
     setIsLoggedIn(false);
   };
 
+  if (!isDesktopOrLaptop) {
+    return (
+      <GuideDesktop>
+        <Title>Harmony HUB</Title>
+        <h1>이 사이트는 데스크탑에서 이용할 수 있습니다.</h1>
+      </GuideDesktop>
+    );
+  }
+
   return (
     <Router>
       <Container>
         <FirebaseAuth setLoggedIn={setIsLoggedIn} setUserData={setUserdata} />
 
-        {!isDesktopOrLaptop && (
-          <GuideDesktop>
-            <Title>Harmony HUB</Title>
-            <h1>이 사이트는 데스크탑에서 이용할 수 있습니다.</h1>
-          </GuideDesktop>
-        )}
-
         {isLoggedIn && (
           <>
             <Sidebar onLogout={handleLogout} />
             <ModalManager />
-
             <Routes>
               {userData && (
                 <Route path="/" element={<MusicEditor userData={userData} />} />

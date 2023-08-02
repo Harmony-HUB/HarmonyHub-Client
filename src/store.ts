@@ -4,6 +4,7 @@ import audioStatusReducer from "./feature/audioStatusSlice";
 import audioContextSlice from "./feature/audioContextSlice";
 import musicEditorSlice from "./feature/musicEditorSlice";
 import audioRecorderSlice from "./feature/recorderSlice";
+import audioStorageSlice from "./feature/audioStorageSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     musicEditor: musicEditorSlice,
     audioContext: audioContextSlice,
     audioRecorder: audioRecorderSlice,
+    audioStorage: audioStorageSlice,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

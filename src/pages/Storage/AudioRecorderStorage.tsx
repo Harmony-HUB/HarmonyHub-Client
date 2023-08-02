@@ -1,11 +1,13 @@
 import { useState } from "react";
-import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
 import { bufferToWav } from "./utils";
 import Button from "../../components/common/Button/Button";
 import Modal from "../../components/common/Modal/Modal";
 import Spinner from "../../components/common/Spinner/Spinner";
 import { AudioRecorderStorageProps } from "./types";
 import StyledFormContainer from "./styles";
+import { AppDispatch, RootState } from "../../store";
+import { uploadAudio } from "../../feature/audioStorageSlice";
 
 function AudioRecorderStorage({
   audioBuffer,
@@ -14,44 +16,18 @@ function AudioRecorderStorage({
   const [showModal, setShowModal] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { uploading } = useSelector((state: RootState) => state.audioStorage);
 
   const handleSaveAudio = async () => {
     if (!audioBuffer) return;
 
-    setLoading(true);
-
     const audioBlob = bufferToWav(audioBuffer);
-    const formData = new FormData();
-    formData.append("audio", audioBlob, `${title}.wav`);
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("created_at", new Date().toISOString());
-    formData.append("userEmail", userData.email);
+    dispatch(uploadAudio({ audioBlob, title, description, userData }));
 
-    try {
-      const token = localStorage.getItem("access_token");
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/uploadAudio`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        setShowModal(false);
-      }
-    } catch (error) {
-      if (process.env.NODE_ENV !== "production") {
-        console.error("업로드 도중 오류가 발생했습니다.", error);
-      }
-    } finally {
-      setLoading(false);
-    }
+    setShowModal(false);
   };
 
   return (
@@ -73,7 +49,7 @@ function AudioRecorderStorage({
             placeholder="Description"
           />
           <Button onClick={handleSaveAudio}>
-            {loading ? <Spinner /> : "Save"}
+            {uploading ? <Spinner /> : "Save"}
           </Button>
         </StyledFormContainer>
       </Modal>
