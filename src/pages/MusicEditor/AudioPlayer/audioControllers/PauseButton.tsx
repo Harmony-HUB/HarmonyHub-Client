@@ -9,13 +9,13 @@ import { AppDispatch } from "../../../../store";
 function PauseButton({ audioPlayedId }: PropsId): React.ReactElement {
   const dispatch = useDispatch<AppDispatch>();
 
-  const handlePaused = () => {
+  const handlePauseAudio = () => {
     dispatch(pauseButtonThunk({ audioPlayedId }));
   };
 
   return (
     <div>
-      <Button onClick={handlePaused}>
+      <Button onClick={handlePauseAudio}>
         <FontAwesomeIcon icon={faPause} />
       </Button>
     </div>

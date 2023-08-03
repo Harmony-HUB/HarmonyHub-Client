@@ -9,13 +9,13 @@ import { trimButtonThunk } from "../../../../feature/audioPlayerThunk";
 function TrimButton({ audioPlayedId }: PropsId): React.ReactElement {
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleTrimClick = () => {
+  const handleTrimAudio = () => {
     dispatch(trimButtonThunk({ audioPlayedId }));
   };
 
   return (
     <div>
-      <Button onClick={handleTrimClick}>
+      <Button onClick={handleTrimAudio}>
         <FontAwesomeIcon icon={faScissors} />
       </Button>
     </div>
