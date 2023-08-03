@@ -20,11 +20,12 @@ function PitchButton({ audioPlayedId }: PropsId): React.ReactElement {
     const newPitch = pitch + delta;
 
     if (newPitch < 0.5 || newPitch > 2) return;
-    dispatch(setPitch({ audioPlayedId, pitch: newPitch }));
 
     if (audioContext && audioContext.pitchShift) {
       audioContext.pitchShift.pitch = newPitch - 1;
     }
+
+    dispatch(setPitch({ audioPlayedId, pitch: newPitch }));
   };
 
   return (

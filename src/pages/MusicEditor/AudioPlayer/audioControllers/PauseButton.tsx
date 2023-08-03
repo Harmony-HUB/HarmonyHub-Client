@@ -23,14 +23,13 @@ function PauseButton({ audioPlayedId }: PropsId): React.ReactElement {
   const pauseSound = () => {
     if (!audioSource) return;
 
-    dispatch(setIsPlaying({ audioPlayedId, isPlaying: false }));
-
     audioSource.stop();
 
     if (audioContext) {
       const elapsedTime = audioContext.context.currentTime - startTime;
       const newPausedTime = elapsedTime + pausedTime;
 
+      dispatch(setIsPlaying({ audioPlayedId, isPlaying: false }));
       dispatch(setPausedTime({ audioPlayedId, pausedTime: newPausedTime }));
       dispatch(setAudioSource({ audioPlayedId, audioSource: null }));
     }

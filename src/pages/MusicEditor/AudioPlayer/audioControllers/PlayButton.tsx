@@ -42,8 +42,6 @@ function PlayButton({ audioPlayedId }: PropsId): React.ReactElement {
       await audioContext.context.resume();
     }
 
-    dispatch(setIsPlaying({ audioPlayedId, isPlaying: true }));
-
     const newAudioSource = new GrainPlayer(audioBuffer, () => {
       dispatch(setIsPlaying({ audioPlayedId, isPlaying: false }));
     });
@@ -63,6 +61,7 @@ function PlayButton({ audioPlayedId }: PropsId): React.ReactElement {
 
     newAudioSource.start(0, playbackOffset, duration);
 
+    dispatch(setIsPlaying({ audioPlayedId, isPlaying: true }));
     dispatch(setAudioSource({ audioPlayedId, audioSource: newAudioSource }));
     dispatch(
       setStartTime({

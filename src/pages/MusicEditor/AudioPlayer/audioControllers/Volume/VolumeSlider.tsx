@@ -17,11 +17,12 @@ function VolumeSlider({ audioPlayedId }: PropsId): React.ReactElement {
 
   const handleVolumeChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newVolume = Number(event.target.value);
-    dispatch(setVolume({ audioPlayedId, volume: newVolume }));
 
     if (audioContext && audioContext.gainNode) {
       audioContext.gainNode.gain.value = newVolume;
     }
+
+    dispatch(setVolume({ audioPlayedId, volume: newVolume }));
   };
 
   const handleMouseEnter = () => {
