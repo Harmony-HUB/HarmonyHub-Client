@@ -7,6 +7,7 @@ import {
   setSelectedStart,
   setAudioSource,
   setStartTime,
+  setPausedTime,
 } from "./audioPlayerSlice";
 import { setIsTrimmed, setIsPlaying } from "./audioStatusSlice";
 import { RootState } from "../store";
@@ -130,5 +131,31 @@ export const playButtonThunk = createAsyncThunk(
         startTime: audioContext.context.currentTime,
       })
     );
+  }
+);
+
+export const pauseButtonThunk = createAsyncThunk(
+  "audioPlayer/pauseButton",
+  async (payload: PropsId, { dispatch, getState }) => {
+    const { audioPlayedId } = payload;
+    const state = getState() as RootState;
+
+    const { audioSource, startTime, pausedTime } =
+      state.audioPlayer.instances[audioPlayedId] || {};
+
+    const { audioContext } = state.audioContext;
+
+    if (!audioSource) return;
+
+    audioSource.stop();
+
+    if (audioContext) {
+      const elapsedTime = audioContext.context.currentTime - startTime;
+      const newPausedTime = elapsedTime + pausedTime;
+
+      dispatch(setIsPlaying({ audioPlayedId, isPlaying: false }));
+      dispatch(setPausedTime({ audioPlayedId, pausedTime: newPausedTime }));
+      dispatch(setAudioSource({ audioPlayedId, audioSource: null }));
+    }
   }
 );
