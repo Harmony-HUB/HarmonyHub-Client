@@ -23,6 +23,8 @@ async function refreshAccessToken(): Promise<string | null> {
     );
 
     const newAccessToken = response.data.access_token;
+    localStorage.setItem("access_token", newAccessToken);
+
     return newAccessToken;
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {

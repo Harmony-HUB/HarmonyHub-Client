@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { getAuth, signOut } from "firebase/auth";
 import {
   OpenButton,
   ToggleButton,
@@ -23,10 +24,12 @@ function Sidebar({ onLogout }: SidebarProps) {
   };
 
   const handleGoogleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-
-    onLogout();
+    const auth = getAuth();
+    signOut(auth).then(() => {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      onLogout();
+    });
   };
 
   return (

@@ -39,7 +39,7 @@ export const uploadAudio = createAsyncThunk(
       }
     } catch (error) {
       const axiosError = error as AxiosError;
-      if (axiosError.response && axiosError.response.status === 401) {
+      if (axiosError.response && axiosError.response.status === 403) {
         const newToken = await refreshAccessToken();
 
         if (!newToken) {

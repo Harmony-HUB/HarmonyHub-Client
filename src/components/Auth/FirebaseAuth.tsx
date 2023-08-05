@@ -27,7 +27,7 @@ function FirebaseAuth({ setLoggedIn, setUserData }: FirebaseAuthProps) {
     return () => {
       unSubscribe();
     };
-  }, [setLoggedIn, setUserData]);
+  }, []);
 
   return null;
 }
