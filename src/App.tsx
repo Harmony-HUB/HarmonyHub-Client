@@ -2,7 +2,7 @@ import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
 import MusicEditor from "./pages/MusicEditor/MusicEditor";
-import Login from "./components/Auth/Login";
+import Login from "./pages/Login/Login";
 import AudioRecorder from "./pages/AudioRecorder/AudioRecorder";
 import Sidebar from "./components/common/Sidebar/Sidebar";
 import { GuideDesktop, Title, Container } from "./styles";

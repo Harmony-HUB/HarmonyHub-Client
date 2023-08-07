@@ -1,6 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import axios, { AxiosError } from "axios";
-import refreshAccessToken from "../../components/Auth/refreshAccessToken";
 import {
   MusicLists,
   MusicButton,
@@ -8,7 +6,7 @@ import {
   MusicTitle,
   MusicCreationTime,
 } from "./styles";
-import CONFIG from "../../config/config";
+import fetchMusics from "./api";
 
 interface Musics {
   url: string;
@@ -24,54 +22,16 @@ function MusicList() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    async function fetchMusics() {
-      let newToken;
-
+    const loadMusics = async () => {
       try {
-        const token = localStorage.getItem("access_token");
-        const response = await axios.get(`${CONFIG.REACT_APP_API_URL}/musics`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setMusics(response.data);
+        const musicData = await fetchMusics();
+        setMusics(musicData);
       } catch (error) {
-        const axiosError = error as AxiosError;
-
-        if (axiosError.response && axiosError.response.status === 403) {
-          newToken = await refreshAccessToken();
-
-          if (!newToken) {
-            if (process.env.NODE_ENV !== "production") {
-              console.error("유효하지 않은 토큰입니다. 다시 로그인 해주세요.");
-            }
-            return;
-          }
-        }
-
-        try {
-          const response = await axios.get(
-            `${CONFIG.REACT_APP_API_URL}/musics`,
-            {
-              headers: {
-                Authorization: `Bearer ${newToken}`,
-              },
-            }
-          );
-
-          setMusics(response.data);
-        } catch (retryError) {
-          if (process.env.NODE_ENV !== "production") {
-            console.error(
-              "액세스 토큰을 새로 고친 후 음악 리스트를 불러오는 동안 오류가 발생했습니다.",
-              retryError
-            );
-          }
-        }
+        console.error(error);
       }
-    }
+    };
 
-    fetchMusics();
+    loadMusics();
   }, []);
 
   const handleMusicSelection = (index: number, music: Musics) => {
