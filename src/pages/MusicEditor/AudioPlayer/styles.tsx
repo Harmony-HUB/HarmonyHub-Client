@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import THEME_COLORS from "../../../config/themeColors";
 
 interface ProgressTimeProps {
   progressPosition: number;
@@ -8,16 +9,12 @@ export const AudioPlayerContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #ffffff;
+  background-color: ${THEME_COLORS.WHITE};
   padding: 20px;
   border-radius: 10px;
   box-shadow:
     0 1px 3px rgba(0, 0, 0, 0.12),
     0 1px 2px rgba(0, 0, 0, 0.24);
-
-  @media (max-width: 768px) {
-    padding: 10px;
-  }
 `;
 
 export const ButtonContainer = styled.div`
@@ -53,7 +50,7 @@ export const SelectionHandle = styled.div`
   height: 120px;
   cursor: col-resize;
   z-index: 1px;
-  background-color: #6bb9f0;
+  background-color: ${THEME_COLORS.SELECT_HANDLE};
   border: 1px solid white;
   box-sizing: border-box;
   border-radius: 5px;

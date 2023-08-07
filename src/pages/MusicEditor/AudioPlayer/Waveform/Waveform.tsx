@@ -10,13 +10,13 @@ import {
 import WaveformContainer from "./styles";
 import { RootState } from "../../../../store";
 import { setIsPlaying } from "../../../../feature/audioStatusSlice";
+import THEME_COLORS from "../../../../config/themeColors";
 
 interface WaveformProps {
   audioPlayedId: number;
 }
 
 function Waveform({ audioPlayedId }: WaveformProps): React.ReactElement {
-  const WAVE_COLOR = "#b3ecec";
   const waveformCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const dispatch = useDispatch();
@@ -87,7 +87,7 @@ function Waveform({ audioPlayedId }: WaveformProps): React.ReactElement {
     ctx.clearRect(0, 0, width, height);
     ctx.beginPath();
     ctx.moveTo(0, amplitude);
-    ctx.strokeStyle = WAVE_COLOR;
+    ctx.strokeStyle = `${THEME_COLORS.WAVEFORM}`;
 
     for (let i = 0; i < width; i += 1) {
       const sliceData = data.slice(i * step, (i + 1) * step);

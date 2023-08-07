@@ -1,4 +1,5 @@
 import styled, { keyframes } from "styled-components";
+import THEME_COLORS from "../../../config/themeColors";
 
 const SpinnerAnimation = keyframes`
   0% {
@@ -15,7 +16,7 @@ const StyledSpinner = styled.div`
   height: 50px;
   border: 3px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
-  border-top-color: #333;
+  border-top-color: ${THEME_COLORS.BLACK};
   animation: ${SpinnerAnimation} 0.8s linear infinite;
 `;
 

@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Link as RouterLink } from "react-router-dom";
+import THEME_COLORS from "../../../config/themeColors";
 
 interface StyledSidebarProps {
   isOpen: boolean;
@@ -58,7 +59,7 @@ export const StyledLink = styled(RouterLink)<StyledLinkProps>`
   }
 
   &:hover {
-    color: #4b4b4b;
+    color: ${THEME_COLORS.SIDEBAR_HOVER};
     text-decoration: underline;
   }
 
@@ -74,7 +75,7 @@ export const StyledSidebar = styled.div<StyledSidebarProps>`
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: #f1f1f1;
+  background-color: ${THEME_COLORS.SIDEBAR};
   transition: transform 0.3s ease-in-out;
   padding-top: 60px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
@@ -86,21 +87,21 @@ export const NavLink = styled.a`
   padding: 8px 16px 8px 16px;
   text-decoration: none;
   font-size: 18px;
-  color: #818181;
+  color: ${THEME_COLORS.SIDEBAR_NAV_LINK};
   display: block;
   transition: 0.3s;
 
   &:hover {
-    color: #f1f1f1;
-    background-color: #4b4b4b;
+    color: ${THEME_COLORS.SIDEBAR};
+    background-color: ${THEME_COLORS.SIDEBAR_HOVER};
   }
 `;
 
 export const SidebarButton = styled.button`
   all: initial;
-  color: #818181;
+  color: ${THEME_COLORS.SIDEBAR_NAV_LINK};
   &:hover {
-    color: #f1f1f1;
-    background-color: #4b4b4b;
+    color: ${THEME_COLORS.SIDEBAR};
+    background-color: ${THEME_COLORS.SIDEBAR_HOVER};
   }
 `;

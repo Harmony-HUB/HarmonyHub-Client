@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import THEME_COLORS from "../../../../config/themeColors";
 
 export const ModalBackground = styled.div`
   position: fixed;
@@ -13,7 +14,7 @@ export const ModalBackground = styled.div`
 `;
 
 export const ModalContent = styled.div`
-  background-color: #1f1f1f;
+  background-color: ${THEME_COLORS.MP3_WRAPPER};
   border-radius: 20px;
   width: 300px;
   height: 450px;
@@ -23,13 +24,13 @@ export const ModalContent = styled.div`
   align-items: center;
   padding: 16px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
-  color: #fff;
+  color: ${THEME_COLORS.WHITE};
   border: none;
   cursor: default;
 `;
 
 export const ContentArea = styled.div`
-  background-color: #000;
+  background-color: ${THEME_COLORS.BLACK};
   border-radius: 10px;
   width: 300px;
   height: 200px;
@@ -46,7 +47,7 @@ export const PlayButtonWrapper = styled.div`
   border-radius: 50%;
   width: 60%;
   height: 40%;
-  background-color: #4d4d4d;
+  background-color: ${THEME_COLORS.MP3_BUTTON_WRAPPER};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -57,5 +58,5 @@ export const PlayButtonInner = styled.div`
   border-radius: 50%;
   width: 50%;
   height: 50%;
-  background-color: #bfbfbf;
+  background-color: ${THEME_COLORS.MP3_BUTTON_INNER};
 `;

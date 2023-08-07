@@ -1,10 +1,11 @@
 import styled from "styled-components";
+import THEME_COLORS from "../../config/themeColors";
 
-interface SongButtonProps {
+interface MusicButtonProps {
   isSelected: boolean;
 }
 
-export const SongList = styled.ul`
+export const MusicLists = styled.ul`
   list-style: none;
   padding: 0;
   margin: 0;
@@ -15,7 +16,7 @@ export const SongList = styled.ul`
   overflow-y: scroll;
 `;
 
-export const SongButton = styled.button<SongButtonProps>`
+export const MusicButton = styled.button<MusicButtonProps>`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -28,18 +29,18 @@ export const SongButton = styled.button<SongButtonProps>`
     isSelected ? "rgba(355, 355, 355, 0.3)" : null};
 `;
 
-export const SongTitle = styled.h3`
+export const MusicTitle = styled.h3`
   margin: 0;
   font-size: 1em;
 `;
 
-export const SongCreationTime = styled.p`
+export const MusicCreationTime = styled.p`
   margin: 0;
   font-size: 0.8em;
-  color: #aaa;
+  color: ${THEME_COLORS.MUSIC_CREATION_TIME};
 `;
 
-export const SongInfo = styled.div`
+export const MusicInfo = styled.div`
   display: flex;
   flex-direction: column;
 `;

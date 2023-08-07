@@ -1,0 +1,25 @@
+const THEME_COLORS = {
+  CONTAINER_COLOR: "#f0f0f0",
+  TITLE_COLOR: "#3bd6c6",
+  WHITE: "#fff",
+  AQUA: "#3bd6c6",
+  HOVERD_AQUA: "#2bc5b4",
+  BLACK: "#000000",
+  MP3_WRAPPER: "#1f1f1f",
+  MP3_BUTTON_WRAPPER: "#4d4d4d",
+  MP3_BUTTON_INNER: "#bfbfbf",
+  SIDEBAR: "#f1f1f1",
+  SIDEBAR_HOVER: "#4b4b4b",
+  SIDEBAR_NAV_LINK: "#818181",
+  EDITOR_BORDER: "#cccc",
+  SELECT_FILE_BUTTON: "#3f51b5",
+  SELECT_FILE_BUTTON_HOVER: "#536dfe",
+  BOTTOM: "#f8f9fa",
+  BOTTOM_BORDER: "#dee2e6",
+  SELECT_HANDLE: "#6bb9f0",
+  SELETED_AREA: "#64646499",
+  WAVEFORM: "#b3ecec",
+  MUSIC_CREATION_TIME: "#aaa",
+};
+
+export default THEME_COLORS;

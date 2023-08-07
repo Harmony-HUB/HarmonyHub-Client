@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import axios from "axios";
-import PropTypes from "prop-types";
 import app from "../../config/firebase-config";
 import Button from "../common/Button/Button";
 import Modal from "../common/Modal/Modal";
+import CONFIG from "../../config/config";
 
 interface LoginProps {
   onLogin: () => void;
@@ -35,7 +35,7 @@ function Login({ onLogin }: LoginProps) {
       };
 
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/user`,
+        `${CONFIG.REACT_APP_API_URL}/user`,
         userObject,
         {
           method: "POST",
@@ -59,7 +59,7 @@ function Login({ onLogin }: LoginProps) {
 
       const token = localStorage.getItem("access_token");
 
-      await axios.get(`${process.env.REACT_APP_API_URL}/protected`, {
+      await axios.get(`${CONFIG.REACT_APP_API_URL}/protected`, {
         headers: { Authorization: `Bearer ${token}` },
       });
     } catch (error) {
@@ -70,17 +70,13 @@ function Login({ onLogin }: LoginProps) {
   };
 
   return (
-    <>
+    <div>
       <Button onClick={openModal}>Login</Button>
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <Button onClick={handleGoogleLogin}>Google Login</Button>
       </Modal>
-    </>
+    </div>
   );
 }
-
-Login.propTypes = {
-  onLogin: PropTypes.func.isRequired,
-};
 
 export default Login;

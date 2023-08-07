@@ -1,4 +1,5 @@
 import axios from "axios";
+import CONFIG from "../../config/config";
 
 interface RefreshResponse {
   access_token: string;
@@ -16,7 +17,7 @@ async function refreshAccessToken(): Promise<string | null> {
     }
 
     const response = await axios.post<RefreshResponse>(
-      `${process.env.REACT_APP_API_URL}/auth/refresh`,
+      `${CONFIG.REACT_APP_API_URL}/auth/refresh`,
       {
         refreshToken,
       }

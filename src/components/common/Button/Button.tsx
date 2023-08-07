@@ -1,6 +1,6 @@
 import { ReactNode, MouseEvent } from "react";
-import PropTypes from "prop-types";
 import StyledButton from "./styles";
+import THEME_COLORS from "../../../config/themeColors";
 
 interface ButtonProps {
   children?: ReactNode;
@@ -41,26 +41,15 @@ function Button({
   );
 }
 
-Button.propTypes = {
-  children: PropTypes.node,
-  onClick: PropTypes.func,
-  backgroundColor: PropTypes.string,
-  color: PropTypes.string,
-  fontSize: PropTypes.string,
-  hoverBackgroundColor: PropTypes.string,
-  margin: PropTypes.string,
-  border: PropTypes.string,
-};
-
 Button.defaultProps = {
   children: null,
   onClick: null,
-  backgroundColor: "#fff",
-  color: "#3bd6c6",
+  backgroundColor: `${THEME_COLORS.WHITE}`,
+  color: `${THEME_COLORS.AQUA}`,
   fontSize: "1rem",
-  hoverBackgroundColor: "#2bc5b4",
+  hoverBackgroundColor: `${THEME_COLORS.HOVERD_AQUA}`,
   margin: "0.5rem 0",
-  border: "#3bd6c6",
+  border: `${THEME_COLORS.AQUA}`,
   disabled: false,
 };
 

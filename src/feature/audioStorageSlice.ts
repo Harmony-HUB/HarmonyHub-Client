@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import refreshAccessToken from "../components/Auth/refreshAccessToken";
+import CONFIG from "../config/config";
 
 interface UploadAudioPayload {
   audioBlob: Blob;
@@ -24,7 +25,7 @@ export const uploadAudio = createAsyncThunk(
     try {
       const token = localStorage.getItem("access_token");
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/uploadAudio`,
+        `${CONFIG.REACT_APP_API_URL}/uploadAudio`,
         formData,
         {
           headers: {
@@ -35,7 +36,7 @@ export const uploadAudio = createAsyncThunk(
       );
 
       if (response.status === 200) {
-        return { success: true };
+        return response;
       }
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -47,7 +48,7 @@ export const uploadAudio = createAsyncThunk(
         }
 
         const response = await axios.post(
-          `${process.env.REACT_APP_API_URL}/uploadAudio`,
+          `${CONFIG.REACT_APP_API_URL}/uploadAudio`,
           formData,
           {
             headers: {
@@ -58,7 +59,7 @@ export const uploadAudio = createAsyncThunk(
         );
 
         if (response.status === 200) {
-          return { success: true };
+          return response;
         }
       }
       throw error;

@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { ReactNode } from "react";
 import ReactDOM from "react-dom";
 import styled from "styled-components";
+import THEME_COLORS from "../../../config/themeColors";
 
 const Overlay = styled.button`
   position: fixed;
@@ -17,7 +18,7 @@ const Overlay = styled.button`
 `;
 
 const Content = styled.button`
-  background-color: #fff;
+  background-color: ${THEME_COLORS.WHITE};
   padding: 1rem;
   border-radius: 5px;
   width: 400px;

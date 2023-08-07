@@ -2,14 +2,15 @@ import { useState, useEffect, useRef } from "react";
 import axios, { AxiosError } from "axios";
 import refreshAccessToken from "../../components/Auth/refreshAccessToken";
 import {
-  SongList,
-  SongButton,
-  SongInfo,
-  SongTitle,
-  SongCreationTime,
+  MusicLists,
+  MusicButton,
+  MusicInfo,
+  MusicTitle,
+  MusicCreationTime,
 } from "./styles";
+import CONFIG from "../../config/config";
 
-interface Song {
+interface Musics {
   url: string;
   key: string;
   title: string;
@@ -17,28 +18,26 @@ interface Song {
 }
 
 function MusicList() {
-  const [songs, setSongs] = useState<Song[]>([]);
+  const [musics, setMusics] = useState<Musics[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [playing, setPlaying] = useState<boolean>(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    async function fetchSongs() {
+    async function fetchMusics() {
       let newToken;
 
       try {
         const token = localStorage.getItem("access_token");
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/songs`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setSongs(response.data);
+        const response = await axios.get(`${CONFIG.REACT_APP_API_URL}/musics`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setMusics(response.data);
       } catch (error) {
         const axiosError = error as AxiosError;
+
         if (axiosError.response && axiosError.response.status === 403) {
           newToken = await refreshAccessToken();
 
@@ -52,7 +51,7 @@ function MusicList() {
 
         try {
           const response = await axios.get(
-            `${process.env.REACT_APP_API_URL}/songs`,
+            `${CONFIG.REACT_APP_API_URL}/musics`,
             {
               headers: {
                 Authorization: `Bearer ${newToken}`,
@@ -60,7 +59,7 @@ function MusicList() {
             }
           );
 
-          setSongs(response.data);
+          setMusics(response.data);
         } catch (retryError) {
           if (process.env.NODE_ENV !== "production") {
             console.error(
@@ -72,15 +71,15 @@ function MusicList() {
       }
     }
 
-    fetchSongs();
+    fetchMusics();
   }, []);
 
-  const handleSongSelection = (index: number, song: Song) => {
+  const handleMusicSelection = (index: number, music: Musics) => {
     setSelectedIndex(index);
 
     if (audioRef.current) {
-      if (audioRef.current.src !== song.url) {
-        audioRef.current.src = song.url;
+      if (audioRef.current.src !== music.url) {
+        audioRef.current.src = music.url;
       }
 
       if (playing && selectedIndex === index) {
@@ -95,31 +94,31 @@ function MusicList() {
 
   return (
     <>
-      <SongList onClick={e => e.stopPropagation()}>
-        {Array.isArray(songs) &&
-          songs.map((song, index) => (
-            <SongButton
+      <MusicLists onClick={e => e.stopPropagation()}>
+        {Array.isArray(musics) &&
+          musics.map((music, index) => (
+            <MusicButton
               type="button"
-              key={song.key}
+              key={music.key}
               tabIndex={index}
-              onClick={() => handleSongSelection(index, song)}
+              onClick={() => handleMusicSelection(index, music)}
               onKeyDown={e => {
                 if (e.key === "Enter" || e.key === " ") {
-                  handleSongSelection(index, song);
+                  handleMusicSelection(index, music);
                 }
               }}
               isSelected={selectedIndex === index}
             >
-              <SongInfo>
-                <SongTitle>{song.title}</SongTitle>
-                <SongCreationTime>
-                  {new Date(song.creationTime).toLocaleString()}
-                </SongCreationTime>
-              </SongInfo>
+              <MusicInfo>
+                <MusicTitle>{music.title}</MusicTitle>
+                <MusicCreationTime>
+                  {new Date(music.creationTime).toLocaleString()}
+                </MusicCreationTime>
+              </MusicInfo>
               {selectedIndex === index && playing && <span>🎵</span>}
-            </SongButton>
+            </MusicButton>
           ))}
-      </SongList>
+      </MusicLists>
       <audio ref={audioRef}>
         <track kind="captions" />
       </audio>

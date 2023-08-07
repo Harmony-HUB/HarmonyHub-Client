@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import THEME_COLORS from "./config/themeColors";
 
 export const Container = styled.div`
   display: flex;
@@ -6,12 +7,12 @@ export const Container = styled.div`
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background-color: #f0f0f0;
+  background-color: ${THEME_COLORS.CONTAINER_COLOR};
 `;
 
 export const Title = styled.h1`
   font-size: 2.5rem;
-  color: #3bd6c6;
+  color: ${THEME_COLORS.TITLE_COLOR};
   margin-bottom: 1rem;
 `;
 

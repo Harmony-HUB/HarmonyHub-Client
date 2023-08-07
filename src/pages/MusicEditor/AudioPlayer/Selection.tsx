@@ -7,6 +7,7 @@ import {
 import { SelectionHandleLeft, SelectionHandleRight } from "./styles";
 import { PropsId } from "../../../types";
 import { RootState } from "../../../store";
+import THEME_COLORS from "../../../config/themeColors";
 
 function WaveSelection({ audioPlayedId }: PropsId): React.ReactElement {
   const selectionCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -31,7 +32,7 @@ function WaveSelection({ audioPlayedId }: PropsId): React.ReactElement {
 
     ctx.clearRect(0, 0, width, height);
 
-    ctx.fillStyle = "rgba(100, 100, 100, 0.6)";
+    ctx.fillStyle = `${THEME_COLORS.SELETED_AREA}`;
     ctx.fillRect(0, 0, leftHandleX, height);
     ctx.fillRect(
       rightHandleX + handleWidth,
@@ -40,10 +41,10 @@ function WaveSelection({ audioPlayedId }: PropsId): React.ReactElement {
       height
     );
 
-    ctx.fillStyle = "#6bb9f0";
+    ctx.fillStyle = `${THEME_COLORS.SELECT_HANDLE}`;
     ctx.fillRect(leftHandleX, 0, handleWidth, height);
     ctx.fillRect(rightHandleX, 0, handleWidth, height);
-    ctx.strokeStyle = "white";
+    ctx.strokeStyle = `${THEME_COLORS.WHITE}`;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(leftHandleX + handleWidth / 2, 0);
@@ -121,7 +122,7 @@ function WaveSelection({ audioPlayedId }: PropsId): React.ReactElement {
   }, [selectedEnd, selectedStart]);
 
   return (
-    <>
+    <div>
       <canvas
         ref={selectionCanvasRef}
         width="1350"
@@ -134,7 +135,7 @@ function WaveSelection({ audioPlayedId }: PropsId): React.ReactElement {
       />
       <SelectionHandleLeft onMouseDown={handleMouseDown} />
       <SelectionHandleRight onMouseDown={handleMouseDown} />
-    </>
+    </div>
   );
 }
 

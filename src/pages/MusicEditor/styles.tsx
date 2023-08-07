@@ -1,8 +1,5 @@
 import styled from "styled-components";
-
-interface FieldWrapperProps {
-  isSelected: boolean;
-}
+import THEME_COLORS from "../../config/themeColors";
 
 export const Editor = styled.div`
   display: flex;
@@ -14,7 +11,7 @@ export const Editor = styled.div`
   max-height: calc(100vh - 100px - 50px);
   padding: 0.5rem;
   font-size: 1.2rem;
-  border: 1px solid #cccc;
+  border: 1px solid ${THEME_COLORS.EDITOR_BORDER};
   border-radius: 4px;
   overflow-y: auto;
   margin-top: 100px;
@@ -28,12 +25,12 @@ export const SelectFileButton = styled.label`
   display: inline-block;
   padding: 0.5em 1em;
   text-decoration: none;
-  background: #3f51b5;
-  color: #fff;
+  background: ${THEME_COLORS.SELECT_FILE_BUTTON};
+  color: ${THEME_COLORS.WHITE};
   border-radius: 4px;
   cursor: pointer;
   &:hover {
-    background: #536dfe;
+    background: ${THEME_COLORS.SELECT_FILE_BUTTON_HOVER};
   }
 `;
 
@@ -52,13 +49,6 @@ export const FileUploadContainer = styled.div`
   left: 10px;
 `;
 
-export const FieldWrapper = styled.div<FieldWrapperProps>`
-  position: relative;
-  border: ${props => (props.isSelected ? "2px solid #00aaff" : "none")};
-  box-shadow: ${props =>
-    props.isSelected ? "0 0 5px rgba(0, 170, 255, 0.5)" : "none"};
-`;
-
 export const BottomBar = styled.div`
   display: flex;
   justify-content: space-between;
@@ -68,8 +58,8 @@ export const BottomBar = styled.div`
   left: 0;
   right: 0;
   padding: 10px;
-  background-color: #f8f9fa;
-  border-top: 1px solid #dee2e6;
+  background-color: ${THEME_COLORS.BOTTOM};
+  border-top: 1px solid ${THEME_COLORS.BOTTOM_BORDER};
 
   @media (max-width: 768px) {
     padding: 5px;
