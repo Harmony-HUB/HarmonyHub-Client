@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop */
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
@@ -70,7 +69,11 @@ function SelectFile(): React.ReactElement {
     <div>
       <SelectFileButton>
         <FontAwesomeIcon icon={faUpload} /> 파일 선택
-        <FileInput type="file" onChange={handleFileChange} />
+        <FileInput
+          type="file"
+          accept=".mp3,audio/*"
+          onChange={handleFileChange}
+        />
       </SelectFileButton>
     </div>
   );

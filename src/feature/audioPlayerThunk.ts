@@ -9,8 +9,9 @@ import {
   setStartTime,
   setPausedTime,
   setProgressPosition,
+  setIsTrimmed,
+  setIsPlaying,
 } from "./audioPlayerSlice";
-import { setIsTrimmed, setIsPlaying } from "./audioStatusSlice";
 import { RootState } from "../store";
 import { PropsId } from "../types";
 
@@ -91,10 +92,10 @@ export const playButtonThunk = createAsyncThunk(
       tempo,
       selectedStart,
       selectedEnd,
+      isTrimmed,
     } = state.audioPlayer.instances[payload.audioPlayedId] || {};
 
     const { audioContext } = state.audioContext;
-    const { isTrimmed } = state.audioStatus.instances[audioPlayedId] || {};
 
     if (!audioContext || !audioContext.context || !audioBuffer || audioSource) {
       return;

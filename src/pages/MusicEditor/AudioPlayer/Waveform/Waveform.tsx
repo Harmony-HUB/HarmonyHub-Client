@@ -6,10 +6,10 @@ import {
   setProgressPosition,
   setPausedTime,
   setAudioSource,
+  setIsPlaying,
 } from "../../../../feature/audioPlayerSlice";
 import WaveformContainer from "./styles";
 import { RootState } from "../../../../store";
-import { setIsPlaying } from "../../../../feature/audioStatusSlice";
 import THEME_COLORS from "../../../../config/themeColors";
 
 interface WaveformProps {
@@ -21,12 +21,15 @@ function Waveform({ audioPlayedId }: WaveformProps): React.ReactElement {
 
   const dispatch = useDispatch();
 
-  const { audioSource, audioBuffer, selectedStart, selectedEnd } = useSelector(
+  const {
+    audioSource,
+    audioBuffer,
+    selectedStart,
+    selectedEnd,
+    isTrimmed,
+    isPlaying,
+  } = useSelector(
     (state: RootState) => state.audioPlayer.instances[audioPlayedId] || {}
-  );
-
-  const { isTrimmed, isPlaying } = useSelector(
-    (state: RootState) => state.audioStatus.instances[audioPlayedId] || {}
   );
 
   const handleWaveformClick = (event: React.MouseEvent) => {

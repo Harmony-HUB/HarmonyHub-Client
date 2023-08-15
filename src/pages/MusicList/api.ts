@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import CONFIG from "../../config/config";
 import refreshAccessToken from "../../components/Auth/refreshAccessToken";
 
-const fetchMusics = async (): Promise<any> => {
+const fetchMusics = async () => {
   let newToken;
   try {
     const token = localStorage.getItem("access_token");
