@@ -13,24 +13,23 @@ interface FileObject {
 }
 
 function SelectFile(): React.ReactElement {
-  const [audioFiles, setAudioFiles] = useState<FileObject[]>([]);
-
+  const [audioFile, setAudioFile] = useState<FileObject | null>(null);
   const dispatch = useDispatch();
 
   const audioContext = useSelector(
     (state: RootState) => state.audioContext.audioContext
   );
+  const audioBuffers = useSelector(
+    (state: RootState) => state.musicEditor.audioBuffers
+  );
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      const selectedFiles = Array.from(event.target.files);
-      const updatedAudioFiles = [...audioFiles];
+      const selectedFile = event.target.files[0];
 
-      selectedFiles.forEach(selectedFile => {
-        const fileURL = URL.createObjectURL(selectedFile);
-        updatedAudioFiles.push({ file: fileURL, isUploaded: true });
-      });
-      setAudioFiles(updatedAudioFiles);
+      const fileURL = URL.createObjectURL(selectedFile);
+
+      setAudioFile({ file: fileURL, isUploaded: true });
     }
   };
 
@@ -52,30 +51,20 @@ function SelectFile(): React.ReactElement {
       return null;
     }
   };
-  useEffect(() => {
-    let isMounted = true;
 
+  useEffect(() => {
     const loadAllFiles = async () => {
-      let updatedBuffers: AudioBuffer[] = [];
-      for (let i = 0; i < audioFiles.length; i += 1) {
-        const newBuffer = await loadAudioFile(audioFiles[i]);
+      if (audioFile) {
+        const newBuffer = (await loadAudioFile(audioFile)) as AudioBuffer;
 
         if (newBuffer) {
-          updatedBuffers = updatedBuffers.concat(newBuffer);
+          dispatch(setAudioBuffers([...audioBuffers, newBuffer]));
         }
-      }
-
-      if (isMounted) {
-        dispatch(setAudioBuffers(updatedBuffers));
       }
     };
 
     loadAllFiles();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [audioFiles]);
+  }, [audioFile]);
 
   return (
     <div>

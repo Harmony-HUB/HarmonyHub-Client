@@ -1,4 +1,3 @@
-/* eslint-disable no-promise-executor-return */
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
@@ -63,7 +62,9 @@ function MergeAudio(): React.ReactElement {
     if (nonNullBuffers.length >= 2) {
       setIsLoading(true);
 
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => {
+        setTimeout(resolve, 2000);
+      });
 
       const newCombinedBuffer = concatenateAudioBuffers(nonNullBuffers);
       dispatch(setCombinedAudioBuffer(newCombinedBuffer));

@@ -70,7 +70,6 @@ export const trimButtonThunk = createAsyncThunk(
     const newAudioBuffers = [...audioBuffers];
 
     newAudioBuffers[audioPlayedId] = newBuffer;
-
     dispatch(setAudioBuffers(newAudioBuffers));
     dispatch(setAudioBuffer({ audioPlayedId, audioBuffer: newBuffer }));
     dispatch(setSelectedStart({ audioPlayedId, selectedStart: 0 }));
