@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { getAuth, signOut } from "firebase/auth";
 import {
-  OpenButton,
   ToggleButton,
   NavLinks,
   NavLink,
@@ -35,17 +34,14 @@ function Sidebar() {
 
   return (
     <>
-      {!isOpen && (
-        <OpenButton onClick={toggleSidebar}>
+      <ToggleButton onClick={toggleSidebar}>
+        {isOpen ? (
+          <FontAwesomeIcon icon={faXmark} />
+        ) : (
           <FontAwesomeIcon icon={faBars} />
-        </OpenButton>
-      )}
-      <StyledSidebar isOpen={isOpen}>
-        {isOpen && (
-          <ToggleButton onClick={toggleSidebar}>
-            <FontAwesomeIcon icon={faBars} />
-          </ToggleButton>
         )}
+      </ToggleButton>
+      <StyledSidebar isOpen={isOpen}>
         <NavLinks>
           <NavLink>
             <SidebarButton onClick={handleGoogleLogout}>로그아웃</SidebarButton>

@@ -12,14 +12,14 @@ interface StyledLinkProps {
 
 export const ToggleButton = styled.button`
   position: absolute;
-  top: 10px;
-  margin-left: 5px;
+  left: 10px;
+  top: 30px;
   background-color: transparent;
   border: none;
   font-size: 30px;
   cursor: pointer;
   outline: none;
-  z-index: 1;
+  z-index: 10;
 `;
 
 export const NavLinks = styled.nav`
@@ -28,44 +28,12 @@ export const NavLinks = styled.nav`
   list-style-type: none;
 `;
 
-export const OpenButton = styled.button`
-  position: fixed;
-  font-size: 30px;
-  top: 10px;
-  left: 10px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  outline: none;
-  padding: 0;
-  margin: 0;
-  z-index: 1000;
-`;
-
 export const OpenButtonSpan = styled.span`
   display: block;
   padding: 10px;
   color: black;
   text-decoration: none;
   text-align: center;
-`;
-
-export const StyledLink = styled(RouterLink)<StyledLinkProps>`
-  color: inherit;
-  text-decoration: none;
-
-  &:visited {
-    color: inherit;
-  }
-
-  &:hover {
-    color: ${THEME_COLORS.SIDEBAR_HOVER};
-    text-decoration: underline;
-  }
-
-  &:active {
-    color: inherit;
-  }
 `;
 
 export const StyledSidebar = styled.div<StyledSidebarProps>`
@@ -82,11 +50,29 @@ export const StyledSidebar = styled.div<StyledSidebarProps>`
   transform: translateX(${({ isOpen }) => (isOpen ? "0" : "-100px")});
 `;
 
+export const StyledLink = styled(RouterLink)<StyledLinkProps>`
+  color: inherit;
+  text-decoration: none;
+
+  &:visited {
+    color: inherit;
+  }
+
+  &:hover {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  &:active {
+    color: inherit;
+  }
+`;
+
 export const NavLink = styled.a`
   margin-top: 20px;
   padding: 8px 16px 8px 16px;
   text-decoration: none;
-  font-size: 18px;
+  font-size: 16px;
   color: ${THEME_COLORS.SIDEBAR_NAV_LINK};
   display: block;
   transition: 0.3s;
@@ -99,7 +85,8 @@ export const NavLink = styled.a`
 
 export const SidebarButton = styled.button`
   all: initial;
-  color: ${THEME_COLORS.SIDEBAR_NAV_LINK};
+  color: inherit;
+  cursor: pointer;
   &:hover {
     color: ${THEME_COLORS.SIDEBAR};
     background-color: ${THEME_COLORS.SIDEBAR_HOVER};
