@@ -25,10 +25,7 @@ function AudioRecorder() {
       {stage === 2 && <RecordStage />}
       {stage === 3 && <MixingStage />}
       {stage === 4 && (
-        <AudioRecorderStorage
-          // userData={userData}
-          audioBuffer={combinedAudioBuffer}
-        />
+        <AudioRecorderStorage audioBuffer={combinedAudioBuffer} />
       )}
     </div>
   );

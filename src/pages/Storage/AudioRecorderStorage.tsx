@@ -17,12 +17,13 @@ function AudioRecorderStorage({ audioBuffer }: AudioRecorderStorageProps) {
   const dispatch = useDispatch<AppDispatch>();
 
   const { uploading } = useSelector((state: RootState) => state.audioStorage);
+  const userData = useSelector((state: RootState) => state.userData.data);
 
   const handleSaveAudio = async () => {
     if (!audioBuffer) return;
 
     const audioBlob = bufferToWav(audioBuffer);
-    dispatch(uploadAudio({ audioBlob, title, description })); // userData
+    dispatch(uploadAudio({ audioBlob, title, description, userData }));
 
     setShowModal(false);
   };

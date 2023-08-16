@@ -13,11 +13,7 @@ import {
 import StyledFormContainer from "./styles";
 import { uploadAudio } from "../../feature/audioStorageSlice";
 
-function AudioStorage({
-  audioBuffer,
-  // userData,
-  audioPlayedId,
-}: AudioStorageProps) {
+function AudioStorage({ audioBuffer, audioPlayedId }: AudioStorageProps) {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -25,6 +21,7 @@ function AudioStorage({
   const dispatch = useDispatch<AppDispatch>();
 
   const { uploading } = useSelector((state: RootState) => state.audioStorage);
+  const userData = useSelector((state: RootState) => state.userData.data);
 
   const isModalOpen = () => {
     setShowModal(true);
@@ -56,7 +53,7 @@ function AudioStorage({
     const buffer = toneAudioBufferToAudioBuffer(adjustedBuffer);
     const audioBlob = bufferToWav(buffer);
 
-    dispatch(uploadAudio({ audioBlob, title, description })); // userData
+    dispatch(uploadAudio({ audioBlob, title, description, userData }));
 
     setShowModal(false);
   };

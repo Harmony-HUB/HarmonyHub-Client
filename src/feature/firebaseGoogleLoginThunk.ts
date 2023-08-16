@@ -27,14 +27,12 @@ const firebaseGoogleLoginThunk = createAsyncThunk(
         }
       );
 
-      const { accessToken } = response.data;
-      const { name, email, refreshToken } = response.data.user;
-      const userData = { name, email };
+      const { accessToken, refreshToken } = response.data;
 
       localStorage.setItem("access_token", accessToken);
       localStorage.setItem("refresh_token", refreshToken);
 
-      return userData;
+      return response.data;
     } catch (error) {
       return rejectWithValue(error);
     }

@@ -2,25 +2,28 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import refreshAccessToken from "../components/Auth/refreshAccessToken";
 import CONFIG from "../config/config";
+import { UserData } from "../types";
 
 interface UploadAudioPayload {
   audioBlob: Blob;
   title: string;
   description: string;
-  // userData: { email: string };
+  userData: UserData | null;
 }
 
 export const uploadAudio = createAsyncThunk(
   "audio/upload",
   async (payload: UploadAudioPayload) => {
-    const { audioBlob, title, description } = payload; // userData
+    const { audioBlob, title, description, userData } = payload;
+
+    if (!userData) return;
 
     const formData = new FormData();
     formData.append("audio", audioBlob, `${title}.wav`);
     formData.append("title", title);
     formData.append("description", description);
     formData.append("created_at", new Date().toISOString());
-    // formData.append("userEmail", userData.email);
+    formData.append("userEmail", userData.email);
 
     try {
       const token = localStorage.getItem("access_token");

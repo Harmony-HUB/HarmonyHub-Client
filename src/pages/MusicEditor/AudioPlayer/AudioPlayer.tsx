@@ -38,11 +38,7 @@ function AudioPlayer({
         <Tempo audioPlayedId={audioPlayedId} />
         <TrimAudio audioPlayedId={audioPlayedId} />
         <Volume audioPlayedId={audioPlayedId} />
-        <AudioStorage
-          // userData={userData}
-          audioBuffer={audioBuffer}
-          audioPlayedId={audioPlayedId}
-        />
+        <AudioStorage audioBuffer={audioBuffer} audioPlayedId={audioPlayedId} />
       </AudioControlsContainer>
     </AudioPlayerContainer>
   );

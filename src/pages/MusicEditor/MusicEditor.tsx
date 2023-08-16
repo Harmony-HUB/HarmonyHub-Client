@@ -47,11 +47,7 @@ function MusicEditor(): React.ReactElement {
 
         return (
           <AudioContainer>
-            <AudioPlayer
-              // userData={userData}
-              audioPlayedId={index}
-              audioBuffer={audioBuffer}
-            />
+            <AudioPlayer audioPlayedId={index} audioBuffer={audioBuffer} />
             <MoveAudioPlayer index={index} />
           </AudioContainer>
         );

@@ -6,7 +6,7 @@ import {
   MusicTitle,
   MusicCreationTime,
 } from "./styles";
-import fetchMusics from "./api";
+import getApiWithToken from "./api";
 
 interface Musics {
   url: string;
@@ -24,7 +24,7 @@ function MusicList() {
   useEffect(() => {
     const loadMusics = async () => {
       try {
-        const musicData = await fetchMusics();
+        const musicData = await getApiWithToken("musics");
         setMusics(musicData);
       } catch (error) {
         console.error(error);

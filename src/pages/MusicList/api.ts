@@ -2,15 +2,18 @@ import axios, { AxiosError } from "axios";
 import CONFIG from "../../config/config";
 import refreshAccessToken from "../../components/Auth/refreshAccessToken";
 
-const fetchMusics = async () => {
+const getApiWithToken = async (endpoint: string) => {
   let newToken;
   try {
     const token = localStorage.getItem("access_token");
-    const response = await axios.get(`${CONFIG.REACT_APP_API_URL}/musics`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.get(
+      `${CONFIG.REACT_APP_API_URL}/${endpoint}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError;
@@ -20,13 +23,16 @@ const fetchMusics = async () => {
         throw new Error("유효하지 않은 토큰입니다. 다시 로그인 해주세요.");
       }
     }
-    const response = await axios.get(`${CONFIG.REACT_APP_API_URL}/musics`, {
-      headers: {
-        Authorization: `Bearer ${newToken}`,
-      },
-    });
+    const response = await axios.get(
+      `${CONFIG.REACT_APP_API_URL}/${endpoint}`,
+      {
+        headers: {
+          Authorization: `Bearer ${newToken}`,
+        },
+      }
+    );
     return response.data;
   }
 };
 
-export default fetchMusics;
+export default getApiWithToken;
