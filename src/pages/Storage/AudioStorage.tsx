@@ -15,7 +15,7 @@ import { uploadAudio } from "../../feature/audioStorageSlice";
 
 function AudioStorage({
   audioBuffer,
-  userData,
+  // userData,
   audioPlayedId,
 }: AudioStorageProps) {
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -56,14 +56,14 @@ function AudioStorage({
     const buffer = toneAudioBufferToAudioBuffer(adjustedBuffer);
     const audioBlob = bufferToWav(buffer);
 
-    dispatch(uploadAudio({ audioBlob, title, description, userData }));
+    dispatch(uploadAudio({ audioBlob, title, description })); // userData
 
     setShowModal(false);
   };
 
   return (
     <div>
-      {userData.email && <Button onClick={isModalOpen}>저장</Button>}
+      <Button onClick={isModalOpen}>저장</Button>
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
         <StyledFormContainer>
           <h3>제목을 입력해주세요</h3>

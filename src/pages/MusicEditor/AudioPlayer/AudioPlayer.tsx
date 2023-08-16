@@ -11,16 +11,13 @@ import Pause from "./audioControllers/PauseButton";
 import Pitch from "./audioControllers/PitchButton";
 import Tempo from "./audioControllers/TempoButton";
 import TrimAudio from "./audioControllers/TrimButton";
-import { UserData } from "../../../types";
 
 interface AudioPlayerProps {
-  userData: UserData;
   audioPlayedId: number;
   audioBuffer: AudioBuffer;
 }
 
 function AudioPlayer({
-  userData,
   audioPlayedId,
   audioBuffer,
 }: AudioPlayerProps): React.ReactElement {
@@ -42,7 +39,7 @@ function AudioPlayer({
         <TrimAudio audioPlayedId={audioPlayedId} />
         <Volume audioPlayedId={audioPlayedId} />
         <AudioStorage
-          userData={userData}
+          // userData={userData}
           audioBuffer={audioBuffer}
           audioPlayedId={audioPlayedId}
         />

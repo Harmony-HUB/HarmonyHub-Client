@@ -7,20 +7,20 @@ interface UploadAudioPayload {
   audioBlob: Blob;
   title: string;
   description: string;
-  userData: { email: string };
+  // userData: { email: string };
 }
 
 export const uploadAudio = createAsyncThunk(
   "audio/upload",
   async (payload: UploadAudioPayload) => {
-    const { audioBlob, title, description, userData } = payload;
+    const { audioBlob, title, description } = payload; // userData
 
     const formData = new FormData();
     formData.append("audio", audioBlob, `${title}.wav`);
     formData.append("title", title);
     formData.append("description", description);
     formData.append("created_at", new Date().toISOString());
-    formData.append("userEmail", userData.email);
+    // formData.append("userEmail", userData.email);
 
     try {
       const token = localStorage.getItem("access_token");

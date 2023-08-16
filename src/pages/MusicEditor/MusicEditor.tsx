@@ -9,16 +9,11 @@ import Modal from "../../components/common/Modal/Modal";
 import MergeAudio from "./MergeAudio";
 import SelectFile from "./SelectFile";
 import MoveAudioPlayer from "./MoveAudioPlayer";
-import { UserData } from "../../types";
 import { RootState } from "../../store";
 import { setAudioBuffers } from "../../feature/musicEditorSlice";
 import useAudioContext from "../../hooks/useAudioContext";
 
-interface MusicEditorProps {
-  userData: UserData;
-}
-
-function MusicEditor({ userData }: MusicEditorProps): React.ReactElement {
+function MusicEditor(): React.ReactElement {
   const [showModal, setShowModal] = useState<boolean>(false);
 
   const dispatch = useDispatch();
@@ -53,7 +48,7 @@ function MusicEditor({ userData }: MusicEditorProps): React.ReactElement {
         return (
           <AudioContainer>
             <AudioPlayer
-              userData={userData}
+              // userData={userData}
               audioPlayedId={index}
               audioBuffer={audioBuffer}
             />
@@ -64,7 +59,7 @@ function MusicEditor({ userData }: MusicEditorProps): React.ReactElement {
       <BottomBar>
         <SelectFile />
         {audioBuffers.length >= 2 && <MergeAudio />}
-        <Button onClick={openModal}>Save</Button>
+        {audioBuffers.length > 1 && <Button onClick={openModal}>Save</Button>}
         <Modal isOpen={showModal} onClose={closeModal}>
           <DownloadAudio audioBuffer={combinedAudioBuffer} />
         </Modal>

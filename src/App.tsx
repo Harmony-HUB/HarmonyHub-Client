@@ -1,23 +1,18 @@
-import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
+import { useSelector } from "react-redux";
 import MusicEditor from "./pages/MusicEditor/MusicEditor";
 import Login from "./pages/Login/Login";
 import AudioRecorder from "./pages/AudioRecorder/AudioRecorder";
 import Sidebar from "./components/common/Sidebar/Sidebar";
 import { GuideDesktop, Title, Container } from "./styles";
-import { UserData } from "./types";
-import FirebaseAuth from "./components/Auth/FirebaseAuth";
 import ModalManager from "./components/common/Modal/ModalManager";
+import selectUserData from "./feature/selectors";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userData, setUserdata] = useState<UserData | null>(null);
   const isDesktopOrLaptop = useMediaQuery({ query: "(min-width: 1274px)" });
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-  };
+  const userData = useSelector(selectUserData);
 
   if (!isDesktopOrLaptop) {
     return (
@@ -31,33 +26,24 @@ function App() {
   return (
     <Router>
       <Container>
-        <FirebaseAuth setLoggedIn={setIsLoggedIn} setUserData={setUserdata} />
-
-        {isLoggedIn && (
+        {userData?.name && (
           <>
-            <Sidebar onLogout={handleLogout} />
+            <Sidebar />
             <ModalManager />
             <Routes>
-              {userData && (
-                <Route path="/" element={<MusicEditor userData={userData} />} />
-              )}
-              {userData && (
-                <Route
-                  path="/audiorecorder"
-                  element={<AudioRecorder userData={userData} />}
-                />
-              )}
+              <Route path="/" element={<MusicEditor />} />
+              <Route path="/audiorecorder" element={<AudioRecorder />} />
             </Routes>
           </>
         )}
 
-        {!isLoggedIn && (
+        {!userData?.name && (
           <>
             <div>
               <Title>Harmony HUB</Title>
             </div>
             <div>
-              <Login onLogin={() => setIsLoggedIn(true)} />
+              <Login />
             </div>
           </>
         )}

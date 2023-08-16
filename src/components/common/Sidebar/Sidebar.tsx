@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { getAuth, signOut } from "firebase/auth";
@@ -11,13 +12,11 @@ import {
   StyledLink,
   SidebarButton,
 } from "./styles";
+import { setUserLogout } from "../../../feature/userDataSlice";
 
-interface SidebarProps {
-  onLogout: () => void;
-}
-
-function Sidebar({ onLogout }: SidebarProps) {
+function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useDispatch();
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -25,11 +24,13 @@ function Sidebar({ onLogout }: SidebarProps) {
 
   const handleGoogleLogout = () => {
     const auth = getAuth();
+
     signOut(auth).then(() => {
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
-      onLogout();
     });
+
+    dispatch(setUserLogout(null));
   };
 
   return (

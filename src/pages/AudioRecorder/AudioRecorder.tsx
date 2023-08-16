@@ -6,13 +6,8 @@ import MixingStage from "./MixingStage";
 import { setAudioContext } from "../../feature/recorderSlice";
 import { RootState } from "../../store";
 import AudioRecorderStorage from "../Storage/AudioRecorderStorage";
-import { UserData } from "../../types";
 
-interface AudioRecorderProp {
-  userData: UserData;
-}
-
-function AudioRecorder({ userData }: AudioRecorderProp) {
+function AudioRecorder() {
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -31,7 +26,7 @@ function AudioRecorder({ userData }: AudioRecorderProp) {
       {stage === 3 && <MixingStage />}
       {stage === 4 && (
         <AudioRecorderStorage
-          userData={userData}
+          // userData={userData}
           audioBuffer={combinedAudioBuffer}
         />
       )}

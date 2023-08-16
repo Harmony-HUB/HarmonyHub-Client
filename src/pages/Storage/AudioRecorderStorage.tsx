@@ -9,10 +9,7 @@ import StyledFormContainer from "./styles";
 import { AppDispatch, RootState } from "../../store";
 import { uploadAudio } from "../../feature/audioStorageSlice";
 
-function AudioRecorderStorage({
-  audioBuffer,
-  userData,
-}: AudioRecorderStorageProps) {
+function AudioRecorderStorage({ audioBuffer }: AudioRecorderStorageProps) {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -25,7 +22,7 @@ function AudioRecorderStorage({
     if (!audioBuffer) return;
 
     const audioBlob = bufferToWav(audioBuffer);
-    dispatch(uploadAudio({ audioBlob, title, description, userData }));
+    dispatch(uploadAudio({ audioBlob, title, description })); // userData
 
     setShowModal(false);
   };
