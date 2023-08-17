@@ -73,14 +73,10 @@ function MergeAudio(): React.ReactElement {
     }
   };
 
-  return (
-    <div>
-      {audioBuffers.length >= 2 && (
-        <Button onClick={handleMergeAudioClick}>
-          {isLoading ? <Spinner /> : "오디오 결합"}
-        </Button>
-      )}
-    </div>
+  return isLoading ? (
+    <Spinner />
+  ) : (
+    <Button onClick={handleMergeAudioClick}>음원 결합</Button>
   );
 }
 

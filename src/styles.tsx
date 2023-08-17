@@ -1,5 +1,12 @@
-import styled from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import THEME_COLORS from "./config/themeColors";
+
+export const GlobalStyle = createGlobalStyle`
+  body {
+    margin: 0;
+    padding: 0;
+  }
+`;
 
 export const Container = styled.div`
   display: flex;
@@ -8,10 +15,12 @@ export const Container = styled.div`
   justify-content: center;
   height: 100vh;
   background-color: ${THEME_COLORS.CONTAINER_COLOR};
+  overflow-y: hidden;
 `;
 
 export const Title = styled.h1`
   font-size: 2.5rem;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   color: ${THEME_COLORS.TITLE_COLOR};
   margin-bottom: 1rem;
 `;
@@ -26,6 +35,6 @@ export const MyMusicButton = styled.div`
 export const GuideDesktop = styled.div`
   display: flex;
   justify-content: center;
-  flex-direction: column;
   align-items: center;
+  flex-direction: column;
 `;

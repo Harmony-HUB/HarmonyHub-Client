@@ -60,7 +60,7 @@ function AudioStorage({ audioBuffer, audioPlayedId }: AudioStorageProps) {
 
   return (
     <div>
-      <Button onClick={isModalOpen}>저장</Button>
+      <Button onClick={isModalOpen}>음원 저장</Button>
       <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
         <StyledFormContainer>
           <h3>제목을 입력해주세요</h3>

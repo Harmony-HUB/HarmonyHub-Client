@@ -6,6 +6,7 @@ import MixingStage from "./MixingStage";
 import { setAudioContext } from "../../feature/recorderSlice";
 import { RootState } from "../../store";
 import AudioRecorderStorage from "../Storage/AudioRecorderStorage";
+import Sidebar from "../../components/common/Sidebar/Sidebar";
 
 function AudioRecorder() {
   const dispatch = useDispatch();
@@ -21,6 +22,7 @@ function AudioRecorder() {
 
   return (
     <div>
+      <Sidebar />
       {stage === 1 && <SelectStage />}
       {stage === 2 && <RecordStage />}
       {stage === 3 && <MixingStage />}

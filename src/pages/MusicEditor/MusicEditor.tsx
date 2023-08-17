@@ -1,7 +1,18 @@
 /* eslint-disable react/jsx-key */
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Editor, BottomBar, AudioContainer } from "./styles";
+import { faChevronUp, faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Sidebar from "../../components/common/Sidebar/Sidebar";
+import ModalManager from "../../components/common/Modal/ModalManager";
+import {
+  Editor,
+  BottomBar,
+  AudioContainer,
+  CenteredContent,
+  BottomBarHandle,
+} from "./styles";
+import { Title } from "../../styles";
 import AudioPlayer from "./AudioPlayer/AudioPlayer";
 import Button from "../../components/common/Button/Button";
 import DownloadAudio from "../Storage/DownloadAudio";
@@ -12,9 +23,11 @@ import MoveAudioPlayer from "./MoveAudioPlayer";
 import { RootState } from "../../store";
 import { setAudioBuffers } from "../../feature/musicEditorSlice";
 import useAudioContext from "../../hooks/useAudioContext";
+import AudioStorage from "../Storage/AudioStorage";
 
 function MusicEditor(): React.ReactElement {
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [isBottomBar, setIsBattomBar] = useState<boolean>(true);
 
   const dispatch = useDispatch();
 
@@ -24,6 +37,9 @@ function MusicEditor(): React.ReactElement {
 
   useAudioContext();
 
+  const toggleBottomBar = () => {
+    setIsBattomBar(!isBottomBar);
+  };
   const openModal = () => {
     setShowModal(true);
   };
@@ -39,28 +55,47 @@ function MusicEditor(): React.ReactElement {
   }, [combinedAudioBuffer]);
 
   return (
-    <Editor>
-      {audioBuffers.map((audioBuffer, index) => {
-        if (audioBuffer === null) {
-          return null;
-        }
+    <>
+      <Sidebar />
+      <ModalManager />
+      <Editor>
+        {audioBuffers.length === 0 ? (
+          <CenteredContent>
+            <Title>Harmony Hub</Title>
+            <SelectFile />
+          </CenteredContent>
+        ) : (
+          audioBuffers.map((audioBuffer, index) => {
+            if (audioBuffer === null) {
+              return null;
+            }
 
-        return (
-          <AudioContainer>
-            <AudioPlayer audioPlayedId={index} audioBuffer={audioBuffer} />
-            <MoveAudioPlayer index={index} />
-          </AudioContainer>
-        );
-      })}
-      <BottomBar>
-        <SelectFile />
+            return (
+              <AudioContainer>
+                <AudioPlayer audioPlayedId={index} audioBuffer={audioBuffer} />
+                <MoveAudioPlayer index={index} />
+              </AudioContainer>
+            );
+          })
+        )}
+      </Editor>
+      <BottomBar isBottomBar={isBottomBar}>
+        <BottomBarHandle onClick={toggleBottomBar}>
+          {isBottomBar ? (
+            <FontAwesomeIcon icon={faChevronDown} />
+          ) : (
+            <FontAwesomeIcon icon={faChevronUp} />
+          )}
+        </BottomBarHandle>
+        {audioBuffers.length > 0 && <SelectFile />}
         {audioBuffers.length >= 2 && <MergeAudio />}
-        {audioBuffers.length > 1 && <Button onClick={openModal}>Save</Button>}
+        {combinedAudioBuffer && <Button onClick={openModal}>Save</Button>}
         <Modal isOpen={showModal} onClose={closeModal}>
           <DownloadAudio audioBuffer={combinedAudioBuffer} />
+          <AudioStorage audioPlayedId={0} audioBuffer={combinedAudioBuffer} />
         </Modal>
       </BottomBar>
-    </Editor>
+    </>
   );
 }
 

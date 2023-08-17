@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { getAuth, signOut } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 import {
   ToggleButton,
   NavLinks,
@@ -16,6 +17,7 @@ import { setUserLogout } from "../../../feature/userDataSlice";
 function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -30,6 +32,7 @@ function Sidebar() {
     });
 
     dispatch(setUserLogout(null));
+    navigate("/login");
   };
 
   return (
