@@ -24,6 +24,7 @@ import { RootState } from "../../store";
 import { setAudioBuffers } from "../../feature/musicEditorSlice";
 import useAudioContext from "../../hooks/useAudioContext";
 import AudioStorage from "../Storage/AudioStorage";
+import { Notes } from "../Login/styles";
 
 function MusicEditor(): React.ReactElement {
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -56,6 +57,7 @@ function MusicEditor(): React.ReactElement {
 
   return (
     <>
+      <Notes />
       <Sidebar />
       <ModalManager />
       <Editor>

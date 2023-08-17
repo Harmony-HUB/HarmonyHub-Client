@@ -1,14 +1,12 @@
-import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import Button from "../../components/common/Button/Button";
-import Modal from "../../components/common/Modal/Modal";
 import firebaseGoogleLoginThunk from "../../feature/firebaseGoogleLoginThunk";
 import { AppDispatch } from "../../store";
 import { Title } from "../../styles";
+import { Cat, LoginContainer, Notes, NotesLottie, LoginButton } from "./styles";
+import notesAnimation from "../../lottie/notesAnimation.json";
 
 function Login() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -17,22 +15,14 @@ function Login() {
     navigate("/");
   };
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
   return (
-    <>
+    <LoginContainer>
+      <NotesLottie animationData={notesAnimation} />
+      <Notes />
       <Title>Harmony HUB</Title>
-      <Button onClick={openModal}>Login</Button>
-      <Modal isOpen={isModalOpen} onClose={closeModal}>
-        <Button onClick={handleLogin}>Google Login</Button>
-      </Modal>
-    </>
+      <LoginButton onClick={handleLogin}>Login</LoginButton>
+      <Cat />
+    </LoginContainer>
   );
 }
 

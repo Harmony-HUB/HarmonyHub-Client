@@ -16,6 +16,7 @@ export const Container = styled.div`
   height: 100vh;
   background-color: ${THEME_COLORS.CONTAINER_COLOR};
   overflow-y: hidden;
+  z-index: 1;
 `;
 
 export const Title = styled.h1`

@@ -15,7 +15,7 @@ export const Editor = styled.div`
   max-height: calc(100vh - 100px - 50px);
   padding: 0.5rem;
   font-size: 1.2rem;
-  border: 1px solid ${THEME_COLORS.EDITOR_BORDER};
+  border: 2.5px solid ${THEME_COLORS.EDITOR_BORDER};
   border-radius: 4px;
   overflow-y: auto;
   margin-top: 100px;
@@ -67,22 +67,17 @@ export const BottomBar = styled.div<BottomBarProps>`
   justify-content: space-between;
   align-items: center;
   position: fixed;
-  height: 40px;
-
+  height: 35px;
   bottom: 0;
   left: 0;
   right: 0;
   padding: 12px;
   padding-left: 70px;
   padding-right: 70px;
-  border: 1px solid ${THEME_COLORS.BOTTOM_BORDER};
+  border: 2px solid ${THEME_COLORS.EDITOR_BORDER};
   background-color: ${THEME_COLORS.BOTTOM};
   transform: translateY(${props => (props.isBottomBar ? "0%" : "100%")});
   transition: transform 0.3s ease-in-out;
-
-  @media (max-width: 768px) {
-    padding: 5px;
-  }
 `;
 
 export const BottomBarHandle = styled.div`
@@ -93,11 +88,13 @@ export const BottomBarHandle = styled.div`
   width: 70px;
   height: 40px;
   z-index: 5;
+  border: 2px solid ${THEME_COLORS.EDITOR_BORDER};
+  border-bottom: none;
   background-color: ${THEME_COLORS.BOTTOM};
-  border-radius: 20%;
+  border-radius: 10px 10px 0 0;
   position: absolute;
   right: 100px;
-  bottom: 50px;
+  bottom: 59px;
 `;
 
 export const AudioContainer = styled.div`
