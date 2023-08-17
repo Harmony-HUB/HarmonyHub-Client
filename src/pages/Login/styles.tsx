@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import styled from "styled-components";
 import Lottie from "lottie-react";
 import THEME_COLORS from "../../config/themeColors";
@@ -50,6 +49,7 @@ export const LoginButton = styled.button`
   color: ${THEME_COLORS.AQUA};
   margin: 20px;
   margin-bottom: 50px;
+  background-color: transparent;
 
   &:hover {
     background-color: ${THEME_COLORS.AQUA};

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Waveform from "./Waveform/Waveform";
 import AudioStorage from "../../Storage/AudioStorage";
 import { AudioControlsContainer, AudioPlayerContainer } from "./styles";
@@ -11,6 +11,7 @@ import Pause from "./audioControllers/PauseButton";
 import Pitch from "./audioControllers/PitchButton";
 import Tempo from "./audioControllers/TempoButton";
 import TrimAudio from "./audioControllers/TrimButton";
+import { RootState } from "../../../store";
 
 interface AudioPlayerProps {
   audioPlayedId: number;
@@ -27,20 +28,30 @@ function AudioPlayer({
     dispatch(setAudioBuffer({ audioPlayedId, audioBuffer }));
   }, [audioBuffer]);
 
+  const { isPlaying } = useSelector(
+    (state: RootState) => state.audioPlayer.instances[audioPlayedId] || {}
+  );
+
   return (
-    <AudioPlayerContainer data-testid="audio-player-container">
-      <Waveform audioPlayedId={audioPlayedId} />
+    <div>
+      <AudioPlayerContainer data-testid="audio-player-container">
+        <Waveform audioPlayedId={audioPlayedId} />
+      </AudioPlayerContainer>
+
       <AudioControlsContainer>
-        <Play audioPlayedId={audioPlayedId} />
+        {isPlaying ? (
+          <Pause audioPlayedId={audioPlayedId} />
+        ) : (
+          <Play audioPlayedId={audioPlayedId} />
+        )}
         <Stop audioPlayedId={audioPlayedId} />
-        <Pause audioPlayedId={audioPlayedId} />
         <Pitch audioPlayedId={audioPlayedId} />
         <Tempo audioPlayedId={audioPlayedId} />
         <TrimAudio audioPlayedId={audioPlayedId} />
-        <Volume audioPlayedId={audioPlayedId} />
         <AudioStorage audioBuffer={audioBuffer} audioPlayedId={audioPlayedId} />
+        <Volume audioPlayedId={audioPlayedId} />
       </AudioControlsContainer>
-    </AudioPlayerContainer>
+    </div>
   );
 }
 export default AudioPlayer;

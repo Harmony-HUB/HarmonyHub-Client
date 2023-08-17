@@ -67,7 +67,11 @@ export const SelectionHandleRight = styled(SelectionHandle)`
 
 export const AudioControlsContainer = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
+  flex-direction: row;
+  justify-content: center;
+`;
+
+export const ButtonWidthContainer = styled.div`
+  margin-left: 10px;
+  margin-right: 10px;
 `;

@@ -29,7 +29,7 @@ export const Title = styled.h1`
 export const MyMusicButton = styled.div`
   position: absolute;
   bottom: 0;
-  top: 80px;
+  top: 50px;
   right: 5%;
 `;
 

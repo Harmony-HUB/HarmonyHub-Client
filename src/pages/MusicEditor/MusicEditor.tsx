@@ -28,7 +28,7 @@ import { Notes } from "../Login/styles";
 
 function MusicEditor(): React.ReactElement {
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [isBottomBar, setIsBattomBar] = useState<boolean>(true);
+  const [isBottomBar, setIsBattomBar] = useState<boolean>(false);
 
   const dispatch = useDispatch();
 
@@ -82,16 +82,27 @@ function MusicEditor(): React.ReactElement {
         )}
       </Editor>
       <BottomBar isBottomBar={isBottomBar}>
-        <BottomBarHandle onClick={toggleBottomBar}>
-          {isBottomBar ? (
-            <FontAwesomeIcon icon={faChevronDown} />
-          ) : (
-            <FontAwesomeIcon icon={faChevronUp} />
-          )}
-        </BottomBarHandle>
+        {audioBuffers.length > 0 ? (
+          <BottomBarHandle onClick={toggleBottomBar}>
+            {isBottomBar ? (
+              <FontAwesomeIcon icon={faChevronDown} />
+            ) : (
+              <FontAwesomeIcon icon={faChevronUp} />
+            )}
+          </BottomBarHandle>
+        ) : null}
         {audioBuffers.length > 0 && <SelectFile />}
         {audioBuffers.length >= 2 && <MergeAudio />}
-        {combinedAudioBuffer && <Button onClick={openModal}>Save</Button>}
+        {combinedAudioBuffer && (
+          <Button
+            width="100px"
+            height="45px"
+            backgroundColor="#fffff"
+            onClick={openModal}
+          >
+            음원 저장
+          </Button>
+        )}
         <Modal isOpen={showModal} onClose={closeModal}>
           <DownloadAudio audioBuffer={combinedAudioBuffer} />
           <AudioStorage audioPlayedId={0} audioBuffer={combinedAudioBuffer} />

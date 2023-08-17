@@ -18,7 +18,9 @@ function ModalManager() {
   return (
     <>
       <MyMusicButton>
-        <Button onClick={openSongsListModal}>내 음악</Button>
+        <Button onClick={openSongsListModal} width="150px">
+          My Playlist
+        </Button>
       </MyMusicButton>
       <MP3Modal isOpen={isSongsListModalOpen} onClose={closeSongsListModal}>
         <MusicList />

@@ -43,7 +43,7 @@ export const StyledSidebar = styled.div<StyledSidebarProps>`
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: ${THEME_COLORS.SIDEBAR};
+  background-color: ${THEME_COLORS.BOTTOM};
   transition: transform 0.3s ease-in-out;
   padding-top: 60px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
@@ -73,6 +73,7 @@ export const NavLink = styled.a`
   padding: 8px 16px 8px 16px;
   text-decoration: none;
   font-size: 16px;
+  font-weight: 800;
   color: ${THEME_COLORS.SIDEBAR_NAV_LINK};
   display: block;
   transition: 0.3s;
@@ -85,6 +86,7 @@ export const NavLink = styled.a`
 
 export const SidebarButton = styled.button`
   all: initial;
+  font-weight: 800;
   color: inherit;
   cursor: pointer;
   &:hover {

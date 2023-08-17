@@ -10,8 +10,8 @@ export const Editor = styled.div`
   flex-direction: column;
   align-items: center;
   position: relative;
-  width: 90%;
-  height: 80%;
+  width: 1520px;
+  height: 700px;
   max-height: calc(100vh - 100px - 50px);
   padding: 0.5rem;
   font-size: 1.2rem;
@@ -74,10 +74,12 @@ export const BottomBar = styled.div<BottomBarProps>`
   padding: 12px;
   padding-left: 70px;
   padding-right: 70px;
-  border: 2px solid ${THEME_COLORS.EDITOR_BORDER};
+  border: 1px solid ${THEME_COLORS.EDITOR_BORDER};
   background-color: ${THEME_COLORS.BOTTOM};
   transform: translateY(${props => (props.isBottomBar ? "0%" : "100%")});
   transition: transform 0.3s ease-in-out;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+  z-index: 20;
 `;
 
 export const BottomBarHandle = styled.div`
@@ -88,13 +90,13 @@ export const BottomBarHandle = styled.div`
   width: 70px;
   height: 40px;
   z-index: 5;
-  border: 2px solid ${THEME_COLORS.EDITOR_BORDER};
+  border: 1px solid ${THEME_COLORS.EDITOR_BORDER};
   border-bottom: none;
   background-color: ${THEME_COLORS.BOTTOM};
   border-radius: 10px 10px 0 0;
   position: absolute;
-  right: 100px;
   bottom: 59px;
+  box-shadow: 2px 0 0 0 rgba(0, 0, 0, 0.3);
 `;
 
 export const AudioContainer = styled.div`
@@ -119,6 +121,8 @@ export const AudioContainer = styled.div`
 
 export const MoveButtonContainer = styled.div`
   display: flex;
+  position: relative;
   flex-direction: column;
   align-items: center;
+  bottom: 32px;
 `;

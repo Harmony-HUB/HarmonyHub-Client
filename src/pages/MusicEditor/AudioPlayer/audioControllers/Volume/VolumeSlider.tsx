@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faVolumeUp } from "@fortawesome/free-solid-svg-icons";
 import { RootState } from "../../../../../store";
 import { setVolume } from "../../../../../feature/audioPlayerSlice";
-import StyledVolumeSlider from "./styles";
+import StyledVolumeSlider, { VolumeContainer } from "./styles";
 import { PropsId } from "../../../../../types";
 
 function VolumeSlider({ audioPlayedId }: PropsId): React.ReactElement {
@@ -34,13 +34,16 @@ function VolumeSlider({ audioPlayedId }: PropsId): React.ReactElement {
   };
 
   return (
-    <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <VolumeContainer
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <FontAwesomeIcon icon={faVolumeUp} />
       <StyledVolumeSlider
         onChange={handleVolumeChange}
         showSlider={showSlider}
       />
-    </div>
+    </VolumeContainer>
   );
 }
 

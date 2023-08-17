@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import THEME_COLORS from "../../../../../config/themeColors";
 
 interface SliderProps {
   showSlider: boolean;
@@ -11,18 +12,28 @@ const StyledVolumeSlider = styled.input.attrs({
   max: "1",
   step: "0.01",
 })<SliderProps>`
-  display: inline-block;
-  opacity: 1;
-  width: 100px;
-  vertical-align: middle;
-  transition:
-    opacity 0.3s,
-    margin-left 0.1s;
-  visibility: ${props => (props.showSlider ? "visible" : "hidden")};
+  width: 150px;
+  opacity: 0;
+  position: absolute;
+  left: 50px;
+  z-index: 2;
+  transition: opacity 0.3s;
 
-  &:hover {
+  &:hover,
+  &:focus {
     opacity: 1;
-    margin-left: 10px;
+  }
+`;
+
+export const VolumeContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  color: ${THEME_COLORS.AQUA};
+
+  &:hover ${StyledVolumeSlider} {
+    opacity: 1;
   }
 `;
 

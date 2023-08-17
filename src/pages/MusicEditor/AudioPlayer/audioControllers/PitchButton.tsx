@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { faHashtag, faMinus } from "@fortawesome/free-solid-svg-icons";
+import { faHashtag } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { setPitch } from "../../../../feature/audioPlayerSlice";
 import { PropsId } from "../../../../types";
@@ -30,9 +30,7 @@ function PitchButton({ audioPlayedId }: PropsId): React.ReactElement {
 
   return (
     <div>
-      <Button onClick={() => handlePitchChange(-0.1)}>
-        <FontAwesomeIcon icon={faMinus} />
-      </Button>
+      <Button onClick={() => handlePitchChange(-0.1)}>b</Button>
       <Button onClick={() => handlePitchChange(0.1)}>
         <FontAwesomeIcon icon={faHashtag} />
       </Button>

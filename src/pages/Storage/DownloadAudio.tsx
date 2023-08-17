@@ -22,8 +22,8 @@ function DownloadAudio({ audioBuffer }: DownloadAudioProps) {
   };
 
   return (
-    <Button onClick={handleDownload} disabled={!audioBuffer}>
-      내 컴퓨터에 저장하기
+    <Button width="150px" onClick={handleDownload} disabled={!audioBuffer}>
+      내 컴퓨터에 저장
     </Button>
   );
 }

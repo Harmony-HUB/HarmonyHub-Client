@@ -13,8 +13,9 @@ import { RootState } from "./store";
 function MainApp() {
   const isDesktopOrLaptop = useMediaQuery({ query: "(min-width: 1274px)" });
   const dispatch = useDispatch();
-  const userData = useSelector((state: RootState) => state.userData.data);
   const navigate = useNavigate();
+
+  const { data, loading } = useSelector((state: RootState) => state.userData);
 
   useEffect(() => {
     const reloadPage = async () => {
@@ -30,10 +31,10 @@ function MainApp() {
   }, []);
 
   useEffect(() => {
-    if (!userData) {
+    if (!data && !loading) {
       navigate("/login");
     }
-  }, [userData, navigate]);
+  }, [data]);
 
   if (!isDesktopOrLaptop) {
     return (

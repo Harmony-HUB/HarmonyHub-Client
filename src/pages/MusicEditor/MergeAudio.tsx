@@ -76,7 +76,13 @@ function MergeAudio(): React.ReactElement {
   return isLoading ? (
     <Spinner />
   ) : (
-    <Button onClick={handleMergeAudioClick}>음원 결합</Button>
+    <Button
+      width="100px"
+      backgroundColor="#ffffff"
+      onClick={handleMergeAudioClick}
+    >
+      음원 결합
+    </Button>
   );
 }
 
