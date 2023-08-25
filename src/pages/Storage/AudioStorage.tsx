@@ -17,14 +17,14 @@ function AudioStorage({ audioBuffer, audioPlayedId }: AudioStorageProps) {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const { uploading } = useSelector((state: RootState) => state.audioStorage);
   const userData = useSelector((state: RootState) => state.userData.data);
 
   const isModalOpen = () => {
-    setShowModal(true);
+    setShowModal(!showModal);
   };
 
   const { pitch, tempo } = useSelector(
@@ -33,6 +33,7 @@ function AudioStorage({ audioBuffer, audioPlayedId }: AudioStorageProps) {
 
   const handleSaveAudio = async () => {
     if (!audioBuffer) return;
+    setIsLoading(true);
 
     const adjustedPitch = pitch !== undefined ? pitch - 1 : 0;
     const adjustedTempo = tempo !== undefined ? tempo : 1;
@@ -55,6 +56,7 @@ function AudioStorage({ audioBuffer, audioPlayedId }: AudioStorageProps) {
 
     dispatch(uploadAudio({ audioBlob, title, description, userData }));
 
+    setIsLoading(false);
     setShowModal(false);
   };
 
@@ -63,7 +65,7 @@ function AudioStorage({ audioBuffer, audioPlayedId }: AudioStorageProps) {
       <Button onClick={isModalOpen} width="100px">
         음원 저장
       </Button>
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+      <Modal isOpen={showModal} onClose={isModalOpen}>
         <StyledFormContainer>
           <h3>제목을 입력해주세요</h3>
           <input
@@ -79,8 +81,8 @@ function AudioStorage({ audioBuffer, audioPlayedId }: AudioStorageProps) {
             placeholder="Description"
           />
         </StyledFormContainer>
-        <Button width="100px" onClick={handleSaveAudio}>
-          {uploading ? <Spinner /> : "Save"}
+        <Button width="100px" height="80px" onClick={handleSaveAudio}>
+          {isLoading ? <Spinner /> : "Save"}
         </Button>
       </Modal>
     </div>

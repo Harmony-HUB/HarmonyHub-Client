@@ -19,6 +19,7 @@ export const StageWrapper = styled.div`
   align-items: center;
   justify-content: space-evenly;
   flex-direction: column;
+  z-index: 100;
 `;
 
 export const ExplainStage = styled.h1`

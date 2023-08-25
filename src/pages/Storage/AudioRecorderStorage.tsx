@@ -13,25 +13,33 @@ function AudioRecorderStorage({ audioBuffer }: AudioRecorderStorageProps) {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const isModalOpen = () => {
+    setShowModal(!showModal);
+  };
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const { uploading } = useSelector((state: RootState) => state.audioStorage);
   const userData = useSelector((state: RootState) => state.userData.data);
 
   const handleSaveAudio = async () => {
     if (!audioBuffer) return;
+    setIsLoading(true);
 
     const audioBlob = bufferToWav(audioBuffer);
     dispatch(uploadAudio({ audioBlob, title, description, userData }));
 
+    setIsLoading(false);
     setShowModal(false);
   };
 
   return (
     <div>
-      <Button onClick={() => setShowModal(true)}>Save Audio</Button>
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+      <Button onClick={isModalOpen} width="160px" height="65px">
+        녹음 음원 저장
+      </Button>
+      <Modal isOpen={showModal} onClose={isModalOpen}>
         <StyledFormContainer>
           <h3>제목을 입력해주세요</h3>
           <input
@@ -46,10 +54,10 @@ function AudioRecorderStorage({ audioBuffer }: AudioRecorderStorageProps) {
             onChange={e => setDescription(e.target.value)}
             placeholder="Description"
           />
-          <Button onClick={handleSaveAudio}>
-            {uploading ? <Spinner /> : "Save"}
-          </Button>
         </StyledFormContainer>
+        <Button width="100px" height="80px" onClick={handleSaveAudio}>
+          {isLoading ? <Spinner /> : "Save"}
+        </Button>
       </Modal>
     </div>
   );

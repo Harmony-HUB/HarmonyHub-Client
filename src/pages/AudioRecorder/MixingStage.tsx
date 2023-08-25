@@ -5,10 +5,8 @@ import { faStop, faPlay } from "@fortawesome/free-solid-svg-icons";
 import { StageWrapper, ExplainStage } from "./styles";
 import Button from "../../components/common/Button/Button";
 import { RootState } from "../../store";
-import {
-  setCombinedAudioBuffer,
-  setAudioSource,
-} from "../../feature/recorderSlice";
+import { setAudioSource } from "../../feature/recorderSlice";
+import AudioRecorderStorage from "../Storage/AudioRecorderStorage";
 
 function MixingStage() {
   const [recordedAudioURL, setRecordedAudioURL] = useState<string | null>(null);
@@ -16,6 +14,8 @@ function MixingStage() {
     null
   );
   const [playing, setPlaying] = useState(false);
+  const [combinedAudioBuffer, setCombinedAudioBuffer] =
+    useState<AudioBuffer | null>(null);
 
   const dispatch = useDispatch();
 
@@ -31,8 +31,10 @@ function MixingStage() {
     if (recordedChunks) {
       const recordedBlob = new Blob(recordedChunks, { type: "audio/webm" });
       const recordedURL = URL.createObjectURL(recordedBlob);
+
       setRecordedAudioURL(recordedURL);
       const reader = new FileReader();
+
       reader.onload = async e => {
         if (e.target !== null) {
           const arrayBuffer = e.target.result;
@@ -61,7 +63,7 @@ function MixingStage() {
       combinedBuffer.copyToChannel(audioBuffer.getChannelData(0), 0);
       combinedBuffer.copyToChannel(recordedBuffer.getChannelData(0), 1);
 
-      dispatch(setCombinedAudioBuffer(combinedBuffer));
+      setCombinedAudioBuffer(combinedBuffer);
 
       const bufferSource = audioContext.createBufferSource();
 
@@ -85,6 +87,9 @@ function MixingStage() {
         <Button onClick={togglePlayStop}>
           <FontAwesomeIcon icon={playing ? faStop : faPlay} />
         </Button>
+      )}
+      {combinedAudioBuffer && (
+        <AudioRecorderStorage audioBuffer={combinedAudioBuffer} />
       )}
     </StageWrapper>
   );

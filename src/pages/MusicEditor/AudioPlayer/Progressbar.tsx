@@ -3,11 +3,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { setProgressPosition } from "../../../feature/audioPlayerSlice";
 import { ProgressBarContainer, ProgressTime } from "./styles";
 import { PropsId } from "../../../types";
-import { RootState } from "../../../store";
+import { AppDispatch, RootState } from "../../../store";
+import { stopButtonThunk } from "../../../feature/audioPlayerThunk";
 
 function ProgressBar({ audioPlayedId }: PropsId): React.ReactElement {
   const progressCanvasRef = useRef<HTMLCanvasElement>(null);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const { audioBuffer, progressPosition, startTime, pausedTime, isPlaying } =
     useSelector(
@@ -25,9 +26,13 @@ function ProgressBar({ audioPlayedId }: PropsId): React.ReactElement {
       audioContext.context.currentTime - startTime + pausedTime;
     const progress = (currentTime / audioBuffer.duration) * 100;
 
-    dispatch(
-      setProgressPosition({ audioPlayedId, progressPosition: progress })
-    );
+    if (currentTime >= audioBuffer.duration) {
+      dispatch(stopButtonThunk({ audioPlayedId }));
+    } else {
+      dispatch(
+        setProgressPosition({ audioPlayedId, progressPosition: progress })
+      );
+    }
   };
 
   useEffect(() => {

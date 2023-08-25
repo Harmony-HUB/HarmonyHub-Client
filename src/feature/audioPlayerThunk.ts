@@ -72,10 +72,18 @@ export const trimButtonThunk = createAsyncThunk(
 
     newAudioBuffers[audioPlayedId] = newBuffer;
     dispatch(setAudioBuffers(newAudioBuffers));
+
     dispatch(setAudioBuffer({ audioPlayedId, audioBuffer: newBuffer }));
     dispatch(setSelectedStart({ audioPlayedId, selectedStart: 0 }));
     dispatch(setSelectedEnd({ audioPlayedId, selectedEnd: 1 }));
     dispatch(setIsTrimmed({ audioPlayedId, isTrimmed: true }));
+    dispatch(setPausedTime({ audioPlayedId, pausedTime: 0 }));
+    dispatch(
+      setProgressPosition({
+        audioPlayedId,
+        progressPosition: selectedStart * 100,
+      })
+    );
   }
 );
 
@@ -114,9 +122,10 @@ export const playButtonThunk = createAsyncThunk(
     newAudioSource.playbackRate = tempo;
     newAudioSource.loop = false;
 
-    const playbackOffset = isTrimmed
-      ? Math.max(0, pausedTime)
-      : Math.max(selectedStart * audioBuffer.duration, pausedTime);
+    const playbackOffset = Math.max(
+      selectedStart * audioBuffer.duration,
+      pausedTime
+    );
 
     const duration = isTrimmed
       ? audioBuffer.duration - playbackOffset

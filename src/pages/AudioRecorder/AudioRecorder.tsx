@@ -5,8 +5,8 @@ import RecordStage from "./RecordStage";
 import MixingStage from "./MixingStage";
 import { setAudioContext } from "../../feature/recorderSlice";
 import { RootState } from "../../store";
-import AudioRecorderStorage from "../Storage/AudioRecorderStorage";
 import Sidebar from "../../components/common/Sidebar/Sidebar";
+import { Notes } from "../Login/styles";
 
 function AudioRecorder() {
   const dispatch = useDispatch();
@@ -16,20 +16,16 @@ function AudioRecorder() {
     dispatch(setAudioContext(audioContext));
   }, []);
 
-  const { stage, combinedAudioBuffer } = useSelector(
-    (state: RootState) => state.audioRecorder
-  );
+  const { stage } = useSelector((state: RootState) => state.audioRecorder);
 
   return (
-    <div>
+    <>
+      <Notes />
       <Sidebar />
       {stage === 1 && <SelectStage />}
       {stage === 2 && <RecordStage />}
       {stage === 3 && <MixingStage />}
-      {stage === 4 && (
-        <AudioRecorderStorage audioBuffer={combinedAudioBuffer} />
-      )}
-    </div>
+    </>
   );
 }
 

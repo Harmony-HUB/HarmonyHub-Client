@@ -38,11 +38,9 @@ export function toneAudioBufferToAudioBuffer(
     toneBuffer.length,
     Tone.context.sampleRate
   );
-
   for (let channel = 0; channel < toneBuffer.numberOfChannels; channel += 1) {
     const channelData = toneBuffer.getChannelData(channel);
     audioBuffer.copyToChannel(channelData, channel);
   }
-
   return audioBuffer;
 }

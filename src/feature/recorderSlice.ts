@@ -39,7 +39,6 @@ const audioRecorderSlice = createSlice({
     setRecordedChunks: createSetProperty("recordedChunks"),
     setIsRecord: createSetProperty("isRecored"),
     setStage: createSetProperty("stage"),
-    setCombinedAudioBuffer: createSetProperty("combinedAudioBuffer"),
   },
 });
 
@@ -51,7 +50,6 @@ export const {
   setRecordedChunks,
   setIsRecord,
   setStage,
-  setCombinedAudioBuffer,
 } = audioRecorderSlice.actions;
 
 export default audioRecorderSlice.reducer;
