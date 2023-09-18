@@ -13,7 +13,8 @@
 
 # 미리보기
 
-![Harmony-HUB](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/a6872f41-930e-42d3-87e8-5f8dbf970ee3)
+![프리뷰신](https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/7a3629d5-4bb6-4edb-be1f-1914482031ec)
+
 
 # 목차
 
@@ -595,7 +596,7 @@ buffers.forEach(buffer => {
 
 ### `requestAnimationFrame` <br>
 
-`requestAnimationFrame`은 웹 브라우저의 화면 갱신 주기에 맞추어 애니메이션을 수행하는 JavaScript 메서드 입니다. 메서드는 레파인트(reflow)와 리페인트(repaint)를 최소화하며, 브라우저의 화면 갱신 주기와 동기화되어 애니메이션을 수행합니다. 일반적으로 이 화면 갱신 주기는 초당 60회로, 대부분의 **웹 브라우저와 컴퓨터의 디스플레이 주사율이 일치** 합니다.
+`requestAnimationFrame`은 웹 브라우저의 화면 갱신 주기에 맞추어 애니메이션을 수행하는 JavaScript 메서드 입니다. 메서드는 레페인트(reflow)와 리페인트(repaint)를 최소화하며, 브라우저의 화면 갱신 주기와 동기화되어 애니메이션을 수행합니다. 일반적으로 이 화면 갱신 주기는 초당 60회로, 대부분의 웹 브라우저와 컴퓨터의 디스플레이 주사율이 일치합니다. 이 화면 갱신 주기와 동기화되는 `requestAnimationFrame`은 화면이 갱신되기 바로 전, 즉 페인트 전에 콜백을 호출하여 애니메이션의 다음 프레임을 준비하게 됩니다.
 <br>
 
 <img width="678" alt="image" src="https://github.com/Harmony-HUB/HarmonyHub-Client/assets/121784425/eb457c8e-639e-46e9-b83e-2e08d26d84d2">
